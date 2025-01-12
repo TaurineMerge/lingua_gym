@@ -1,5 +1,5 @@
 import Database from '../../database/config/db-connection';
-import { User } from '../../database/interfaces/User/User';
+import User from '../../database/interfaces/User/User';
 
 class UserModel {
   private db;
@@ -37,6 +37,28 @@ class UserModel {
       return result.rows[0] || null;
     } catch (err) {
       console.error('Error fetching user by ID:', err);
+      throw err;
+    }
+  }
+
+  async getUserByEmail(email: string): Promise<User | null> {
+    const query = `SELECT * FROM "User" WHERE email = $1`;
+    try {
+      const result = await this.db.query<User>(query, [email]);
+      return result.rows[0] || null;
+    } catch (err) {
+      console.error('Error fetching user by Email:', err);
+      throw err;
+    }
+  }
+
+  async getUserByUsername(username: string): Promise<User | null> {
+    const query = `SELECT * FROM "User" WHERE username = $1`;
+    try {
+      const result = await this.db.query<User>(query, [username]);
+      return result.rows[0] || null;
+    } catch (err) {
+      console.error('Error fetching user by username:', err);
       throw err;
     }
   }
