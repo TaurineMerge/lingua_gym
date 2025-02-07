@@ -1,5 +1,6 @@
 import Database from '../../database/config/db-connection';
 import User from '../../database/interfaces/User/User';
+import logger from '../utils/logger/Logger';
 
 class UserModel {
   private db;
@@ -9,23 +10,23 @@ class UserModel {
   }
 
   async createUser(user: User): Promise<void> {
-    const query = `
-      INSERT INTO "User" (user_id, username, display_name, password_hash, email, profile_picture, email_verified)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
-    `;
+    const query = 'INSERT INTO "User" (user_id, username, display_name, password_hash, email, token_version, profile_picture, email_verified) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)';
     const values = [
       user.user_id,
       user.username,
       user.display_name,
       user.password_hash,
       user.email,
+      user.token_version,
       user.profile_picture,
       user.email_verified,
     ];
     try {
+      logger.info('Creating user...');
       await this.db.query(query, values);
+      logger.info('User created successfully');
     } catch (err) {
-      console.error('Error creating user:', err);
+      logger.error('Error creating user:', err);
       throw err;
     }
   }
