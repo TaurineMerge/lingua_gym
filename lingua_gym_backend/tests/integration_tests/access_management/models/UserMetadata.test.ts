@@ -1,0 +1,73 @@
+import Database from '../../../../database/config/db-connection';
+import User from '../../../../database/interfaces/User/User';
+import UserMetadata from '../../../../database/interfaces/User/UserMetadata';
+import UserModel from '../../../../src/models/UserModel';
+import UserMetadataModel from '../../../../src/models/UserMetadataModel';
+import { v4 as uuidv4 } from 'uuid';
+
+const db = Database.getInstance();
+const userModel = new UserModel(db);
+const userMetadataModel = new UserMetadataModel(db);
+
+afterAll(async () => {
+  await db.close();
+});
+
+describe('UserMetadataModel Integration Tests', () => {
+  let testUser: User;
+  let testUserMetadata: UserMetadata;
+
+  beforeEach(async () => {
+    testUser = {
+      user_id: uuidv4(),
+      username: `testuser_${Date.now()}`,
+      display_name: 'Test User',
+      password_hash: 'hashedpassword',
+      email: `testuser_${Date.now()}@example.com`,
+      token_version: 1,
+      email_verified: false,
+    };
+
+    testUserMetadata = {
+      user_id: testUser.user_id,
+      last_login: new Date(),
+      signup_date: new Date(),
+    };
+
+    await userModel.createUser(testUser);
+  });
+
+  afterEach(async () => {
+    await userMetadataModel.deleteUserMetadata(testUserMetadata.user_id);
+    await userModel.deleteUser(testUser.user_id);
+  });
+
+  test('should create a user metadata', async () => {
+    await expect(userMetadataModel.createUserMetadata(testUserMetadata)).resolves.toBeUndefined();
+  });
+
+  test('should retrieve a user metadata by user id', async () => {
+    await userMetadataModel.createUserMetadata(testUserMetadata);
+    const userMetadata = await userMetadataModel.getUserMetadataById(testUserMetadata.user_id);
+    expect(userMetadata).toMatchObject({
+      user_id: testUserMetadata.user_id,
+      last_login: testUserMetadata.last_login,
+      signup_date: testUserMetadata.signup_date
+    });
+  });
+
+  test('should update a user metadata', async () => {
+    const newLoginDate = new Date();
+    await userMetadataModel.createUserMetadata(testUserMetadata);
+    await userMetadataModel.updateUserMetadata(testUserMetadata.user_id, { last_login: newLoginDate });
+    const updatedUserMetadata = await userMetadataModel.getUserMetadataById(testUserMetadata.user_id);
+    expect(updatedUserMetadata?.last_login).toEqual(newLoginDate);
+  });
+
+  test('should delete a user metadata', async () => {
+    await userMetadataModel.createUserMetadata(testUserMetadata);
+    await userMetadataModel.deleteUserMetadata(testUserMetadata.user_id);
+    const userMetadata = await userMetadataModel.getUserMetadataById(testUserMetadata.user_id);
+    expect(userMetadata).toBeNull();
+  });
+});
