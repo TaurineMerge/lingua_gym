@@ -1,14 +1,14 @@
 import PasswordResetService from '../../../../src/services/access_management/PasswordResetService';
 import UserModel from '../../../../src/models/UserModel';
 import UserPasswordResetModel from '../../../../src/models/UserPasswordResetModel';
-import Database from '../../../../database/config/db-connection';
+import Database from '../../../../src/database/config/db-connection';
 import 'dotenv/config';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import RegistrationService from '../../../../src/services/access_management/RegistrationService';
 import UserMetadataModel from '../../../../src/models/UserMetadataModel';
-import User from '../../../../database/interfaces/User/User';
+import User from '../../../../src/database/interfaces/User/User';
 
 const db = Database.getInstance();
 const userModel = new UserModel(db);

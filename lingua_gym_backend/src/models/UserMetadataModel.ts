@@ -1,5 +1,5 @@
-import Database from '../../database/config/db-connection';
-import UserMetadata from '../../database/interfaces/User/UserMetadata';
+import Database from '../database/config/db-connection';
+import UserMetadata from '../database/interfaces/User/UserMetadata';
 import logger from '../utils/logger/Logger';
 
 class UserMetadataModel {

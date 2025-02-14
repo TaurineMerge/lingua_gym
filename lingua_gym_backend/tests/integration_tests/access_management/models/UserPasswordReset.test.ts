@@ -1,6 +1,6 @@
-import Database from '../../../../database/config/db-connection';
-import User from '../../../../database/interfaces/User/User';
-import UserPasswordReset from '../../../../database/interfaces/User/UserPasswordReset';
+import Database from '../../../../src/database/config/db-connection';
+import User from '../../../../src/database/interfaces/User/User';
+import UserPasswordReset from '../../../../src/database/interfaces/User/UserPasswordReset';
 import UserModel from '../../../../src/models/UserModel';
 import UserPasswordResetModel from '../../../../src/models/UserPasswordResetModel';
 import { v4 as uuidv4 } from 'uuid';

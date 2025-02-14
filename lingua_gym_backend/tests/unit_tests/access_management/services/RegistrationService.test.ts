@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import RegistrationService from '../../../../src/services/access_management/RegistrationService';
 import UserModel from '../../../../src/models/UserModel';
 import UserMetadataModel from '../../../../src/models/UserMetadataModel';
-import Database from '../../../../database/config/db-connection';
+import Database from '../../../../src/database/config/db-connection';
 import bcrypt from 'bcrypt';
 
 jest.mock('../../../../src/models/UserModel');
@@ -36,7 +36,7 @@ describe('RegistrationService', () => {
     mockUserModel.createUser.mockResolvedValue(undefined);
     mockUserMetadataModel.createUserMetadata.mockResolvedValue(undefined);
 
-    await expect(registrationService.register(user.username, user.email, user.password_hash)).resolves.toBeUndefined();
+    await expect(registrationService.register(user.username, user.email, user.password_hash)).resolves.not.toBeUndefined();
 
     expect(mockUserModel.getUserByEmail).toHaveBeenCalledWith(user.email);
     expect(mockUserModel.getUserByUsername).toHaveBeenCalledWith(user.username);

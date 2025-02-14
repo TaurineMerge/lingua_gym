@@ -1,4 +1,4 @@
-import Database from '../../../../database/config/db-connection';
+import Database from '../../../../src/database/config/db-connection';
 import RegistrationService from '../../../../src/services/access_management/RegistrationService';
 import UserModel from '../../../../src/models/UserModel';
 import UserMetadataModel from '../../../../src/models/UserMetadataModel';

@@ -1,6 +1,6 @@
 import UserPasswordResetModel from '../../models/UserPasswordResetModel';
 import UserModel from '../../models/UserModel';
-import User from '../../../database/interfaces/User/User';
+import User from '../../database/interfaces/User/User';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import hashPassword from '../../utils/hash/HashPassword';

@@ -1,4 +1,4 @@
-import Database from '../../../../database/config/db-connection';
+import Database from '../../../../src/database/config/db-connection';
 import AuthenticationService from '../../../../src/services/access_management/AuthenticationService';
 import UserModel from '../../../../src/models/UserModel';
 import TokenManagementService from '../../../../src/services/access_management/JwtTokenManagementService';

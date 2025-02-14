@@ -1,4 +1,4 @@
-import Database from "../../../database/config/db-connection";
+import Database from "../../../src/database/config/db-connection";
 
 const db = Database.getInstance();
 

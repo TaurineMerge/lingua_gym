@@ -1,5 +1,5 @@
-import Database from '../../database/config/db-connection';
-import User from '../../database/interfaces/User/User';
+import Database from '../database/config/db-connection';
+import User from '../database/interfaces/User/User';
 import logger from '../utils/logger/Logger';
 
 class UserModel {

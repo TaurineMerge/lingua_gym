@@ -1,8 +1,8 @@
 import UserPasswordResetModel from '../../../../src/models/UserPasswordResetModel';
-import Database from '../../../../database/config/db-connection';
-import UserPasswordReset from '../../../../database/interfaces/User/UserPasswordReset';
+import Database from '../../../../src/database/config/db-connection';
+import UserPasswordReset from '../../../../src/database/interfaces/User/UserPasswordReset';
 
-jest.mock('../../../../database/config/db-connection');
+jest.mock('../../../../src/database/config/db-connection');
 
 const mockDb = {
   query: jest.fn(),
@@ -27,7 +27,7 @@ describe('UserPasswordResetModel', () => {
     await userPasswordResetModel.createResetEntry(mockResetEntry);
 
     expect(mockDb.query).toHaveBeenCalledWith(
-      'INSERT INTO "userpasswordreset" (user_id, password_reset_token, password_reset_token_expiration) VALUES ($1, $2, $3)',
+      'INSERT INTO "UserPasswordReset" (user_id, password_reset_token, password_reset_token_expiration) VALUES ($1, $2, $3)',
       [mockResetEntry.user_id, mockResetEntry.password_reset_token, mockResetEntry.password_reset_token_expiration]
     );
   });
@@ -43,7 +43,7 @@ describe('UserPasswordResetModel', () => {
 
     const result = await userPasswordResetModel.getByToken(mockResetEntry.password_reset_token);
 
-    expect(mockDb.query).toHaveBeenCalledWith('SELECT * FROM "userpasswordreset" WHERE password_reset_token = $1',[mockResetEntry.password_reset_token]);
+    expect(mockDb.query).toHaveBeenCalledWith('SELECT * FROM "UserPasswordReset" WHERE password_reset_token = $1',[mockResetEntry.password_reset_token]);
     expect(result).toEqual(mockResetEntry);
   });
 
@@ -67,7 +67,7 @@ describe('UserPasswordResetModel', () => {
     await userPasswordResetModel.invalidateToken(mockResetEntry.password_reset_token);
 
     expect(mockDb.query).toHaveBeenCalledWith(
-      'DELETE FROM "userpasswordreset" WHERE password_reset_token = $1',
+      'DELETE FROM "UserPasswordReset" WHERE password_reset_token = $1',
       [mockResetEntry.password_reset_token]
     );
   });
@@ -78,7 +78,7 @@ describe('UserPasswordResetModel', () => {
     await userPasswordResetModel.deleteRequestByUserId(mockResetEntry.user_id);
 
     expect(mockDb.query).toHaveBeenCalledWith(
-      'DELETE FROM "userpasswordreset" WHERE user_id = $1',
+      'DELETE FROM "UserPasswordReset" WHERE user_id = $1',
       [mockResetEntry.user_id]
     );
   });
@@ -89,7 +89,7 @@ describe('UserPasswordResetModel', () => {
     await userPasswordResetModel.deleteExpiredRequests();
 
     expect(mockDb.query).toHaveBeenCalledWith(
-      'DELETE FROM "userpasswordreset" WHERE password_reset_token_expiration <= NOW()'
+      'DELETE FROM "UserPasswordReset" WHERE password_reset_token_expiration <= NOW()'
     );
   });
 });

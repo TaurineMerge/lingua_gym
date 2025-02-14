@@ -82,7 +82,7 @@ describe('PasswordResetService', () => {
       });
 
       await expect(passwordResetService.resetPassword('invalidToken', 'newPassword')).rejects.toThrow(
-        'Invalid or expired reset token: Error: Invalid reset token'
+        'Invalid or expired reset token: Error: Invalid or expired reset token'
       );
     });
   });

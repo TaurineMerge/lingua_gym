@@ -1,6 +1,6 @@
-import Database from '../../../../database/config/db-connection';
-import User from '../../../../database/interfaces/User/User';
-import UserMetadata from '../../../../database/interfaces/User/UserMetadata';
+import Database from '../../../../src/database/config/db-connection';
+import User from '../../../../src/database/interfaces/User/User';
+import UserMetadata from '../../../../src/database/interfaces/User/UserMetadata';
 import UserModel from '../../../../src/models/UserModel';
 import UserMetadataModel from '../../../../src/models/UserMetadataModel';
 import { v4 as uuidv4 } from 'uuid';

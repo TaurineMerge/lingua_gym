@@ -1,5 +1,5 @@
 import { Pool, QueryResult, QueryResultRow } from 'pg';
-import logger from '../../src/utils/logger/Logger';
+import logger from '../../utils/logger/Logger';
 import 'dotenv/config';
 
 class Database {

@@ -1,6 +1,6 @@
-import Database from '../../../../database/config/db-connection';
+import Database from '../../../../src/database/config/db-connection';
 import UserModel from '../../../../src/models/UserModel';
-import User from '../../../../database/interfaces/User/User';
+import User from '../../../../src/database/interfaces/User/User';
 import { v4 as uuidv4 } from 'uuid';
 
 const db = Database.getInstance();

@@ -1,6 +1,6 @@
 import UserMetadataModel from '../../../../src/models/UserMetadataModel';
-import Database from '../../../../database/config/db-connection';
-import UserMetadata from '../../../../database/interfaces/User/UserMetadata';
+import Database from '../../../../src/database/config/db-connection';
+import UserMetadata from '../../../../src/database/interfaces/User/UserMetadata';
 import logger from '../../../../src/utils/logger/Logger';
 
 jest.mock('../../../../src/utils/logger/logger', () => ({
@@ -33,8 +33,8 @@ describe('UserModel', () => {
 
     expect(db.query).toHaveBeenCalledWith(
       `
-      INSERT INTO "usermetadata" (user_id, last_login, signup_date)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      INSERT INTO "UserMetadata" (user_id, last_login, signup_date)
+      VALUES ($1, $2, $3)
     `,
       [userMetadata.user_id, userMetadata.last_login, userMetadata.signup_date]
     );

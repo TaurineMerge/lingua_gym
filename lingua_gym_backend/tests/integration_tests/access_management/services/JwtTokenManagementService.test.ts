@@ -3,8 +3,8 @@ import TokenManagementService from '../../../../src/services/access_management/J
 import UserModel from '../../../../src/models/UserModel';
 import UserMetadataModel from '../../../../src/models/UserMetadataModel';
 import 'dotenv/config';
-import Database from '../../../../database/config/db-connection';
-import User from '../../../../database/interfaces/User/User';
+import Database from '../../../../src/database/config/db-connection';
+import User from '../../../../src/database/interfaces/User/User';
 import RegistrationService from '../../../../src/services/access_management/RegistrationService';
 
 const db = Database.getInstance();

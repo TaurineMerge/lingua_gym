@@ -3,7 +3,7 @@ import UserModel from '../../models/UserModel';
 import UserMetadataModel from '../../models/UserMetadataModel';
 import hashPassword from '../../utils/hash/HashPassword';
 import logger from '../../utils/logger/Logger';
-import User from '../../../database/interfaces/User/User';
+import User from '../../database/interfaces/User/User';
 
 class RegistrationService {
     private userModel: UserModel;
