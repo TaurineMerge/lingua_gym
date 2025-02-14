@@ -1,6 +1,6 @@
-import Database from '../database/config/db-connection';
-import UserPasswordReset from '../database/interfaces/User/UserPasswordReset';
-import logger from '../utils/logger/Logger';
+import Database from '../../database/config/db-connection';
+import UserPasswordReset from '../../database/interfaces/User/UserPasswordReset';
+import logger from '../../utils/logger/Logger';
 
 class UserPasswordResetModel {
   private db;

@@ -1,8 +1,9 @@
 import Database from '../database/config/db-connection';
 import User from '../database/interfaces/User/User';
 import logger from '../utils/logger/Logger';
+import IUserModel from './IUserModel';
 
-class UserModel {
+class UserModel implements IUserModel {
   private db;
   
   constructor(dbInstance: Database) {
@@ -64,7 +65,7 @@ class UserModel {
     }
   }
 
-  async updateUser(user_id: string, updates: Partial<User>): Promise<void> {
+  async updateUserById(user_id: string, updates: Partial<User>): Promise<void> {
     const fields = Object.keys(updates)
       .map((key, index) => `"${key}" = $${index + 2}`)
       .join(", ");
@@ -78,7 +79,7 @@ class UserModel {
     }
   }
 
-  async deleteUser(user_id: string): Promise<void> {
+  async deleteUserById(user_id: string): Promise<void> {
     const query = `DELETE FROM "User" WHERE user_id = $1`;
     try {
       await this.db.query(query, [user_id]);

@@ -1,4 +1,4 @@
-import UserPasswordResetModel from '../../../../src/models/UserPasswordResetModel';
+import UserPasswordResetModel from '../../../../src/models/access_management/UserPasswordResetModel';
 import Database from '../../../../src/database/config/db-connection';
 import UserPasswordReset from '../../../../src/database/interfaces/User/UserPasswordReset';
 

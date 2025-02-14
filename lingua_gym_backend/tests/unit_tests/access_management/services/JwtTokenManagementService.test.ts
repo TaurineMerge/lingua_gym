@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import TokenManagementService from '../../../../src/services/access_management/JwtTokenManagementService';
-import UserModel from '../../../../src/models/UserModel';
+import UserModel from '../../../../src/models/access_management/UserModel';
 import User from '../../../../src/database/interfaces/User/User';
 import Database from '../../../../src/database/config/db-connection';
 
@@ -103,14 +103,14 @@ describe('TokenManagementService', () => {
     it('should refresh tokens if the refresh token is valid', async () => {
       (jwt.verify as jest.Mock).mockReturnValue({ userId: mockUser.user_id, tokenVersion: mockUser.token_version });
       userModel.getUserById.mockResolvedValue(mockUser);
-      userModel.updateUser.mockResolvedValue();
+      userModel.updateUserById.mockResolvedValue();
 
       (jwt.sign as jest.Mock).mockReturnValueOnce('newAccessToken').mockReturnValueOnce('newRefreshToken');
 
       const result = await tokenService.refreshToken('validRefreshToken');
 
       expect(userModel.getUserById).toHaveBeenCalledWith(mockUser.user_id);
-      expect(userModel.updateUser).toHaveBeenCalledWith(mockUser.user_id, { token_version: 2 });
+      expect(userModel.updateUserById).toHaveBeenCalledWith(mockUser.user_id, { token_version: 2 });
       expect(result).toEqual({ accessToken: 'newAccessToken', refreshToken: 'newRefreshToken' });
     });
 

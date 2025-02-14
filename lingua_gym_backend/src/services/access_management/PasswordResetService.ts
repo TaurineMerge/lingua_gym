@@ -1,5 +1,5 @@
-import UserPasswordResetModel from '../../models/UserPasswordResetModel';
-import UserModel from '../../models/UserModel';
+import UserPasswordResetModel from '../../models/access_management/UserPasswordResetModel';
+import UserModel from '../../models/access_management/UserModel';
 import User from '../../database/interfaces/User/User';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
@@ -72,7 +72,7 @@ class PasswordResetService {
       throw new Error('Invalid or expired reset token');
     }
 
-    await this.userModel.updateUser(payload.userId, {
+    await this.userModel.updateUserById(payload.userId, {
       password_hash: hashPassword(newPassword),
       token_version: (payload.tokenVersion || 0) + 1,
     });

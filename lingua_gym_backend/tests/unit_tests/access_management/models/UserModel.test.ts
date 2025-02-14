@@ -1,4 +1,4 @@
-import UserModel from '../../../../src/models/UserModel';
+import UserModel from '../../../../src/models/access_management/UserModel';
 import Database from '../../../../src/database/config/db-connection';
 import User from '../../../../src/database/interfaces/User/User';
 import logger from '../../../../src/utils/logger/Logger';
@@ -121,7 +121,7 @@ describe('UserModel', () => {
     const updates = { display_name: 'New Name', email_verified: false };
     const query = 'UPDATE "User" SET "display_name" = $2, "email_verified" = $3 WHERE user_id = $1';
 
-    await userModel.updateUser(mockUser.user_id, updates);
+    await userModel.updateUserById(mockUser.user_id, updates);
 
     expect(db.query).toHaveBeenCalledWith(query, [mockUser.user_id, updates.display_name, updates.email_verified]);
   });
@@ -130,11 +130,11 @@ describe('UserModel', () => {
     const error = new Error('Update failed');
     db.query.mockRejectedValue(error);
 
-    await expect(userModel.updateUser(mockUser.user_id, { display_name: 'New Name' })).rejects.toThrow(error);
+    await expect(userModel.updateUserById(mockUser.user_id, { display_name: 'New Name' })).rejects.toThrow(error);
   });
 
   test('deleteUser() should call db.query() with correct SQL', async () => {
-    await userModel.deleteUser(mockUser.user_id);
+    await userModel.deleteUserById(mockUser.user_id);
 
     expect(db.query).toHaveBeenCalledWith('DELETE FROM "User" WHERE user_id = $1', [mockUser.user_id]);
   });
@@ -143,6 +143,6 @@ describe('UserModel', () => {
     const error = new Error('Delete failed');
     db.query.mockRejectedValue(error);
 
-    await expect(userModel.deleteUser(mockUser.user_id)).rejects.toThrow(error);
+    await expect(userModel.deleteUserById(mockUser.user_id)).rejects.toThrow(error);
   });
 });

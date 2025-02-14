@@ -1,4 +1,4 @@
-import UserMetadataModel from '../../../../src/models/UserMetadataModel';
+import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel';
 import Database from '../../../../src/database/config/db-connection';
 import UserMetadata from '../../../../src/database/interfaces/User/UserMetadata';
 import logger from '../../../../src/utils/logger/Logger';

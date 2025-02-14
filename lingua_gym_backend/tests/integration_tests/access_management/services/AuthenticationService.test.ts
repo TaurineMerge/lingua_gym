@@ -1,6 +1,6 @@
 import Database from '../../../../src/database/config/db-connection';
 import AuthenticationService from '../../../../src/services/access_management/AuthenticationService';
-import UserModel from '../../../../src/models/UserModel';
+import UserModel from '../../../../src/models/access_management/UserModel';
 import TokenManagementService from '../../../../src/services/access_management/JwtTokenManagementService';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';

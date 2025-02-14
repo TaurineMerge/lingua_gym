@@ -1,8 +1,9 @@
-import Database from '../database/config/db-connection';
-import UserMetadata from '../database/interfaces/User/UserMetadata';
-import logger from '../utils/logger/Logger';
+import Database from '../../database/config/db-connection';
+import UserMetadata from '../../database/interfaces/User/UserMetadata';
+import logger from '../../utils/logger/Logger';
+import IUserMetadataModel from './IUserMetadataModel';
 
-class UserMetadataModel {
+class UserMetadataModel implements IUserMetadataModel {
   private db;
 
   constructor(dbInstance: Database) {
@@ -40,7 +41,7 @@ class UserMetadataModel {
     }
   }
 
-  async updateUserMetadata(user_id: string, updates: Partial<UserMetadata>): Promise<void> {
+  async updateUserMetadataById(user_id: string, updates: Partial<UserMetadata>): Promise<void> {
     const fields = Object.keys(updates)
       .map((key, index) => `"${key}" = $${index + 2}`)
       .join(", ");
@@ -57,7 +58,7 @@ class UserMetadataModel {
     }
   }
 
-  async deleteUserMetadata(user_id: string): Promise<void> {
+  async deleteUserMetadataById(user_id: string): Promise<void> {
     const query = `DELETE FROM "UserMetadata" WHERE user_id = $1`;
 
     try {

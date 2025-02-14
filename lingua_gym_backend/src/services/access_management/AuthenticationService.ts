@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import UserModel from '../../models/UserModel';
+import UserModel from '../../models/access_management/UserModel';
 import logger from '../../utils/logger/Logger';
 import TokenManagementService from './JwtTokenManagementService';
 

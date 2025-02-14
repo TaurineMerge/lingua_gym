@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import RegistrationService from '../../../../src/services/access_management/RegistrationService';
-import UserModel from '../../../../src/models/UserModel';
-import UserMetadataModel from '../../../../src/models/UserMetadataModel';
+import UserModel from '../../../../src/models/access_management/UserModel';
+import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel';
 import Database from '../../../../src/database/config/db-connection';
 import bcrypt from 'bcrypt';
 

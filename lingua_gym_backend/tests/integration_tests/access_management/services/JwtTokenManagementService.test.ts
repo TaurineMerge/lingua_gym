@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import TokenManagementService from '../../../../src/services/access_management/JwtTokenManagementService';
-import UserModel from '../../../../src/models/UserModel';
-import UserMetadataModel from '../../../../src/models/UserMetadataModel';
+import UserModel from '../../../../src/models/access_management/UserModel';
+import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel';
 import 'dotenv/config';
 import Database from '../../../../src/database/config/db-connection';
 import User from '../../../../src/database/interfaces/User/User';

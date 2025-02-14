@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import UserModel from '../../models/UserModel';
-import UserMetadataModel from '../../models/UserMetadataModel';
+import UserModel from '../../models/access_management/UserModel';
+import UserMetadataModel from '../../models/access_management/UserMetadataModel';
 import hashPassword from '../../utils/hash/HashPassword';
 import logger from '../../utils/logger/Logger';
 import User from '../../database/interfaces/User/User';

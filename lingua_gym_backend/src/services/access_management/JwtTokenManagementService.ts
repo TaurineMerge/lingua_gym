@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import UserModel from '../../models/UserModel';
+import UserModel from '../../models/access_management/UserModel';
 import User from '../../database/interfaces/User/User';
 import logger from '../../utils/logger/Logger';
 import 'dotenv/config';
@@ -64,7 +64,7 @@ class TokenManagementService {
         throw new Error('User not found');
       }
   
-      await this.userModel.updateUser(userId, { token_version: user.token_version + 1 });
+      await this.userModel.updateUserById(userId, { token_version: user.token_version + 1 });
       logger.info({ userId }, 'Token version incremented');
     } catch (error) {
       logger.error({ userId, error }, 'Failed to increment token version');
