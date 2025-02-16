@@ -8,12 +8,12 @@ import JwtTokenManagementService from '../services/access_management/JwtTokenMan
 import RegistrationService from '../services/access_management/RegistrationService';
 import PasswordResetService from '../services/access_management/PasswordResetService';
 
-class ServicesFactory {
+class ServiceFactory {
     private static db = Database.getInstance();
 
-    private static userModel = new UserModel(ServicesFactory.db);
-    private static userMetadataModel = new UserMetadataModel(ServicesFactory.db);
-    private static userPasswordResetModel = new UserPasswordResetModel(ServicesFactory.db);
+    private static userModel = new UserModel(ServiceFactory.db);
+    private static userMetadataModel = new UserMetadataModel(ServiceFactory.db);
+    private static userPasswordResetModel = new UserPasswordResetModel(ServiceFactory.db);
 
     private static registrationService: RegistrationService;
     private static jwtTokenService: JwtTokenManagementService;
@@ -22,9 +22,9 @@ class ServicesFactory {
 
     static {
         try {
-            ServicesFactory.registrationService = new RegistrationService(
-                ServicesFactory.userModel, 
-                ServicesFactory.userMetadataModel
+            ServiceFactory.registrationService = new RegistrationService(
+                ServiceFactory.userModel, 
+                ServiceFactory.userMetadataModel
             );
             logger.info('RegistrationService initialized successfully');
         } catch (error) {
@@ -33,7 +33,7 @@ class ServicesFactory {
         }
 
         try {
-            ServicesFactory.jwtTokenService = new JwtTokenManagementService(ServicesFactory.userModel);
+            ServiceFactory.jwtTokenService = new JwtTokenManagementService(ServiceFactory.userModel);
             logger.info('JwtTokenManagementService initialized successfully');
         } catch (error) {
             logger.error({ err: error }, 'Failed to initialize JwtTokenManagementService');
@@ -41,9 +41,9 @@ class ServicesFactory {
         }
 
         try {
-            ServicesFactory.authenticationService = new AuthenticationService(
-                ServicesFactory.userModel, 
-                ServicesFactory.jwtTokenService
+            ServiceFactory.authenticationService = new AuthenticationService(
+                ServiceFactory.userModel, 
+                ServiceFactory.jwtTokenService
             );
             logger.info('AuthenticationService initialized successfully');
         } catch (error) {
@@ -52,9 +52,9 @@ class ServicesFactory {
         }
 
         try {
-            ServicesFactory.passwordResetService = new PasswordResetService(
-                ServicesFactory.userModel, 
-                ServicesFactory.userPasswordResetModel
+            ServiceFactory.passwordResetService = new PasswordResetService(
+                ServiceFactory.userModel, 
+                ServiceFactory.userPasswordResetModel
             );
             logger.info('PasswordResetService initialized successfully');
         } catch (error) {
@@ -64,20 +64,20 @@ class ServicesFactory {
     }
 
     static getAuthenticationService() {
-        return ServicesFactory.authenticationService;
+        return ServiceFactory.authenticationService;
     }
 
     static getRegistrationService() {
-        return ServicesFactory.registrationService;
+        return ServiceFactory.registrationService;
     }
 
     static getPasswordResetService() {
-        return ServicesFactory.passwordResetService;
+        return ServiceFactory.passwordResetService;
     }
 
     static getJwtTokenManagementService() {
-        return ServicesFactory.jwtTokenService;
+        return ServiceFactory.jwtTokenService;
     }
 }
 
-export default ServicesFactory;
+export default ServiceFactory;

@@ -1,9 +1,8 @@
 import Database from '../../database/config/db-connection';
 import UserMetadata from '../../database/interfaces/User/UserMetadata';
 import logger from '../../utils/logger/Logger';
-import IUserMetadataModel from './IUserMetadataModel';
 
-class UserMetadataModel implements IUserMetadataModel {
+class UserMetadataModel {
   private db;
 
   constructor(dbInstance: Database) {

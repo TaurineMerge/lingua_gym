@@ -1,9 +1,8 @@
-import Database from '../database/config/db-connection';
-import User from '../database/interfaces/User/User';
-import logger from '../utils/logger/Logger';
-import IUserModel from './IUserModel';
+import Database from '../../database/config/db-connection';
+import User from '../../database/interfaces/User/User';
+import logger from '../../utils/logger/Logger';
 
-class UserModel implements IUserModel {
+class UserModel {
   private db;
   
   constructor(dbInstance: Database) {
