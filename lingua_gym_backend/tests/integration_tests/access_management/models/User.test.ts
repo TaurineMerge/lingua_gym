@@ -1,5 +1,5 @@
 import Database from '../../../../src/database/config/db-connection';
-import UserModel from '../../../../src/models/UserModel';
+import UserModel from '../../../../src/models/access_management/UserModel';
 import User from '../../../../src/database/interfaces/User/User';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -26,7 +26,7 @@ describe('UserModel Integration Tests', () => {
   });
 
   afterEach(async () => {
-    await userModel.deleteUser(testUser.user_id);
+    await userModel.deleteUserById(testUser.user_id);
   });
 
   test('should create a user', async () => {
@@ -56,14 +56,14 @@ describe('UserModel Integration Tests', () => {
 
   test('should update a user', async () => {
     await userModel.createUser(testUser);
-    await userModel.updateUser(testUser.user_id, { display_name: 'Updated Name' });
+    await userModel.updateUserById(testUser.user_id, { display_name: 'Updated Name' });
     const updatedUser = await userModel.getUserById(testUser.user_id);
     expect(updatedUser?.display_name).toBe('Updated Name');
   });
 
   test('should delete a user', async () => {
     await userModel.createUser(testUser);
-    await userModel.deleteUser(testUser.user_id);
+    await userModel.deleteUserById(testUser.user_id);
     const user = await userModel.getUserById(testUser.user_id);
     expect(user).toBeNull();
   });

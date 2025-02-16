@@ -1,8 +1,8 @@
 import Database from '../../../../src/database/config/db-connection';
 import User from '../../../../src/database/interfaces/User/User';
 import UserMetadata from '../../../../src/database/interfaces/User/UserMetadata';
-import UserModel from '../../../../src/models/UserModel';
-import UserMetadataModel from '../../../../src/models/UserMetadataModel';
+import UserModel from '../../../../src/models/access_management/UserModel';
+import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel';
 import { v4 as uuidv4 } from 'uuid';
 
 const db = Database.getInstance();
@@ -38,8 +38,8 @@ describe('UserMetadataModel Integration Tests', () => {
   });
 
   afterEach(async () => {
-    await userMetadataModel.deleteUserMetadata(testUserMetadata.user_id);
-    await userModel.deleteUser(testUser.user_id);
+    await userMetadataModel.deleteUserMetadataById(testUserMetadata.user_id);
+    await userModel.deleteUserById(testUser.user_id);
   });
 
   test('should create a user metadata', async () => {
@@ -59,14 +59,14 @@ describe('UserMetadataModel Integration Tests', () => {
   test('should update a user metadata', async () => {
     const newLoginDate = new Date();
     await userMetadataModel.createUserMetadata(testUserMetadata);
-    await userMetadataModel.updateUserMetadata(testUserMetadata.user_id, { last_login: newLoginDate });
+    await userMetadataModel.updateUserMetadataById(testUserMetadata.user_id, { last_login: newLoginDate });
     const updatedUserMetadata = await userMetadataModel.getUserMetadataById(testUserMetadata.user_id);
     expect(updatedUserMetadata?.last_login).toEqual(newLoginDate);
   });
 
   test('should delete a user metadata', async () => {
     await userMetadataModel.createUserMetadata(testUserMetadata);
-    await userMetadataModel.deleteUserMetadata(testUserMetadata.user_id);
+    await userMetadataModel.deleteUserMetadataById(testUserMetadata.user_id);
     const userMetadata = await userMetadataModel.getUserMetadataById(testUserMetadata.user_id);
     expect(userMetadata).toBeNull();
   });

@@ -1,8 +1,8 @@
 import Database from '../../../../src/database/config/db-connection';
 import User from '../../../../src/database/interfaces/User/User';
 import UserPasswordReset from '../../../../src/database/interfaces/User/UserPasswordReset';
-import UserModel from '../../../../src/models/UserModel';
-import UserPasswordResetModel from '../../../../src/models/UserPasswordResetModel';
+import UserModel from '../../../../src/models/access_management/UserModel';
+import UserPasswordResetModel from '../../../../src/models/access_management/UserPasswordResetModel';
 import { v4 as uuidv4 } from 'uuid';
 
 const db = Database.getInstance();
@@ -39,7 +39,7 @@ describe('UserPasswordResetModel Integration Tests', () => {
 
   afterEach(async () => {
     await passwordResetModel.deleteRequestByUserId(testUser.user_id);
-    await userModel.deleteUser(testUser.user_id);
+    await userModel.deleteUserById(testUser.user_id);
   });
 
   test('should create a password reset entry', async () => {
