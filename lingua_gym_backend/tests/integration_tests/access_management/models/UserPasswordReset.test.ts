@@ -1,8 +1,8 @@
-import Database from '../../../../src/database/config/db-connection';
-import User from '../../../../src/database/interfaces/User/User';
-import UserPasswordReset from '../../../../src/database/interfaces/User/UserPasswordReset';
-import UserModel from '../../../../src/models/access_management/UserModel';
-import UserPasswordResetModel from '../../../../src/models/access_management/UserPasswordResetModel';
+import Database from '../../../../src/database/config/db-connection.js';
+import User from '../../../../src/database/interfaces/User/User.js';
+import UserPasswordReset from '../../../../src/database/interfaces/User/UserPasswordReset.js';
+import UserModel from '../../../../src/models/access_management/UserModel.js';
+import UserPasswordResetModel from '../../../../src/models/access_management/UserPasswordResetModel.js';
 import { v4 as uuidv4 } from 'uuid';
 
 const db = Database.getInstance();

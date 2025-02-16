@@ -8,8 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import jwt from 'jsonwebtoken';
-import TokenManagementService from '../../../../src/services/access_management/JwtTokenManagementService';
-import UserModel from '../../../../src/models/access_management/UserModel';
+import TokenManagementService from '../../../../src/services/access_management/JwtTokenManagementService.js';
+import UserModel from '../../../../src/models/access_management/UserModel.js';
 jest.mock('jsonwebtoken');
 jest.mock('../../../../src/models/UserModel');
 const mockDbInstance = {};

@@ -1,6 +1,6 @@
-import Database from '../../database/config/db-connection';
-import User from '../../database/interfaces/User/User';
-import logger from '../../utils/logger/Logger';
+import Database from '../../database/config/db-connection.js';
+import User from '../../database/interfaces/User/User.js';
+import logger from '../../utils/logger/Logger.js';
 
 class UserModel {
   private db;

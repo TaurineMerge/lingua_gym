@@ -1,13 +1,13 @@
-import { Pool, QueryResult, QueryResultRow } from 'pg';
-import logger from '../../utils/logger/Logger';
+import pg from 'pg';
+import logger from '../../utils/logger/Logger.js';
 import 'dotenv/config';
 
 class Database {
   private static instance: Database | null = null;
-  private pool: Pool;
+  private pool: pg.Pool;
 
   private constructor() {
-    this.pool = new Pool({
+    this.pool = new pg.Pool({
       host: process.env.DB_HOST || 'localhost',
       port: parseInt(process.env.DB_PORT || '5432', 10),
       user: process.env.DB_USER || 'user',
@@ -28,7 +28,7 @@ class Database {
       await this.close();
       process.exit(0);
     });
-    
+
     process.on('SIGTERM', async () => {
       logger.info('Received SIGTERM, shutting down...');
       await this.close();
@@ -43,10 +43,10 @@ class Database {
     return Database.instance;
   }
 
-  public async query<T extends QueryResultRow>(
+  public async query<T extends pg.QueryResultRow>(
     text: string,
     params?: unknown[]
-  ): Promise<QueryResult<T>> {
+  ): Promise<pg.QueryResult<T>> {
     try {
       logger.info({ query: text, params }, 'Executing query');
       return await this.pool.query<T>(text, params);

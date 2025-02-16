@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import ServiceFactory from '../services/ServiceFactory';
-import logger from '../utils/logger/Logger';
+import ServiceFactory from '../services/ServiceFactory.js';
+import logger from '../utils/logger/Logger.js';
 
 class AccessManagementController {
   static async register(req: Request, res: Response): Promise<void> {

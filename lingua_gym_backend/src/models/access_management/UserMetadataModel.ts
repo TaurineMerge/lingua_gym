@@ -1,6 +1,6 @@
-import Database from '../../database/config/db-connection';
-import UserMetadata from '../../database/interfaces/User/UserMetadata';
-import logger from '../../utils/logger/Logger';
+import Database from '../../database/config/db-connection.js';
+import UserMetadata from '../../database/interfaces/User/UserMetadata.js';
+import logger from '../../utils/logger/Logger.js';
 
 class UserMetadataModel {
   private db;

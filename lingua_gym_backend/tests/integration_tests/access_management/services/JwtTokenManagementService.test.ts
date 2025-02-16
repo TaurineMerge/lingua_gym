@@ -1,11 +1,11 @@
 import jwt from 'jsonwebtoken';
-import TokenManagementService from '../../../../src/services/access_management/JwtTokenManagementService';
-import UserModel from '../../../../src/models/access_management/UserModel';
-import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel';
+import TokenManagementService from '../../../../src/services/access_management/JwtTokenManagementService.js';
+import UserModel from '../../../../src/models/access_management/UserModel.js';
+import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel.js';
 import 'dotenv/config';
-import Database from '../../../../src/database/config/db-connection';
-import User from '../../../../src/database/interfaces/User/User';
-import RegistrationService from '../../../../src/services/access_management/RegistrationService';
+import Database from '../../../../src/database/config/db-connection.js';
+import User from '../../../../src/database/interfaces/User/User.js';
+import RegistrationService from '../../../../src/services/access_management/RegistrationService.js';
 
 const db = Database.getInstance();
 const userModel = new UserModel(db);

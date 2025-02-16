@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import Database from "../../../src/database/config/db-connection";
+import Database from "../../../src/database/config/db-connection.js";
 const db = Database.getInstance();
 describe("Database Connection Integration Test", () => {
     test("Should connect to the database and run a simple query", () => __awaiter(void 0, void 0, void 0, function* () {

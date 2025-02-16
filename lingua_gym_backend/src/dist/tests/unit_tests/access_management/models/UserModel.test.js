@@ -7,8 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import UserModel from '../../../../src/models/access_management/UserModel';
-import logger from '../../../../src/utils/logger/Logger';
+import UserModel from '../../../../src/models/access_management/UserModel.js';
+import logger from '../../../../src/utils/logger/Logger.js';
 jest.mock('../../../../src/utils/logger/logger', () => ({
     info: jest.fn(),
     error: jest.fn(),

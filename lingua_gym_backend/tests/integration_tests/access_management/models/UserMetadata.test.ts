@@ -1,8 +1,8 @@
-import Database from '../../../../src/database/config/db-connection';
-import User from '../../../../src/database/interfaces/User/User';
-import UserMetadata from '../../../../src/database/interfaces/User/UserMetadata';
-import UserModel from '../../../../src/models/access_management/UserModel';
-import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel';
+import Database from '../../../../src/database/config/db-connection.js';
+import User from '../../../../src/database/interfaces/User/User.js';
+import UserMetadata from '../../../../src/database/interfaces/User/UserMetadata.js';
+import UserModel from '../../../../src/models/access_management/UserModel.js';
+import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel.js';
 import { v4 as uuidv4 } from 'uuid';
 
 const db = Database.getInstance();

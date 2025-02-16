@@ -7,10 +7,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import Database from '../../../../src/database/config/db-connection';
-import RegistrationService from '../../../../src/services/access_management/RegistrationService';
-import UserModel from '../../../../src/models/access_management/UserModel';
-import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel';
+import Database from '../../../../src/database/config/db-connection.js';
+import RegistrationService from '../../../../src/services/access_management/RegistrationService.js';
+import UserModel from '../../../../src/models/access_management/UserModel.js';
+import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel.js';
 import bcrypt from 'bcrypt';
 const db = Database.getInstance();
 const userModel = new UserModel(db);

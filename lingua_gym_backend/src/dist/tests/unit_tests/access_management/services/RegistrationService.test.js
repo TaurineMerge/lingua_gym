@@ -8,9 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { v4 as uuidv4 } from 'uuid';
-import RegistrationService from '../../../../src/services/access_management/RegistrationService';
-import UserModel from '../../../../src/models/access_management/UserModel';
-import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel';
+import RegistrationService from '../../../../src/services/access_management/RegistrationService.js';
+import UserModel from '../../../../src/models/access_management/UserModel.js';
+import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel.js';
 import bcrypt from 'bcrypt';
 jest.mock('../../../../src/models/UserModel');
 jest.mock('../../../../src/models/UserMetadataModel');

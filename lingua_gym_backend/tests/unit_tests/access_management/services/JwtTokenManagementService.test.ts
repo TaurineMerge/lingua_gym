@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
-import TokenManagementService from '../../../../src/services/access_management/JwtTokenManagementService';
-import UserModel from '../../../../src/models/access_management/UserModel';
-import User from '../../../../src/database/interfaces/User/User';
-import Database from '../../../../src/database/config/db-connection';
+import TokenManagementService from '../../../../src/services/access_management/JwtTokenManagementService.js';
+import UserModel from '../../../../src/models/access_management/UserModel.js';
+import User from '../../../../src/database/interfaces/User/User.js';
+import Database from '../../../../src/database/config/db-connection.js';
 
 jest.mock('jsonwebtoken');
 jest.mock('../../../../src/models/UserModel');

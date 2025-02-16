@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
-import UserModel from '../../models/access_management/UserModel';
-import logger from '../../utils/logger/Logger';
-import TokenManagementService from './JwtTokenManagementService';
+import UserModel from '../../models/access_management/UserModel.js';
+import logger from '../../utils/logger/Logger.js';
+import TokenManagementService from './JwtTokenManagementService.js';
 
 class AuthenticationService {
   private userModel: UserModel;

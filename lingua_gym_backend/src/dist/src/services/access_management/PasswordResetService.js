@@ -9,8 +9,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
-import hashPassword from '../../utils/hash/HashPassword';
-import logger from '../../utils/logger/Logger';
+import hashPassword from '../../utils/hash/HashPassword.js';
+import logger from '../../utils/logger/Logger.js';
 import 'dotenv/config';
 class PasswordResetService {
     constructor(userModel, userPasswordResetModel) {

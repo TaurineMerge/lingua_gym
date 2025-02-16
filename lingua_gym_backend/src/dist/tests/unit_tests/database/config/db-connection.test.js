@@ -8,8 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { Pool } from 'pg';
-import Database from '../../../../src/database/config/db-connection';
-import logger from '../../../../src/utils/logger/Logger';
+import Database from '../../../../src/database/config/db-connection.js';
+import logger from '../../../../src/utils/logger/Logger.js';
 jest.mock('pg', () => {
     const mockQuery = jest.fn();
     const mockEnd = jest.fn();

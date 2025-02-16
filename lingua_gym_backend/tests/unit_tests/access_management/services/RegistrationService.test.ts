@@ -1,8 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
-import RegistrationService from '../../../../src/services/access_management/RegistrationService';
-import UserModel from '../../../../src/models/access_management/UserModel';
-import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel';
-import Database from '../../../../src/database/config/db-connection';
+import RegistrationService from '../../../../src/services/access_management/RegistrationService.js';
+import UserModel from '../../../../src/models/access_management/UserModel.js';
+import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel.js';
+import Database from '../../../../src/database/config/db-connection.js';
 import bcrypt from 'bcrypt';
 
 jest.mock('../../../../src/models/UserModel');

@@ -1,7 +1,7 @@
-import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel';
-import Database from '../../../../src/database/config/db-connection';
-import UserMetadata from '../../../../src/database/interfaces/User/UserMetadata';
-import logger from '../../../../src/utils/logger/Logger';
+import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel.js';
+import Database from '../../../../src/database/config/db-connection.js';
+import UserMetadata from '../../../../src/database/interfaces/User/UserMetadata.js';
+import logger from '../../../../src/utils/logger/Logger.js';
 
 jest.mock('../../../../src/utils/logger/logger', () => ({
   info: jest.fn(),

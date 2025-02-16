@@ -1,6 +1,6 @@
 import { Pool, QueryResult } from 'pg';
-import Database from '../../../../src/database/config/db-connection';
-import logger from '../../../../src/utils/logger/Logger';
+import Database from '../../../../src/database/config/db-connection.js';
+import logger from '../../../../src/utils/logger/Logger.js';
 
 jest.mock('pg', () => {
   const mockQuery = jest.fn();

@@ -1,6 +1,6 @@
-import UserPasswordResetModel from '../../../../src/models/access_management/UserPasswordResetModel';
-import Database from '../../../../src/database/config/db-connection';
-import UserPasswordReset from '../../../../src/database/interfaces/User/UserPasswordReset';
+import UserPasswordResetModel from '../../../../src/models/access_management/UserPasswordResetModel.js';
+import Database from '../../../../src/database/config/db-connection.js';
+import UserPasswordReset from '../../../../src/database/interfaces/User/UserPasswordReset.js';
 
 jest.mock('../../../../src/database/config/db-connection');
 

@@ -7,12 +7,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { Pool } from 'pg';
-import logger from '../../utils/logger/Logger';
+import pg from 'pg';
+import logger from '../../utils/logger/Logger.js';
 import 'dotenv/config';
 class Database {
     constructor() {
-        this.pool = new Pool({
+        this.pool = new pg.Pool({
             host: process.env.DB_HOST || 'localhost',
             port: parseInt(process.env.DB_PORT || '5432', 10),
             user: process.env.DB_USER || 'user',

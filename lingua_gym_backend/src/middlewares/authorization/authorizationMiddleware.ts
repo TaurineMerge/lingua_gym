@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import ServiceFactory from "../../services/ServiceFactory";
-import logger from "../../utils/logger/Logger";
+import ServiceFactory from "../../services/ServiceFactory.js";
+import logger from "../../utils/logger/Logger.js";
 
 const authenticateToken = (req: Request, res: Response, next: NextFunction): Response | void => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader?.split(" ")[1];
+  const token = req.cookies.refreshToken;
 
   if (!token) {
     logger.warn({ path: req.path }, "Unauthorized access attempt: No token provided");
@@ -14,6 +13,8 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction): Res
   try {
     const jwtService = ServiceFactory.getJwtTokenManagementService();
     const user = jwtService.verifyAccessToken(token);
+
+    req.body.userId = user.userId;
 
     logger.info({ userId: user.userId }, "User authenticated successfully");
     next();

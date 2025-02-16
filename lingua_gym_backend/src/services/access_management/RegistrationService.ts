@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
-import UserModel from '../../models/access_management/UserModel';
-import UserMetadataModel from '../../models/access_management/UserMetadataModel';
-import hashPassword from '../../utils/hash/HashPassword';
-import logger from '../../utils/logger/Logger';
-import User from '../../database/interfaces/User/User';
+import UserModel from '../../models/access_management/UserModel.js';
+import UserMetadataModel from '../../models/access_management/UserMetadataModel.js';
+import hashPassword from '../../utils/hash/HashPassword.js';
+import logger from '../../utils/logger/Logger.js';
+import User from '../../database/interfaces/User/User.js';
 
 class RegistrationService {
     private userModel: UserModel;

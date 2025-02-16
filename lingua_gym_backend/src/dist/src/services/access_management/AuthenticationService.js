@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import bcrypt from 'bcrypt';
-import logger from '../../utils/logger/Logger';
+import logger from '../../utils/logger/Logger.js';
 class AuthenticationService {
     constructor(userModel, jwtTokenService) {
         this.userModel = userModel;

@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import logger from '../logger/Logger';
+import logger from '../logger/Logger.js';
 
 function hashPassword(password: string): string {
   try {

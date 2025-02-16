@@ -8,8 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { v4 as uuidv4 } from 'uuid';
-import hashPassword from '../../utils/hash/HashPassword';
-import logger from '../../utils/logger/Logger';
+import hashPassword from '../../utils/hash/HashPassword.js';
+import logger from '../../utils/logger/Logger.js';
 class RegistrationService {
     constructor(userModel, userMetadataModel) {
         this.userModel = userModel;

@@ -7,9 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import Database from '../../../../src/database/config/db-connection';
-import UserModel from '../../../../src/models/access_management/UserModel';
-import UserPasswordResetModel from '../../../../src/models/access_management/UserPasswordResetModel';
+import Database from '../../../../src/database/config/db-connection.js';
+import UserModel from '../../../../src/models/access_management/UserModel.js';
+import UserPasswordResetModel from '../../../../src/models/access_management/UserPasswordResetModel.js';
 import { v4 as uuidv4 } from 'uuid';
 const db = Database.getInstance();
 const userModel = new UserModel(db);

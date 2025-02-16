@@ -7,8 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import ServiceFactory from '../services/ServiceFactory';
-import logger from '../utils/logger/Logger';
+import ServiceFactory from '../services/ServiceFactory.js';
+import logger from '../utils/logger/Logger.js';
 class AccessManagementController {
     static register(req, res) {
         return __awaiter(this, void 0, void 0, function* () {

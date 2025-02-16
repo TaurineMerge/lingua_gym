@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
-import PasswordResetService from '../../../../src/services/access_management/PasswordResetService';
+import PasswordResetService from '../../../../src/services/access_management/PasswordResetService.js';
 jest.mock('jsonwebtoken');
 jest.mock('nodemailer');
 const mockUserModel = {

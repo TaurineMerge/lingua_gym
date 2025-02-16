@@ -1,12 +1,12 @@
-import logger from '../utils/logger/Logger';
-import Database from '../database/config/db-connection';
-import UserModel from '../models/access_management/UserModel';
-import UserMetadataModel from '../models/access_management/UserMetadataModel';
-import UserPasswordResetModel from '../models/access_management/UserPasswordResetModel';
-import AuthenticationService from '../services/access_management/AuthenticationService';
-import JwtTokenManagementService from '../services/access_management/JwtTokenManagementService';
-import RegistrationService from '../services/access_management/RegistrationService';
-import PasswordResetService from '../services/access_management/PasswordResetService';
+import logger from '../utils/logger/Logger.js';
+import Database from '../database/config/db-connection.js';
+import UserModel from '../models/access_management/UserModel.js';
+import UserMetadataModel from '../models/access_management/UserMetadataModel.js';
+import UserPasswordResetModel from '../models/access_management/UserPasswordResetModel.js';
+import AuthenticationService from '../services/access_management/AuthenticationService.js';
+import JwtTokenManagementService from '../services/access_management/JwtTokenManagementService.js';
+import RegistrationService from '../services/access_management/RegistrationService.js';
+import PasswordResetService from '../services/access_management/PasswordResetService.js';
 class ServiceFactory {
     static getAuthenticationService() {
         return ServiceFactory.authenticationService;

@@ -1,7 +1,7 @@
 import express from 'express';
 import 'dotenv/config';
 import cookieParser from 'cookie-parser';
-import accessManagementRoutes from './routes/AccessManagementRoutes';
+import accessManagementRoutes from './routes/AccessManagementRoutes.js';
 const app = express();
 const PORT = process.env.PORT;
 app.use(express.json());
