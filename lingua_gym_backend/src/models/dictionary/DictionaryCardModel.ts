@@ -1,0 +1,83 @@
+import Database from '../../database/config/db-connection.js';
+import DictionaryCard from '../../database/interfaces/dictionary/DictionaryCard.js';
+import CardTranslation from '../../database/interfaces/dictionary/CardTranslation.js';
+import CardMeaning from '../../database/interfaces/dictionary/CardMeaning.js';
+import CardExample from '../../database/interfaces/dictionary/CardExample.js';
+import logger from '../../utils/logger/Logger.js';
+
+class DictionaryCardModel {
+    private db;
+
+    constructor(dbInstance: Database) {
+        this.db = dbInstance;
+    }
+
+    async createCard(cardGeneralData: DictionaryCard, cardTranslations: Array<CardTranslation>, cardMeanings: Array<CardMeaning>, cardExamples: Array<CardExample>) {
+        try {
+            await this.db.query('BEGIN');
+            
+            const cardResult = await this.db.query(
+                `INSERT INTO DictionaryCards (original, transcription, pronunciation)
+                 VALUES ($1, $2, $3) RETURNING dictionary_card_id`,
+                [cardGeneralData.original, cardGeneralData.transcription, cardGeneralData.pronunciation]
+            );
+            
+            const cardId = cardResult.rows[0].dictionary_card_id;
+            
+            await this.insertTranslations(cardId, cardTranslations);
+            await this.insertMeanings(cardId, cardMeanings);
+            await this.insertExamples(cardId, cardExamples);
+            
+            await this.db.query('COMMIT');
+            return cardId;
+        } catch (err) {
+            await this.db.query('ROLLBACK');
+            logger.error({ err }, 'Failed to create dictionary card');
+            throw err;
+        }
+    }
+
+    private async insertTranslations(cardId: string, cardTranslations: Array<CardTranslation>) {
+        const query = `INSERT INTO DictionaryTranslations (dictionary_card_id, translation) VALUES ($1, $2)`;
+        for (const translation of cardTranslations) {
+            await this.db.query(query, [cardId, translation.translation]);
+        }
+    }
+
+    private async insertMeanings(cardId: string, cardMeanings: Array<CardMeaning>) {
+        const query = `INSERT INTO DictionaryMeanings (dictionary_card_id, meaning) VALUES ($1, $2)`;
+        for (const meaning of cardMeanings) {
+            await this.db.query(query, [cardId, meaning.meaning]);
+        }
+    }
+
+    private async insertExamples(cardId: string, cardExamples: Array<CardExample>) {
+        const query = `INSERT INTO DictionaryExamples (dictionary_card_id, example) VALUES ($1, $2)`;
+        for (const example of cardExamples) {
+            await this.db.query(query, [cardId, example.example]);
+        }
+    }
+
+    async getCardById(cardId: string) {
+        const cardQuery = `SELECT * FROM DictionaryCards WHERE dictionary_card_id = $1`;
+        const translationQuery = `SELECT translation FROM DictionaryTranslations WHERE dictionary_card_id = $1`;
+        const meaningQuery = `SELECT meaning FROM DictionaryMeanings WHERE dictionary_card_id = $1`;
+        const exampleQuery = `SELECT example FROM DictionaryExamples WHERE dictionary_card_id = $1`;
+        
+        const cardResult = await this.db.query(cardQuery, [cardId]);
+        if (cardResult.rows.length === 0) return null;
+        
+        const translations = (await this.db.query(translationQuery, [cardId])).rows.map(row => row.translation);
+        const meanings = (await this.db.query(meaningQuery, [cardId])).rows.map(row => row.meaning);
+        const examples = (await this.db.query(exampleQuery, [cardId])).rows.map(row => row.example);
+        
+        return {
+            ...cardResult.rows[0],
+            translation: translations,
+            meaning: meanings,
+            example: examples
+        };
+    }
+}
+
+export default DictionaryCardModel;
