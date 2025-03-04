@@ -1,5 +1,5 @@
 import Database from '../../database/config/db-connection.js';
-import UserPasswordReset from '../../database/interfaces/User/UserPasswordReset.js';
+import { UserPasswordReset } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 
 class UserPasswordResetModel {

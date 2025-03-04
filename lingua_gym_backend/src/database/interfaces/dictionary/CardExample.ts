@@ -1,6 +1,6 @@
 interface DictionaryExample {
     dictionaryCardId: string;
-    example: string;
+    example: string | null;
 }
 
 export default DictionaryExample;

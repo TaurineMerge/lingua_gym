@@ -1,5 +1,5 @@
 import Database from '../../database/config/db-connection.js';
-import { Permission as UserSetsPermission, UserSets } from '../../database/interfaces/dictionary/UserSets.js';
+import { Permission as UserSetsPermission, UserSets } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 
 class UserSetsModel {

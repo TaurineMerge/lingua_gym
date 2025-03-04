@@ -1,5 +1,5 @@
 import Database from '../../database/config/db-connection.js';
-import UserMetadata from '../../database/interfaces/User/UserMetadata.js';
+import { UserMetadata } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 
 class UserMetadataModel {

@@ -1,6 +1,6 @@
 import UserModel from '../../../../src/models/access_management/UserModel.js';
 import Database from '../../../../src/database/config/db-connection.js';
-import User from '../../../../src/database/interfaces/User/User.js';
+import { User } from '../../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../../../src/utils/logger/Logger.js';
 
 jest.mock('../../../../src/utils/logger/logger', () => ({

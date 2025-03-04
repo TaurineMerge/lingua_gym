@@ -1,5 +1,5 @@
 import Database from '../../database/config/db-connection.js';
-import DictionarySet from '../../database/interfaces/dictionary/DictionarySet.js';
+import { DictionarySet } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 
 class DictionarySetModel {

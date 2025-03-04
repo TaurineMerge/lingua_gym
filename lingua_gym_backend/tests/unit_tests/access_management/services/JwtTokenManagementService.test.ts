@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import TokenManagementService from '../../../../src/services/access_management/JwtTokenManagementService.js';
 import UserModel from '../../../../src/models/access_management/UserModel.js';
-import User from '../../../../src/database/interfaces/User/User.js';
+import { User } from '../../../../src/database/interfaces/DbInterfaces.js';
 import Database from '../../../../src/database/config/db-connection.js';
 
 jest.mock('jsonwebtoken');

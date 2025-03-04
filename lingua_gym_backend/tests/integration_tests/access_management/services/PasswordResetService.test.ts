@@ -8,7 +8,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import RegistrationService from '../../../../src/services/access_management/RegistrationService.js';
 import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel.js';
-import User from '../../../../src/database/interfaces/User/User.js';
+import { User } from '../../../../src/database/interfaces/DbInterfaces.js';
 
 const db = Database.getInstance();
 const userModel = new UserModel(db);

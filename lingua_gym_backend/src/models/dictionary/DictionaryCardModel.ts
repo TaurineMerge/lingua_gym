@@ -1,8 +1,5 @@
 import Database from '../../database/config/db-connection.js';
-import DictionaryCard from '../../database/interfaces/dictionary/DictionaryCard.js';
-import CardTranslation from '../../database/interfaces/dictionary/CardTranslation.js';
-import CardMeaning from '../../database/interfaces/dictionary/CardMeaning.js';
-import CardExample from '../../database/interfaces/dictionary/CardExample.js';
+import { DictionaryCard, CardTranslation, CardMeaning, CardExample } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 
 class DictionaryCardModel {

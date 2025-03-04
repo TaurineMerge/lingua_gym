@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import UserModel from '../../models/access_management/UserModel.js';
-import User from '../../database/interfaces/User/User.js';
+import { User } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 import 'dotenv/config';
 

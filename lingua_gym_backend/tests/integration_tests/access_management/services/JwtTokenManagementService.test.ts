@@ -4,7 +4,7 @@ import UserModel from '../../../../src/models/access_management/UserModel.js';
 import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel.js';
 import 'dotenv/config';
 import Database from '../../../../src/database/config/db-connection.js';
-import User from '../../../../src/database/interfaces/User/User.js';
+import { User } from '../../../../src/database/interfaces/DbInterfaces.js';
 import RegistrationService from '../../../../src/services/access_management/RegistrationService.js';
 
 const db = Database.getInstance();
