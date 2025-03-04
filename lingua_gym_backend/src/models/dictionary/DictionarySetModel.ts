@@ -1,4 +1,5 @@
 import Database from '../../database/config/db-connection.js';
+import DictionarySet from '../../database/interfaces/dictionary/DictionarySet.js';
 import logger from '../../utils/logger/Logger.js';
 
 class DictionarySetModel {
@@ -8,12 +9,12 @@ class DictionarySetModel {
         this.db = dbInstance;
     }
 
-    async createSet(name: string, ownerId: string, description?: string) {
+    async createSet(name: string, ownerId: string, description?: string): Promise<DictionarySet> {
         const query = `INSERT INTO dictionary_sets (name, owner_id, description) VALUES ($1, $2, $3) RETURNING *`;
         const values = [name, ownerId, description || null];
         
         try {
-            const result = await this.db.query(query, values);
+            const result = await this.db.query<DictionarySet>(query, values);
             return result.rows[0];
         } catch (error) {
             logger.error({ error }, 'Error creating dictionary set');
@@ -21,10 +22,10 @@ class DictionarySetModel {
         }
     }
 
-    async getSetById(setId: string) {
+    async getSetById(setId: string): Promise<DictionarySet | null> {
         const query = `SELECT * FROM dictionary_sets WHERE set_id = $1`;
         try {
-            const result = await this.db.query(query, [setId]);
+            const result = await this.db.query<DictionarySet>(query, [setId]);
             return result.rows[0] || null;
         } catch (error) {
             logger.error({ error }, 'Error fetching dictionary set');
@@ -32,10 +33,10 @@ class DictionarySetModel {
         }
     }
 
-    async deleteSet(setId: string) {
+    async deleteSet(setId: string): Promise<DictionarySet | null> {
         const query = `DELETE FROM dictionary_sets WHERE set_id = $1 RETURNING *`;
         try {
-            const result = await this.db.query(query, [setId]);
+            const result = await this.db.query<DictionarySet>(query, [setId]);
             return result.rows[0] || null;
         } catch (error) {
             logger.error({ error }, 'Error deleting dictionary set');

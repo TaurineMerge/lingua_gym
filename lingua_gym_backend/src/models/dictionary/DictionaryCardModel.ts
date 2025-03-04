@@ -12,17 +12,17 @@ class DictionaryCardModel {
         this.db = dbInstance;
     }
 
-    async createCard(cardGeneralData: DictionaryCard, cardTranslations: Array<CardTranslation>, cardMeanings: Array<CardMeaning>, cardExamples: Array<CardExample>) {
+    async createCard(cardGeneralData: DictionaryCard, cardTranslations: Array<CardTranslation>, cardMeanings: Array<CardMeaning>, cardExamples: Array<CardExample>): Promise<string> {
         try {
             await this.db.query('BEGIN');
             
-            const cardResult = await this.db.query(
+            const cardResult = await this.db.query<DictionaryCard>(
                 `INSERT INTO DictionaryCards (original, transcription, pronunciation)
                  VALUES ($1, $2, $3) RETURNING dictionary_card_id`,
                 [cardGeneralData.original, cardGeneralData.transcription, cardGeneralData.pronunciation]
             );
             
-            const cardId = cardResult.rows[0].dictionary_card_id;
+            const cardId = cardResult.rows[0].dictionaryCardId;
             
             await this.insertTranslations(cardId, cardTranslations);
             await this.insertMeanings(cardId, cardMeanings);
@@ -37,34 +37,34 @@ class DictionaryCardModel {
         }
     }
 
-    private async insertTranslations(cardId: string, cardTranslations: Array<CardTranslation>) {
+    private async insertTranslations(cardId: string, cardTranslations: Array<CardTranslation>): Promise<void> {
         const query = `INSERT INTO DictionaryTranslations (dictionary_card_id, translation) VALUES ($1, $2)`;
         for (const translation of cardTranslations) {
             await this.db.query(query, [cardId, translation.translation]);
         }
     }
 
-    private async insertMeanings(cardId: string, cardMeanings: Array<CardMeaning>) {
+    private async insertMeanings(cardId: string, cardMeanings: Array<CardMeaning>): Promise<void> {
         const query = `INSERT INTO DictionaryMeanings (dictionary_card_id, meaning) VALUES ($1, $2)`;
         for (const meaning of cardMeanings) {
             await this.db.query(query, [cardId, meaning.meaning]);
         }
     }
 
-    private async insertExamples(cardId: string, cardExamples: Array<CardExample>) {
+    private async insertExamples(cardId: string, cardExamples: Array<CardExample>): Promise<void> {
         const query = `INSERT INTO DictionaryExamples (dictionary_card_id, example) VALUES ($1, $2)`;
         for (const example of cardExamples) {
             await this.db.query(query, [cardId, example.example]);
         }
     }
 
-    async getCardById(cardId: string) {
+    async getCardById(cardId: string): Promise<DictionaryCard & { translation: string[], meaning: string[], example: string[] } | null> {
         const cardQuery = `SELECT * FROM DictionaryCards WHERE dictionary_card_id = $1`;
         const translationQuery = `SELECT translation FROM DictionaryTranslations WHERE dictionary_card_id = $1`;
         const meaningQuery = `SELECT meaning FROM DictionaryMeanings WHERE dictionary_card_id = $1`;
         const exampleQuery = `SELECT example FROM DictionaryExamples WHERE dictionary_card_id = $1`;
         
-        const cardResult = await this.db.query(cardQuery, [cardId]);
+        const cardResult = await this.db.query<DictionaryCard>(cardQuery, [cardId]);
         if (cardResult.rows.length === 0) return null;
         
         const translations = (await this.db.query(translationQuery, [cardId])).rows.map(row => row.translation);

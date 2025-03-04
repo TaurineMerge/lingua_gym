@@ -9,4 +9,4 @@ interface UserSets {
     permission: Permission;
 }
 
-export default UserSets;
+export { Permission, UserSets };

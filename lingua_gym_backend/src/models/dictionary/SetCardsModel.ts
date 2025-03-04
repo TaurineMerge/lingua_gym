@@ -1,4 +1,5 @@
 import Database from '../../database/config/db-connection.js';
+import DictionaryCard from '../../database/interfaces/dictionary/DictionaryCard.js';
 import logger from '../../utils/logger/Logger.js';
 
 class SetCardsModel {
@@ -8,23 +9,23 @@ class SetCardsModel {
         this.db = dbInstance;
     }
 
-    async addCardToSet(setId: string, cardId: string) {
+    async addCardToSet(setId: string, cardId: string): Promise<DictionaryCard | null> {
         const query = `INSERT INTO set_cards (set_id, card_id) VALUES ($1, $2) RETURNING *`;
         
         try {
-            const result = await this.db.query(query, [setId, cardId]);
-            return result.rows[0];
+            const result = await this.db.query<DictionaryCard>(query, [setId, cardId]);
+            return result.rows[0] || null;
         } catch (error) {
             logger.error({ error }, 'Error adding card to set');
             throw error;
         }
     }
 
-    async removeCardFromSet(setId: string, cardId: string) {
+    async removeCardFromSet(setId: string, cardId: string): Promise<DictionaryCard | null> {
         const query = `DELETE FROM set_cards WHERE set_id = $1 AND card_id = $2 RETURNING *`;
         
         try {
-            const result = await this.db.query(query, [setId, cardId]);
+            const result = await this.db.query<DictionaryCard>(query, [setId, cardId]);
             return result.rows[0] || null;
         } catch (error) {
             logger.error({ error }, 'Error removing card from set');
@@ -32,7 +33,7 @@ class SetCardsModel {
         }
     }
 
-    async getCardsBySet(setId: string) {
+    async getCardsBySet(setId: string): Promise<DictionaryCard[] | null> {
         const query = `
             SELECT dc.* 
             FROM dictionary_cards dc
@@ -41,8 +42,8 @@ class SetCardsModel {
         `;
         
         try {
-            const result = await this.db.query(query, [setId]);
-            return result.rows;
+            const result = await this.db.query<DictionaryCard>(query, [setId]);
+            return result.rows || null;
         } catch (error) {
             logger.error({ error }, 'Error fetching cards for set');
             throw error;
