@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import UserModel from '../../models/access_management/UserModel.js';
+import { UserModel } from '../../models/access_management/access_management.js';
 import logger from '../../utils/logger/Logger.js';
 import TokenManagementService from './JwtTokenManagementService.js';
 

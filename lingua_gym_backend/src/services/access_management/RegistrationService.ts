@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import UserModel from '../../models/access_management/UserModel.js';
-import UserMetadataModel from '../../models/access_management/UserMetadataModel.js';
+import { UserModel, UserMetadataModel } from '../../models/access_management/access_management.js';
 import hashPassword from '../../utils/hash/HashPassword.js';
 import logger from '../../utils/logger/Logger.js';
 import { User } from '../../database/interfaces/DbInterfaces.js';

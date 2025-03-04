@@ -1,9 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import DictionaryCardModel from '../../models/dictionary/DictionaryCardModel.js';
-import DictionaryCard from '../../database/interfaces/dictionary/DictionaryCard.js';
-import CardTranslation from '../../database/interfaces/dictionary/CardTranslation.js';
-import CardMeaning from '../../database/interfaces/dictionary/CardMeaning.js';
-import CardExample from '../../database/interfaces/dictionary/CardExample.js';
+import { DictionaryCardModel } from '../../models/dictionary/dictionary.js';
+import { DictionaryCard, CardTranslation, CardMeaning, CardExample } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 
 class DictionaryCardService {

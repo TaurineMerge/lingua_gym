@@ -1,7 +1,6 @@
 import Database from '../../../../src/database/config/db-connection.js';
 import { User, UserMetadata } from '../../../../src/database/interfaces/DbInterfaces.js';
-import UserModel from '../../../../src/models/access_management/UserModel.js';
-import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel.js';
+import { UserModel, UserMetadataModel } from '../../../../src/models/access_management/access_management.js';
 import { v4 as uuidv4 } from 'uuid';
 
 const db = Database.getInstance();

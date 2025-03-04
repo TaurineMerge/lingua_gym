@@ -1,7 +1,6 @@
 import Database from '../../../../src/database/config/db-connection.js';
 import { User, UserPasswordReset } from '../../../../src/database/interfaces/DbInterfaces.js';
-import UserModel from '../../../../src/models/access_management/UserModel.js';
-import UserPasswordResetModel from '../../../../src/models/access_management/UserPasswordResetModel.js';
+import { UserModel, UserPasswordResetModel } from '../../../../src/models/access_management/access_management.js';
 import { v4 as uuidv4 } from 'uuid';
 
 const db = Database.getInstance();

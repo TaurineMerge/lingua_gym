@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import TokenManagementService from '../../../../src/services/access_management/JwtTokenManagementService.js';
-import UserModel from '../../../../src/models/access_management/UserModel.js';
+import { UserModel } from '../../../../src/models/access_management/access_management.js';
 import { User } from '../../../../src/database/interfaces/DbInterfaces.js';
 import Database from '../../../../src/database/config/db-connection.js';
 

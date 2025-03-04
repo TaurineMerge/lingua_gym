@@ -1,4 +1,4 @@
-import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel.js';
+import { UserMetadataModel } from '../../../../src/models/access_management/access_management.js';
 import Database from '../../../../src/database/config/db-connection.js';
 import { UserMetadata } from '../../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../../../src/utils/logger/Logger.js';

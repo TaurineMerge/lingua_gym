@@ -1,5 +1,5 @@
 import Database from '../../../../src/database/config/db-connection.js';
-import UserModel from '../../../../src/models/access_management/UserModel.js';
+import { UserModel } from '../../../../src/models/access_management/access_management.js';
 import { User } from '../../../../src/database/interfaces/DbInterfaces.js';
 import { v4 as uuidv4 } from 'uuid';
 
