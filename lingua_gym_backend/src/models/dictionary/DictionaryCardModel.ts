@@ -58,6 +58,31 @@ class DictionaryCardModel {
         }
     }
 
+    async removeCardById(cardId: string): Promise<boolean> {
+        try {
+            await this.db.query('BEGIN');
+    
+            await this.db.query(`DELETE FROM DictionaryTranslations WHERE dictionary_card_id = $1`, [cardId]);
+            await this.db.query(`DELETE FROM DictionaryMeanings WHERE dictionary_card_id = $1`, [cardId]);
+            await this.db.query(`DELETE FROM DictionaryExamples WHERE dictionary_card_id = $1`, [cardId]);
+            await this.db.query(`DELETE FROM card_tags WHERE card_id = $1`, [cardId]);
+    
+            const result = await this.db.query(`DELETE FROM DictionaryCards WHERE dictionary_card_id = $1 RETURNING dictionary_card_id`, [cardId]);
+    
+            await this.db.query('COMMIT');
+    
+            if (result.rowCount! > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            await this.db.query('ROLLBACK');
+            logger.error({ error, cardId }, 'Error deleting dictionary card');
+            throw error;
+        }
+    }    
+
     async getCardById(cardId: string): Promise<DictionaryCard & { translation: string[], meaning: string[], example: string[] } | null> {
         const cardQuery = `SELECT * FROM DictionaryCards WHERE dictionary_card_id = $1`;
         const translationQuery = `SELECT translation FROM DictionaryTranslations WHERE dictionary_card_id = $1`;
