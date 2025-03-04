@@ -78,6 +78,39 @@ class DictionaryCardModel {
             example: examples
         };
     }
+
+    async addTagToCard(cardId: string, tagId: string): Promise<boolean> {
+        const query = `INSERT INTO card_tags (card_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
+        try {
+            const result = await this.db.query(query, [cardId, tagId]);
+            return result.rowCount! > 0;
+        } catch (error) {
+            logger.error({ error, cardId, tagId }, 'Error adding tag to card');
+            return false;
+        }
+    }
+
+    async removeTagFromCard(cardId: string, tagId: string): Promise<boolean> {
+        const query = `DELETE FROM card_tags WHERE card_id = $1 AND tag_id = $2;`;
+        try {
+            const result = await this.db.query(query, [cardId, tagId]);
+            return result.rowCount! > 0;
+        } catch (error) {
+            logger.error({ error, cardId, tagId }, 'Error removing tag from card');
+            return false;
+        }
+    }
+
+    async getTagsForCard(cardId: string): Promise<string[]> {
+        const query = `SELECT t.name FROM tags t INNER JOIN card_tags ct ON t.tag_id = ct.tag_id WHERE ct.card_id = $1;`;
+        try {
+            const result = await this.db.query<{ name: string }>(query, [cardId]);
+            return result.rows.map(row => row.name);
+        } catch (error) {
+            logger.error({ error, cardId }, 'Error fetching tags for card');
+            return [];
+        }
+    }
 }
 
 export default DictionaryCardModel;
