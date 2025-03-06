@@ -14,11 +14,11 @@ class DictionaryCardModel {
             await this.db.query('BEGIN');
             
             const cardResult = await this.db.query<DictionaryCard>(
-                `INSERT INTO DictionaryCards (original, transcription, pronunciation)
-                 VALUES ($1, $2, $3) RETURNING dictionary_card_id`,
-                [cardGeneralData.original, cardGeneralData.transcription, cardGeneralData.pronunciation]
+                `INSERT INTO DictionaryCards (dictionary_card_id, original, transcription, pronunciation)
+                 VALUES ($1, $2, $3, $4) RETURNING dictionary_card_id`,
+                [cardGeneralData.dictionaryCardId, cardGeneralData.original, cardGeneralData.transcription, cardGeneralData.pronunciation]
             );
-            
+
             const cardId = cardResult.rows[0].dictionaryCardId;
             
             await this.insertTranslations(cardId, cardTranslations);
@@ -89,9 +89,9 @@ class DictionaryCardModel {
         const cardResult = await this.db.query<DictionaryCard>(cardQuery, [cardId]);
         if (cardResult.rows.length === 0) return null;
         
-        const translations = (await this.db.query(translationQuery, [cardId])).rows.map(row => row.translation);
-        const meanings = (await this.db.query(meaningQuery, [cardId])).rows.map(row => row.meaning);
-        const examples = (await this.db.query(exampleQuery, [cardId])).rows.map(row => row.example);
+        const translations = (await this.db.query(translationQuery, [cardId])).rows.map(row => row.translation).flat();
+        const meanings = (await this.db.query(meaningQuery, [cardId])).rows.map(row => row.meaning).flat();
+        const examples = (await this.db.query(exampleQuery, [cardId])).rows.map(row => row.example).flat();
         
         return {
             ...cardResult.rows[0],

@@ -9,9 +9,9 @@ class DictionarySetModel {
         this.db = dbInstance;
     }
 
-    async createSet(name: string, ownerId: string, description?: string): Promise<DictionarySet> {
-        const query = `INSERT INTO dictionary_sets (name, owner_id, description) VALUES ($1, $2, $3) RETURNING *`;
-        const values = [name, ownerId, description || null];
+    async createSet(dictionarySet: DictionarySet): Promise<DictionarySet> {
+        const query = `INSERT INTO dictionary_sets (dictionary_set_id, name, owner_id, description) VALUES ($1, $2, $3, $4) RETURNING *`;
+        const values = [dictionarySet.dictionarySetId, dictionarySet.name, dictionarySet.ownerId, dictionarySet.description || null];
         
         try {
             const result = await this.db.query<DictionarySet>(query, values);

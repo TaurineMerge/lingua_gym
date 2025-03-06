@@ -42,11 +42,11 @@ describe('DictionarySetModel', () => {
     test('createSet should insert a set and return it', async () => {
         dbMock.query.mockResolvedValueOnce({ rows: [set], rowCount: 1, command: 'INSERT', oid: 0, fields: [] });
 
-        const result = await setModel.createSet(setName, setOwnerId, setDescription);
+        const result = await setModel.createSet(set);
         expect(result).toEqual(set);
         expect(dbMock.query).toHaveBeenCalledWith(
             expect.stringContaining('INSERT INTO dictionary_sets'),
-            [setName, setOwnerId, setDescription]
+            [setId, setName, setOwnerId, setDescription]
         );
     });
 

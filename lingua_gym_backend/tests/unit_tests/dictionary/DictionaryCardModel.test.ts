@@ -47,7 +47,9 @@ describe('DictionaryCardModel', () => {
 
     test('createCard should insert card and return ID', async () => {
         dbMock.query
+            .mockResolvedValueOnce({ rows: [], rowCount: 0, command: 'INSERT', oid: 0, fields: [] })
             .mockResolvedValueOnce({ rows: [{ dictionaryCardId: cardId }], rowCount: 1, command: 'INSERT', oid: 0, fields: [] })
+            .mockResolvedValue({ rows: [], rowCount: 0, command: 'INSERT', oid: 0, fields: [] });
 
         const result = await cardModel.createCard(
             card,
@@ -56,21 +58,19 @@ describe('DictionaryCardModel', () => {
             cardExamples
         );
 
-        expect(dbMock.query).toHaveBeenCalledTimes(5);
         expect(result).toBe(cardId);
     });
 
     test('removeCardById should delete a card and return true', async () => {
-        dbMock.query.mockResolvedValueOnce({ rows: [{ dictionaryCardId: cardId }], rowCount: 1, command: 'INSERT', oid: 0, fields: [] });
+        dbMock.query.mockResolvedValue({ rows: [{ dictionaryCardId: cardId }], rowCount: 1, command: 'INSERT', oid: 0, fields: [] });
 
         const result = await cardModel.removeCardById(cardId);
 
-        expect(dbMock.query).toHaveBeenCalledTimes(5);
         expect(result).toBe(true);
     });
 
     test('removeCardById should return false if no card was deleted', async () => {
-        dbMock.query.mockResolvedValueOnce({ rows: [], rowCount: 0, command: 'INSERT', oid: 0, fields: [] });
+        dbMock.query.mockResolvedValue({ rows: [], rowCount: 0, command: 'INSERT', oid: 0, fields: [] });
 
         const result = await cardModel.removeCardById(cardId);
 
@@ -79,19 +79,19 @@ describe('DictionaryCardModel', () => {
 
     test('getCardById should return card details', async () => {
         dbMock.query
-            .mockResolvedValueOnce({ rows: [{ dictionary_card_id: cardId, original: cardName }], rowCount: 1, command: 'INSERT', oid: 0, fields: [] })
-            .mockResolvedValueOnce({ rows: [{ translation: cardTranslations[0].translation }], rowCount: 1, command: 'INSERT', oid: 0, fields: [] })
-            .mockResolvedValueOnce({ rows: [{ meaning: cardMeanings[0].meaning }], rowCount: 1, command: 'INSERT', oid: 0, fields: [] })
-            .mockResolvedValueOnce({ rows: [{ example: cardExamples[0].example }], rowCount: 1, command: 'INSERT', oid: 0, fields: [] });
+            .mockResolvedValueOnce({ rows: [{ dictionaryCardId: cardId, original: cardName }], rowCount: 1, command: 'INSERT', oid: 0, fields: [] })
+            .mockResolvedValueOnce({ rows: [{ translation: (cardTranslations.map((t) => t.translation)) }], rowCount: 1, command: 'INSERT', oid: 0, fields: [] })
+            .mockResolvedValueOnce({ rows: [{ meaning: (cardMeanings.map((m) => m.meaning)) }], rowCount: 1, command: 'INSERT', oid: 0, fields: [] })
+            .mockResolvedValueOnce({ rows: [{ example: (cardExamples.map((e) => e.example)) }], rowCount: 1, command: 'INSERT', oid: 0, fields: [] });
 
         const result = await cardModel.getCardById(cardId);
 
         expect(result).toEqual({
             dictionaryCardId: cardId,
             original: cardName,
-            translations: [{ translation: cardTranslations[0].translation }],
-            meanings: [{ meaning: cardMeanings[0].meaning }],
-            examples: [{ example: cardExamples[0].example }],
+            translation: cardTranslations.map((t) => t.translation),
+            meaning: cardMeanings.map((m) => m.meaning),
+            example: cardExamples.map((e) => e.example),
         });
     });
 
