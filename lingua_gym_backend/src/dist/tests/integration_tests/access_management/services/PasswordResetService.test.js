@@ -8,15 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import PasswordResetService from '../../../../src/services/access_management/PasswordResetService.js';
-import UserModel from '../../../../src/models/access_management/UserModel.js';
-import UserPasswordResetModel from '../../../../src/models/access_management/UserPasswordResetModel.js';
 import Database from '../../../../src/database/config/db-connection.js';
 import 'dotenv/config';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import RegistrationService from '../../../../src/services/access_management/RegistrationService.js';
-import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel.js';
+import { UserModel, UserPasswordResetModel, UserMetadataModel } from '../../../../src/models/access_management/access_management.js';
 const db = Database.getInstance();
 const userModel = new UserModel(db);
 const userMetadataModel = new UserMetadataModel(db);

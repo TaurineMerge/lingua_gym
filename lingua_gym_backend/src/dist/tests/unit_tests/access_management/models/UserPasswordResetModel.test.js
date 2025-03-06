@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import UserPasswordResetModel from '../../../../src/models/access_management/UserPasswordResetModel.js';
+import { UserPasswordResetModel } from '../../../../src/models/access_management/access_management.js';
 jest.mock('../../../../src/database/config/db-connection');
 const mockDb = {
     query: jest.fn(),
