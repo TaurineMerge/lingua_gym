@@ -95,6 +95,25 @@ describe('DictionaryCardModel', () => {
         });
     });
 
+    test('updateCard should update card details and return true', async () => {
+        dbMock.query.mockResolvedValue({ rowCount: 1, command: 'UPDATE', oid: 0, fields: [], rows: [] });
+
+        const updatedCard = { ...card, original: 'updatedTest' };
+        const updatedTranslations = [{ dictionaryCardId: cardId, translation: 'обновленный тест' }];
+        const updatedMeanings = [{ dictionaryCardId: cardId, meaning: 'updated trial' }];
+        const updatedExamples = [{ dictionaryCardId: cardId, example: 'This is an updated test' }];
+
+        const result = await cardModel.updateCard(
+            cardId,
+            updatedCard,
+            updatedTranslations,
+            updatedMeanings,
+            updatedExamples
+        );
+
+        expect(result).toBe(true);
+    });
+
     test('addTagToCard should return true if tag added', async () => {
         dbMock.query.mockResolvedValueOnce({ rowCount: 1, command: 'INSERT', oid: 0, fields: [], rows: [] });
 

@@ -78,7 +78,37 @@ class DictionaryCardModel {
             logger.error({ error, cardId }, 'Error deleting dictionary card');
             throw error;
         }
-    }    
+    }
+    
+    async updateCard(cardId: string, cardGeneralData: Partial<DictionaryCard>, cardTranslations: Array<CardTranslation>, cardMeanings: Array<CardMeaning>, cardExamples: Array<CardExample>): Promise<boolean> {
+        try {
+            await this.db.query('BEGIN');
+
+            if (cardGeneralData.original || cardGeneralData.transcription || cardGeneralData.pronunciation) {
+                await this.db.query(
+                    `UPDATE DictionaryCards SET original = COALESCE($2, original), transcription = COALESCE($3, transcription), pronunciation = COALESCE($4, pronunciation) 
+                     WHERE dictionary_card_id = $1`,
+                    [cardId, cardGeneralData.original, cardGeneralData.transcription, cardGeneralData.pronunciation]
+                );
+            }
+
+            await this.db.query(`DELETE FROM DictionaryTranslations WHERE dictionary_card_id = $1`, [cardId]);
+            await this.insertTranslations(cardId, cardTranslations);
+
+            await this.db.query(`DELETE FROM DictionaryMeanings WHERE dictionary_card_id = $1`, [cardId]);
+            await this.insertMeanings(cardId, cardMeanings);
+
+            await this.db.query(`DELETE FROM DictionaryExamples WHERE dictionary_card_id = $1`, [cardId]);
+            await this.insertExamples(cardId, cardExamples);
+
+            await this.db.query('COMMIT');
+            return true;
+        } catch (err) {
+            await this.db.query('ROLLBACK');
+            logger.error({ err, cardId }, 'Failed to update dictionary card');
+            return false;
+        }
+    }
 
     async getCardById(cardId: string): Promise<DictionaryCard & { translation: string[], meaning: string[], example: string[] } | null> {
         const cardQuery = `SELECT * FROM DictionaryCards WHERE dictionary_card_id = $1`;
