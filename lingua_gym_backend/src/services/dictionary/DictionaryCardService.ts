@@ -58,6 +58,31 @@ class DictionaryCardService {
         return deleted;
     }
 
+    async updateCard(
+        cardId: string,
+        cardGeneralData: Partial<Omit<DictionaryCard, 'dictionaryCardId'>>,
+        cardTranslations?: CardTranslation[],
+        cardMeanings?: CardMeaning[],
+        cardExamples?: CardExample[]
+    ): Promise<boolean> {
+        logger.info({ cardId, cardGeneralData }, 'Updating dictionary card');
+        const updated = await this.dictionaryCardModel.updateCard(
+            cardId,
+            cardGeneralData,
+            cardTranslations || [],
+            cardMeanings || [],
+            cardExamples || []
+        );
+
+        if (updated) {
+            logger.info({ cardId }, 'Dictionary card updated successfully');
+        } else {
+            logger.warn({ cardId }, 'Failed to update dictionary card');
+        }
+
+        return updated;
+    }
+
     async addTagToCard(cardId: string, tagId: string): Promise<boolean> {
         logger.info({ cardId, tagId }, 'Adding tag to dictionary card');
         const success = await this.dictionaryCardModel.addTagToCard(cardId, tagId);
