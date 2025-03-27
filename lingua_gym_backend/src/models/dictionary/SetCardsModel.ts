@@ -34,16 +34,11 @@ class SetCardsModel {
     }
 
     async getCardsBySet(setId: string): Promise<DictionaryCard[] | null> {
-        const query = `
-            SELECT dc.* 
-            FROM dictionary_cards dc
-            JOIN set_cards sc ON dc.dictionary_card_id = sc.card_id
-            WHERE sc.set_id = $1
-        `;
+        const query = `SELECT dc.* FROM dictionary_cards dc JOIN set_cards sc ON dc.dictionary_card_id = sc.card_id WHERE sc.set_id = $1`;
         
         try {
             const result = await this.db.query<DictionaryCard>(query, [setId]);
-            return result.rows || null;
+            return result.rows.length > 0 ? result.rows : null;
         } catch (error) {
             logger.error({ error }, 'Error fetching cards for set');
             throw error;

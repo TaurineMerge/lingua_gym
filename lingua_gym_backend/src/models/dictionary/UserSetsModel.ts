@@ -9,11 +9,11 @@ class UserSetsModel {
         this.db = dbInstance;
     }
 
-    async addUserToSet(userId: string, setId: string, role: string): Promise<UserSets | null> {
+    async addUserToSet(userId: string, setId: string, permission: UserSetsPermission): Promise<UserSets | null> {
         const query = `INSERT INTO user_sets (user_id, set_id, role) VALUES ($1, $2, $3) RETURNING *`;
         
         try {
-            const result = await this.db.query<UserSets>(query, [userId, setId, role]);
+            const result = await this.db.query<UserSets>(query, [userId, setId, permission]);
             return result.rows[0] || null;
         } catch (error) {
             logger.error({ error }, 'Error adding user to set');
@@ -38,19 +38,19 @@ class UserSetsModel {
         
         try {
             const result = await this.db.query<UserSets>(query, [setId]);
-            return result.rows || null;
+            return result.rows.length > 0 ? result.rows : null;
         } catch (error) {
             logger.error({ error }, 'Error fetching users for set');
             throw error;
         }
     }
 
-    async getUserRole(userId: string, setId: string): Promise<UserSetsPermission | null> {
+    async getUserPermission(userId: string, setId: string): Promise<UserSetsPermission | null> {
         const query = `SELECT role FROM user_sets WHERE user_id = $1 AND set_id = $2`;
         
         try {
-            const result = await this.db.query<{ role: UserSetsPermission }>(query, [userId, setId]);
-            return result.rows[0]?.role || null;
+            const result = await this.db.query<{ permission: UserSetsPermission }>(query, [userId, setId]);
+            return result.rows[0]?.permission || null;
         } catch (error) {
             logger.error({ error }, 'Error fetching user role in set');
             throw error;
