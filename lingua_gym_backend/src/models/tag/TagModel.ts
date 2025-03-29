@@ -1,5 +1,6 @@
 import Database from '../../database/config/db-connection.js';
 import logger from '../../utils/logger/Logger.js';
+import Tag from '../../database/interfaces/tag/Tag.js';
 
 class TagModel {
     private db;
@@ -8,10 +9,10 @@ class TagModel {
         this.db = dbInstance;
     }
 
-    async createTag(name: string, description?: string): Promise<string | null> {
-        const query = `INSERT INTO tags (name, description) VALUES ($1, $2) RETURNING tag_id;`;
+    async createTag(tagId: string, name: string): Promise<string | null> {
+        const query = `INSERT INTO tags (tag_id, name) VALUES ($1, $2) RETURNING tag_id;`;
         try {
-            const result = await this.db.query<{ tag_id: string }>(query, [name, description || null]);
+            const result = await this.db.query(query, [tagId, name || null]);
             return result.rows[0]?.tag_id || null;
         } catch (error) {
             logger.error({ error, name }, 'Error creating tag');
@@ -19,10 +20,10 @@ class TagModel {
         }
     }
 
-    async getTagById(tagId: string) {
+    async getTagById(tagId: string): Promise<Tag | null> {
         const query = `SELECT * FROM tags WHERE tag_id = $1;`;
         try {
-            const result = await this.db.query(query, [tagId]);
+            const result = await this.db.query<Tag>(query, [tagId]);
             return result.rows[0] || null;
         } catch (error) {
             logger.error({ error, tagId }, 'Error fetching tag');
@@ -30,10 +31,10 @@ class TagModel {
         }
     }
 
-    async getAllTags() {
+    async getAllTags(): Promise<Array<Tag>> {
         const query = `SELECT * FROM tags ORDER BY name;`;
         try {
-            const result = await this.db.query(query);
+            const result = await this.db.query<Tag>(query);
             return result.rows;
         } catch (error) {
             logger.error({ error }, 'Error fetching all tags');
@@ -41,10 +42,10 @@ class TagModel {
         }
     }
 
-    async updateTag(tagId: string, name: string, description?: string): Promise<boolean> {
+    async updateTag(tagId: string, name: string): Promise<boolean> {
         const query = `UPDATE tags SET name = $1, description = $2 WHERE tag_id = $3;`;
         try {
-            const result = await this.db.query(query, [name, description || null, tagId]);
+            const result = await this.db.query(query, [tagId, name]);
             return result.rowCount! > 0;
         } catch (error) {
             logger.error({ error, tagId }, 'Error updating tag');
