@@ -80,27 +80,57 @@ class DictionaryCardModel {
         }
     }
     
-    async updateCard(cardId: string, cardGeneralData: Partial<DictionaryCard>, cardTranslations: Array<CardTranslation>, cardMeanings: Array<CardMeaning>, cardExamples: Array<CardExample>): Promise<boolean> {
+    async updateCard(
+        cardId: string,
+        cardGeneralData: Partial<DictionaryCard>,
+        cardTranslations?: Array<CardTranslation>,
+        cardMeanings?: Array<CardMeaning>,
+        cardExamples?: Array<CardExample>
+    ): Promise<boolean> {
         try {
             await this.db.query('BEGIN');
-
-            if (cardGeneralData.original || cardGeneralData.transcription || cardGeneralData.pronunciation) {
+    
+            if (Object.keys(cardGeneralData).length > 0) {
+                const fieldsToUpdate = Object.entries(cardGeneralData)
+                    .filter(([, value]) => value !== undefined)
+                    .map(([field]) => field as keyof DictionaryCard);
+    
+                if (fieldsToUpdate.length > 0) {
+                    const setClause = fieldsToUpdate
+                        .map((field, index) => `${field} = $${index + 2}`)
+                        .join(', ');
+    
+                    await this.db.query(
+                        `UPDATE DictionaryCards SET ${setClause} WHERE dictionary_card_id = $1`,
+                        [cardId, ...fieldsToUpdate.map(field => cardGeneralData[field])]
+                    );
+                }
+            }
+    
+            if (cardTranslations) {
                 await this.db.query(
-                    `UPDATE DictionaryCards SET original = COALESCE($2, original), transcription = COALESCE($3, transcription), pronunciation = COALESCE($4, pronunciation) 
-                     WHERE dictionary_card_id = $1`,
-                    [cardId, cardGeneralData.original, cardGeneralData.transcription, cardGeneralData.pronunciation]
+                    `DELETE FROM DictionaryTranslations WHERE dictionary_card_id = $1`,
+                    [cardId]
                 );
+                await this.insertTranslations(cardId, cardTranslations);
             }
 
-            await this.db.query(`DELETE FROM DictionaryTranslations WHERE dictionary_card_id = $1`, [cardId]);
-            await this.insertTranslations(cardId, cardTranslations);
+            if (cardMeanings) {
+                await this.db.query(
+                    `DELETE FROM DictionaryMeanings WHERE dictionary_card_id = $1`,
+                    [cardId]
+                );
+                await this.insertMeanings(cardId, cardMeanings);
+            }
 
-            await this.db.query(`DELETE FROM DictionaryMeanings WHERE dictionary_card_id = $1`, [cardId]);
-            await this.insertMeanings(cardId, cardMeanings);
-
-            await this.db.query(`DELETE FROM DictionaryExamples WHERE dictionary_card_id = $1`, [cardId]);
-            await this.insertExamples(cardId, cardExamples);
-
+            if (cardExamples) {
+                await this.db.query(
+                    `DELETE FROM DictionaryExamples WHERE dictionary_card_id = $1`,
+                    [cardId]
+                );
+                await this.insertExamples(cardId, cardExamples);
+            }
+    
             await this.db.query('COMMIT');
             return true;
         } catch (err) {
