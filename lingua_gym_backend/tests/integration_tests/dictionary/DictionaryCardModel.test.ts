@@ -2,11 +2,12 @@ import Database from '../../../src/database/config/db-connection.js';
 import { DictionaryCardModel } from '../../../src/models/dictionary/dictionary.js';
 import { v4 as uuidv4 } from 'uuid';
 import { DictionaryCard, CardTranslation, CardMeaning, CardExample } from '../../../src/database/interfaces/DbInterfaces.js';
-import { TagModel } from '../../../src/models/tag/tag.js';
+import { TagModel, CardTagsModel } from '../../../src/models/tag/tag.js';
 
 describe('DictionaryCardModel integration', () => {
     let db: Database;
     let cardModel: DictionaryCardModel;
+    let cardTagsModel: CardTagsModel;
     let tagModel: TagModel;
     let testCardId: string;
     let testTagId: string;
@@ -30,6 +31,7 @@ describe('DictionaryCardModel integration', () => {
         db = Database.getInstance();
         cardModel = new DictionaryCardModel(db);
         tagModel = new TagModel(db);
+        cardTagsModel = new CardTagsModel(db);
     });
 
     beforeEach(async () => {
@@ -88,19 +90,19 @@ describe('DictionaryCardModel integration', () => {
         });
 
         test('should associate tag with card', async () => {
-            const added = await cardModel.addTagToCard(testCardId, testTagId);
+            const added = await cardTagsModel.addTagToCard(testCardId, testTagId);
             expect(added).toBe(true);
 
-            const tags = await cardModel.getTagsForCard(testCardId);
+            const tags = await cardTagsModel.getTagsForCard(testCardId);
             expect(tags).toContain('vocab');
         });
 
         test('should detach tag from card', async () => {
-            await cardModel.addTagToCard(testCardId, testTagId);
-            const isRemoved = await cardModel.removeTagFromCard(testCardId, testTagId);
+            await cardTagsModel.addTagToCard(testCardId, testTagId);
+            const isRemoved = await cardTagsModel.removeTagFromCard(testCardId, testTagId);
             expect(isRemoved).toBe(true);
 
-            const tags = await cardModel.getTagsForCard(testCardId);
+            const tags = await cardTagsModel.getTagsForCard(testCardId);
             expect(tags).not.toContain('vocab');
         });
     });

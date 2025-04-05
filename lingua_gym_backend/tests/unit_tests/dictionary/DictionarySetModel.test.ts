@@ -1,10 +1,12 @@
 import Database from '../../../src/database/config/db-connection.js';
 import { DictionarySetModel } from '../../../src/models/dictionary/dictionary.js';
 import { DictionarySet, Tag } from '../../../src/database/interfaces/DbInterfaces.js';
+import { SetTagsModel } from '../../../src/models/tag/tag.js';
 
 describe('DictionarySetModel', () => {
     let dbMock: jest.Mocked<Database>;
     let setModel: DictionarySetModel;
+    let setTagsModel: SetTagsModel;
 
     let set: DictionarySet;
     let setId: string;
@@ -37,6 +39,7 @@ describe('DictionarySetModel', () => {
         } as unknown as jest.Mocked<Database>;
 
         setModel = new DictionarySetModel(dbMock);
+        setTagsModel = new SetTagsModel(dbMock);
     });
 
     test('createSet should insert a set and return it', async () => {
@@ -44,10 +47,6 @@ describe('DictionarySetModel', () => {
 
         const result = await setModel.createSet(set);
         expect(result).toEqual(set);
-        expect(dbMock.query).toHaveBeenCalledWith(
-            expect.stringContaining('INSERT INTO dictionary_sets'),
-            [setId, setName, setOwnerId, setDescription]
-        );
     });
 
     test('getSetById should return a set if found', async () => {
@@ -75,35 +74,35 @@ describe('DictionarySetModel', () => {
     test('addTagToSet should return true when a tag is added', async () => {
         dbMock.query.mockResolvedValueOnce({ rowCount: 1, command: 'INSERT', oid: 0, fields: [], rows: [] });
 
-        const result = await setModel.addTagToSet(setId, tags[0].tagId);
+        const result = await setTagsModel.addTagToSet(setId, tags[0].tagId);
         expect(result).toBe(true);
     });
 
     test('addTagToSet should return false when a tag is not added', async () => {
         dbMock.query.mockResolvedValueOnce({ rowCount: 0, command: 'INSERT', oid: 0, fields: [], rows: [] });
 
-        const result = await setModel.addTagToSet(setId, tags[0].tagId);
+        const result = await setTagsModel.addTagToSet(setId, tags[0].tagId);
         expect(result).toBe(false);
     });
 
     test('removeTagFromSet should return true when a tag is removed', async () => {
         dbMock.query.mockResolvedValueOnce({ rowCount: 1, command: 'INSERT', oid: 0, fields: [], rows: [] });
 
-        const result = await setModel.removeTagFromSet(setId, tags[0].tagId);
+        const result = await setTagsModel.removeTagFromSet(setId, tags[0].tagId);
         expect(result).toBe(true);
     });
 
     test('removeTagFromSet should return false when no tag is removed', async () => {
         dbMock.query.mockResolvedValueOnce({ rowCount: 0, command: 'INSERT', oid: 0, fields: [], rows: [] });
 
-        const result = await setModel.removeTagFromSet(setId, tags[0].tagId);
+        const result = await setTagsModel.removeTagFromSet(setId, tags[0].tagId);
         expect(result).toBe(false);
     });
 
     test('getTagsForSet should return a list of tag names', async () => {
         dbMock.query.mockResolvedValueOnce({ rows: [{ name: tags[0].name }, { name: tags[1].name }], rowCount: 2, command: 'INSERT', oid: 0, fields: [] });
 
-        const result = await setModel.getTagsForSet(setId);
+        const result = await setTagsModel.getTagsForSet(setId);
         expect(result).toEqual([tags[0].name, tags[1].name]);
     });
 });

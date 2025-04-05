@@ -1,10 +1,12 @@
 import { DictionaryCardModel } from '../../../src/models/dictionary/dictionary.js';
 import Database from '../../../src/database/config/db-connection.js';
 import {  DictionaryCard, CardTranslation, CardMeaning, CardExample, Tag } from '../../../src/database/interfaces/DbInterfaces.js';
+import { CardTagsModel } from '../../../src/models/tag/tag.js';
 
 describe('DictionaryCardModel', () => {
     let dbMock: jest.Mocked<Database>;
     let cardModel: DictionaryCardModel;
+    let cardTagsModel: CardTagsModel;
 
     let card: DictionaryCard;
     let cardId: string;
@@ -43,6 +45,8 @@ describe('DictionaryCardModel', () => {
         } as unknown as jest.Mocked<Database>;
 
         cardModel = new DictionaryCardModel(dbMock);
+
+        cardTagsModel = new CardTagsModel(dbMock);
     });
 
     test('createCard should insert card and return ID', async () => {
@@ -117,7 +121,7 @@ describe('DictionaryCardModel', () => {
     test('addTagToCard should return true if tag added', async () => {
         dbMock.query.mockResolvedValueOnce({ rowCount: 1, command: 'INSERT', oid: 0, fields: [], rows: [] });
 
-        const result = await cardModel.addTagToCard('card-123', 'tag-456');
+        const result = await cardTagsModel.addTagToCard('card-123', 'tag-456');
 
         expect(result).toBe(true);
     });
@@ -125,7 +129,7 @@ describe('DictionaryCardModel', () => {
     test('removeTagFromCard should return true if tag removed', async () => {
         dbMock.query.mockResolvedValueOnce({ rowCount: 1, command: 'DELETE', oid: 0, fields: [], rows: [] });
 
-        const result = await cardModel.removeTagFromCard('card-123', 'tag-456');
+        const result = await cardTagsModel.removeTagFromCard('card-123', 'tag-456');
 
         expect(result).toBe(true);
     });
@@ -133,7 +137,7 @@ describe('DictionaryCardModel', () => {
     test('getTagsForCard should return an array of tag names', async () => {
         dbMock.query.mockResolvedValueOnce({ rows: [{ name: tags[0].name }, { name: tags[1].name }], rowCount: 2, command: 'INSERT', oid: 0, fields: [] });
 
-        const result = await cardModel.getTagsForCard(cardId);
+        const result = await cardTagsModel.getTagsForCard(cardId);
 
         expect(result).toEqual([tags[0].name, tags[1].name]);
     });
