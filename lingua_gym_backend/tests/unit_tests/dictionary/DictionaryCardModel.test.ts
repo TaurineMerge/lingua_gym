@@ -123,7 +123,7 @@ describe('DictionaryCardModel', () => {
     });
 
     test('removeTagFromCard should return true if tag removed', async () => {
-        dbMock.query.mockResolvedValueOnce({ rowCount: 1, command: 'INSERT', oid: 0, fields: [], rows: [] });
+        dbMock.query.mockResolvedValueOnce({ rowCount: 0, command: 'DELETE', oid: 0, fields: [], rows: [] });
 
         const result = await cardModel.removeTagFromCard('card-123', 'tag-456');
 
