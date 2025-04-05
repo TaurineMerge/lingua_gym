@@ -10,7 +10,7 @@ class CardsTagsModel {
     }
 
     async addTagToCard(cardId: string, tagId: string): Promise<boolean> {
-        const query = `INSERT INTO cards_tags (card_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
+        const query = `INSERT INTO "CardsTags" (card_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
         try {
             const result = await this.db.query(query, [cardId, tagId]);
             return result.rowCount! > 0;
@@ -21,7 +21,7 @@ class CardsTagsModel {
     }
 
     async removeTagFromCard(cardId: string, tagId: string): Promise<boolean> {
-        const query = `DELETE FROM cards_tags WHERE card_id = $1 AND tag_id = $2;`;
+        const query = `DELETE FROM "CardsTags" WHERE card_id = $1 AND tag_id = $2;`;
         try {
             const result = await this.db.query(query, [cardId, tagId]);
             return result.rowCount! > 0;
@@ -32,7 +32,7 @@ class CardsTagsModel {
     }
 
     async getTagsByCard(cardId: string): Promise<Array<CardsTags>> {
-        const query = `SELECT tags_id FROM card_tags WHERE card_id = $1;`;
+        const query = `SELECT tags_id FROM "CardTags" WHERE card_id = $1;`;
         try {
             const result = await this.db.query<CardsTags>(query, [cardId]);
             return result.rows;
@@ -43,7 +43,7 @@ class CardsTagsModel {
     }
 
     async getUserCardsByTag(tagId: string, userId: string): Promise<Array<CardsTags>> {
-        const query = `SELECT ct.card_id FROM cards_tags ct JOIN dictionary_cards dc ON ct.card_id = dc.dictionary_card_id WHERE ct.tag_id = $1 AND dc.owner_id = $2;`;
+        const query = `SELECT ct.card_id FROM "CardsTags" ct JOIN "DictionaryCards" dc ON ct.card_id = dc.dictionary_card_id WHERE ct.tag_id = $1 AND dc.owner_id = $2;`;
         try {
             const result = await this.db.query<CardsTags>(query, [tagId, userId]);
             return result.rows;
