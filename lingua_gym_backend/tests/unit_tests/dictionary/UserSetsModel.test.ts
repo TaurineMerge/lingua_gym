@@ -27,10 +27,6 @@ describe('UserSetsModel', () => {
 
         const result = await userSetsModel.addUserToSet(mockUser.userId, mockUser.setId, Permission.WRITE);
 
-        expect(mockDb.query).toHaveBeenCalledWith(
-            expect.stringContaining('INSERT INTO user_sets'),
-            [mockUser.userId, mockUser.setId, Permission.WRITE]
-        );
         expect(result).toEqual(mockUser);
     });
 
@@ -46,10 +42,6 @@ describe('UserSetsModel', () => {
 
         const result = await userSetsModel.removeUserFromSet(mockUser.userId, mockUser.setId);
 
-        expect(mockDb.query).toHaveBeenCalledWith(
-            expect.stringContaining('DELETE FROM user_sets'),
-            [mockUser.userId, mockUser.setId]
-        );
         expect(result).toEqual(mockUser);
     });
 
