@@ -31,9 +31,7 @@ describe('DictionarySetModel integration', () => {
         tagModel = new TagModel(db);
         setTagsModel = new SetTagsModel(db);
 
-        await db.query('DELETE FROM "SetTags"');
-        await db.query('DELETE FROM "Tags"');
-        await db.query('DELETE FROM "DictionarySets"');
+        await clearDatabase();
     });
 
     afterAll(async () => {
@@ -41,10 +39,14 @@ describe('DictionarySetModel integration', () => {
     });
 
     afterEach(async () => {
+        await clearDatabase();
+    });
+
+    const clearDatabase = async () => {
         await db.query('DELETE FROM "SetTags"');
         await db.query('DELETE FROM "Tags"');
         await db.query('DELETE FROM "DictionarySets"');
-    });
+    };
 
     describe('Basic Set Operations', () => {
         test('createSet should insert a dictionary set', async () => {

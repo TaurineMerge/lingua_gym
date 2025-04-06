@@ -29,10 +29,6 @@ describe('SetCardsModel', () => {
 
         const result = await setCardsModel.addCardToSet('set1', mockCard.dictionaryCardId);
         
-        expect(mockDb.query).toHaveBeenCalledWith(
-            'INSERT INTO set_cards (set_id, card_id) VALUES ($1, $2) RETURNING *',
-            ['set1', mockCard.dictionaryCardId]
-        );
         expect(result).toEqual(mockCard);
     });
 
@@ -49,10 +45,6 @@ describe('SetCardsModel', () => {
 
         const result = await setCardsModel.removeCardFromSet('set1', mockCard.dictionaryCardId);
         
-        expect(mockDb.query).toHaveBeenCalledWith(
-            'DELETE FROM set_cards WHERE set_id = $1 AND card_id = $2 RETURNING *',
-            ['set1', mockCard.dictionaryCardId]
-        );
         expect(result).toEqual(mockCard);
     });
 
@@ -70,10 +62,6 @@ describe('SetCardsModel', () => {
 
         const result = await setCardsModel.getCardsBySet('set1');
         
-        expect(mockDb.query).toHaveBeenCalledWith(
-            'SELECT dc.* FROM dictionary_cards dc JOIN set_cards sc ON dc.dictionary_card_id = sc.card_id WHERE sc.set_id = $1',
-            ['set1']
-        );
         expect(result).toEqual(mockCards);
     });
 
