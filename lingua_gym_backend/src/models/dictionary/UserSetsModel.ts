@@ -10,7 +10,7 @@ class UserSetsModel {
     }
 
     async addUserToSet(userId: string, setId: string, permission: UserSetsPermission): Promise<UserSets | null> {
-        const query = `INSERT INTO user_sets (user_id, set_id, role) VALUES ($1, $2, $3) RETURNING *`;
+        const query = `INSERT INTO "UserSets" (user_id, set_id, permission) VALUES ($1, $2, $3) RETURNING user_id AS "userId", set_id AS "setId", permission`;
         
         try {
             const result = await this.db.query<UserSets>(query, [userId, setId, permission]);
@@ -22,7 +22,7 @@ class UserSetsModel {
     }
 
     async removeUserFromSet(userId: string, setId: string): Promise<UserSets | null> {
-        const query = `DELETE FROM user_sets WHERE user_id = $1 AND set_id = $2 RETURNING *`;
+        const query = `DELETE FROM "UserSets" WHERE user_id = $1 AND set_id = $2 RETURNING user_id AS "userId", set_id AS "setId", permission`;
         
         try {
             const result = await this.db.query<UserSets>(query, [userId, setId]);
@@ -34,7 +34,7 @@ class UserSetsModel {
     }
 
     async getUsersBySet(setId: string): Promise<UserSets[] | null> {
-        const query = `SELECT user_id, role FROM user_sets WHERE set_id = $1`;
+        const query = `SELECT user_id, permission FROM "UserSets" WHERE set_id = $1`;
         
         try {
             const result = await this.db.query<UserSets>(query, [setId]);
@@ -46,7 +46,7 @@ class UserSetsModel {
     }
 
     async getUserPermission(userId: string, setId: string): Promise<UserSetsPermission | null> {
-        const query = `SELECT role FROM user_sets WHERE user_id = $1 AND set_id = $2`;
+        const query = `SELECT permission FROM "UserSets" WHERE user_id = $1 AND set_id = $2`;
         
         try {
             const result = await this.db.query<{ permission: UserSetsPermission }>(query, [userId, setId]);
