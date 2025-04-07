@@ -1,7 +1,7 @@
 import Database from '../../database/config/db-connection.js';
 import logger from '../../utils/logger/Logger.js';
 
-class CardTagsModel {
+class SetTagsModel {
     private db;
 
     constructor(dbInstance: Database) {
@@ -42,4 +42,4 @@ class CardTagsModel {
     }
 }
 
-export default CardTagsModel;
+export default SetTagsModel;
