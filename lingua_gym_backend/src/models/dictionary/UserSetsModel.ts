@@ -56,6 +56,18 @@ class UserSetsModel {
             throw error;
         }
     }
+
+    async getUserSets(userId: string): Promise<UserSets[] | null> {
+        const query = `SELECT set_id, permission FROM "UserSets" WHERE user_id = $1`;
+
+        try {
+            const result = await this.db.query<UserSets>(query, [userId]);
+            return result.rows.length > 0 ? result.rows : null;
+        } catch (error) {
+            logger.error({ error }, 'Error fetching sets for user');
+            throw error;
+        }
+    }
 }
 
 export default UserSetsModel;
