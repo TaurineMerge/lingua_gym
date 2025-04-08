@@ -1,6 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import ServiceFactory from "../../services/ServiceFactory.js";
+import container from "../../di/Container.js";
 import logger from "../../utils/logger/Logger.js";
+import { JwtTokenManagementService } from "../../services/access_management/access_management.js";
+
+const jwtService = container.resolve<JwtTokenManagementService>("jwtTokenService");
 
 const authenticateToken = (req: Request, res: Response, next: NextFunction): Response | void => {
   const token = req.cookies.refreshToken;
@@ -11,16 +14,12 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction): Res
   }
 
   try {
-    const jwtService = ServiceFactory.getJwtTokenManagementService();
     const user = jwtService.verifyAccessToken(token);
-
     req.body.userId = user.userId;
-
     logger.info({ userId: user.userId }, "User authenticated successfully");
     next();
   } catch (error) {
     logger.error({ error, path: req.path }, "Token verification failed");
-
     return res.status(403).json({
       error: error instanceof Error ? error.message : "Invalid token",
     });
@@ -35,14 +34,11 @@ const validateRefreshToken = (req: Request, res: Response, next: NextFunction): 
   }
 
   try {
-    const jwtService = ServiceFactory.getJwtTokenManagementService();
     const user = jwtService.verifyRefreshToken(refreshToken);
-
     logger.info({ userId: user.userId }, "Refresh token validated successfully");
     next();
   } catch (error) {
     logger.error({ error, path: req.path }, "Refresh token verification failed");
-
     return res.status(403).json({
       error: error instanceof Error ? error.message : "Invalid refresh token",
     });

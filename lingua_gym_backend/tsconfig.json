@@ -8,5 +8,7 @@
     "strict": true,
     "skipLibCheck": true,
     "moduleResolution":"node",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   }
 }
