@@ -1,121 +1,54 @@
-import { v4 as uuidv4 } from 'uuid';
-import { DictionaryCardModel } from '../../models/dictionary/dictionary.js';
-import { DictionaryCard, CardTranslation, CardMeaning, CardExample } from '../../database/interfaces/DbInterfaces.js';
+import { DictionaryCardModel } from '../../../src/models/dictionary/dictionary.js';
 import logger from '../../utils/logger/Logger.js';
+import { DictionaryCard, CardTranslation, CardMeaning, CardExample } from '../../database/interfaces/DbInterfaces.js';
 
 class DictionaryCardService {
-    private dictionaryCardModel: DictionaryCardModel;
+    private model: DictionaryCardModel;
 
-    constructor(dictionaryCardModel: DictionaryCardModel) {
-        this.dictionaryCardModel = dictionaryCardModel;
+    constructor(model: DictionaryCardModel) {
+        this.model = model;
     }
 
-    async createCard(
-        cardGeneralData: Omit<DictionaryCard, 'dictionaryCardId'>,
-        cardTranslations: CardTranslation[],
-        cardMeanings: CardMeaning[],
-        cardExamples: CardExample[]
-    ): Promise<string> {
-        this.validateCardData(cardGeneralData);
-
-        const cardId = uuidv4();
-        logger.info({ cardId, cardGeneralData }, 'Creating new dictionary card');
-
-        const createdId = await this.dictionaryCardModel.createCard(
-            { ...cardGeneralData, dictionaryCardId: cardId },
-            cardTranslations,
-            cardMeanings,
-            cardExamples
-        );
-
-        logger.info({ cardId: createdId }, 'Dictionary card created successfully');
-        return createdId;
-    }
-
-    async getCardById(cardId: string): Promise<DictionaryCard & { translation: string[], meaning: string[], example: string[] } | null> {
-        logger.info({ cardId }, 'Fetching dictionary card');
-        const card = await this.dictionaryCardModel.getCardById(cardId);
-
-        if (!card) {
-            logger.warn({ cardId }, 'Dictionary card not found');
+    async createCard(card: DictionaryCard, cardTranslations: Array<CardTranslation>, cardMeanings: Array<CardMeaning>, cardExamples: Array<CardExample>): Promise<string | null> {
+        if (!card.dictionaryCardId || !card.original) {
+            logger.warn({ card }, 'Validation failed while creating dictionary card');
             return null;
         }
 
-        logger.info({ cardId }, 'Dictionary card fetched successfully');
-        return card;
+        try {
+            return await this.model.createCard(card, cardTranslations, cardMeanings, cardExamples);
+        } catch (error) {
+            logger.error({ error, card }, 'Failed to create dictionary card');
+            return null;
+        }
     }
 
-    async deleteCard(cardId: string): Promise<boolean> {
-        logger.info({ cardId }, 'Attempting to delete dictionary card');
-        const deleted = await this.dictionaryCardModel.removeCardById(cardId);
-
-        if (deleted) {
-            logger.info({ cardId }, 'Dictionary card deleted successfully');
-        } else {
-            logger.warn({ cardId }, 'Dictionary card not found or already deleted');
+    async getCardById(cardId: string): Promise<DictionaryCard | null> {
+        if (!cardId) {
+            logger.warn('Card ID is required');
+            return null;
         }
 
-        return deleted;
+        try {
+            return await this.model.getCardById(cardId);
+        } catch (error) {
+            logger.error({ error, cardId }, 'Failed to fetch dictionary card');
+            return null;
+        }
     }
 
-    async updateCard(
-        cardId: string,
-        cardGeneralData: Partial<Omit<DictionaryCard, 'dictionaryCardId'>>,
-        cardTranslations?: CardTranslation[],
-        cardMeanings?: CardMeaning[],
-        cardExamples?: CardExample[]
-    ): Promise<boolean> {
-        logger.info({ cardId, cardGeneralData }, 'Updating dictionary card');
-        const updated = await this.dictionaryCardModel.updateCard(
-            cardId,
-            cardGeneralData,
-            cardTranslations || [],
-            cardMeanings || [],
-            cardExamples || []
-        );
-
-        if (updated) {
-            logger.info({ cardId }, 'Dictionary card updated successfully');
-        } else {
-            logger.warn({ cardId }, 'Failed to update dictionary card');
+    async removeCardById(cardId: string): Promise<boolean> {
+        if (!cardId) {
+            logger.warn('Missing card ID for deletion');
+            return false;
         }
 
-        return updated;
-    }
-
-    async addTagToCard(cardId: string, tagId: string): Promise<boolean> {
-        logger.info({ cardId, tagId }, 'Adding tag to dictionary card');
-        const success = await this.dictionaryCardModel.addTagToCard(cardId, tagId);
-
-        if (success) {
-            logger.info({ cardId, tagId }, 'Tag added successfully');
-        } else {
-            logger.warn({ cardId, tagId }, 'Failed to add tag (maybe already added)');
+        try {
+            return await this.model.removeCardById(cardId);
+        } catch (error) {
+            logger.error({ error, cardId }, 'Failed to delete dictionary card');
+            return false;
         }
-
-        return success;
-    }
-
-    async removeTagFromCard(cardId: string, tagId: string): Promise<boolean> {
-        logger.info({ cardId, tagId }, 'Removing tag from dictionary card');
-        const success = await this.dictionaryCardModel.removeTagFromCard(cardId, tagId);
-
-        if (success) {
-            logger.info({ cardId, tagId }, 'Tag removed successfully');
-        } else {
-            logger.warn({ cardId, tagId }, 'Failed to remove tag (maybe it was not assigned)');
-        }
-
-        return success;
-    }
-
-    async getTagsForCard(cardId: string): Promise<string[]> {
-        logger.info({ cardId }, 'Fetching tags for dictionary card');
-        return await this.dictionaryCardModel.getTagsForCard(cardId);
-    }
-
-    private validateCardData(cardData: Omit<DictionaryCard, 'dictionaryCardId'>): void {
-        if (!cardData.original.trim()) throw new Error('Original field cannot be empty');
     }
 }
 
