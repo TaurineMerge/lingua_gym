@@ -1,7 +1,7 @@
-import { DictionaryCardModel } from '../../../src/models/dictionary/dictionary.js';
-import Database from '../../../src/database/config/db-connection.js';
-import {  DictionaryCard, CardTranslation, CardMeaning, CardExample, Tag } from '../../../src/database/interfaces/DbInterfaces.js';
-import { CardTagsModel } from '../../../src/models/tag/tag.js';
+import { DictionaryCardModel } from '../../../../src/models/dictionary/dictionary.js';
+import Database from '../../../../src/database/config/db-connection.js';
+import {  DictionaryCard, CardTranslation, CardMeaning, CardExample, Tag } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { CardTagsModel } from '../../../../src/models/tag/tag.js';
 
 describe('DictionaryCardModel', () => {
     let dbMock: jest.Mocked<Database>;

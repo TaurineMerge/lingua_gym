@@ -1,6 +1,6 @@
-import { SetCardsModel } from '../../../src/models/dictionary/dictionary.js';
-import Database from '../../../src/database/config/db-connection.js';
-import { DictionaryCard } from '../../../src/database/interfaces/DbInterfaces.js';
+import { SetCardsModel } from '../../../../src/models/dictionary/dictionary.js';
+import Database from '../../../../src/database/config/db-connection.js';
+import { DictionaryCard } from '../../../../src/database/interfaces/DbInterfaces.js';
 
 describe('SetCardsModel', () => {
     let mockDb: jest.Mocked<Database>;

@@ -1,7 +1,7 @@
-import Database from '../../../src/database/config/db-connection.js';
-import { DictionarySetModel } from '../../../src/models/dictionary/dictionary.js';
-import { DictionarySet, Tag } from '../../../src/database/interfaces/DbInterfaces.js';
-import { SetTagsModel } from '../../../src/models/tag/tag.js';
+import Database from '../../../../src/database/config/db-connection.js';
+import { DictionarySetModel } from '../../../../src/models/dictionary/dictionary.js';
+import { DictionarySet, Tag } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { SetTagsModel } from '../../../../src/models/tag/tag.js';
 
 describe('DictionarySetModel', () => {
     let dbMock: jest.Mocked<Database>;

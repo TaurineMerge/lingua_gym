@@ -1,6 +1,6 @@
-import { UserSetsModel } from '../../../src/models/dictionary/dictionary.js';
-import Database from '../../../src/database/config/db-connection.js';
-import { Permission, UserSets } from '../../../src/database/interfaces/DbInterfaces.js';
+import { UserSetsModel } from '../../../../src/models/dictionary/dictionary.js';
+import Database from '../../../../src/database/config/db-connection.js';
+import { Permission, UserSets } from '../../../../src/database/interfaces/DbInterfaces.js';
 
 describe('UserSetsModel', () => {
     let mockDb: jest.Mocked<Database>;
