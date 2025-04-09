@@ -5,7 +5,9 @@ import nodemailer from 'nodemailer';
 import hashPassword from '../../utils/hash/HashPassword.js';
 import logger from '../../utils/logger/Logger.js';
 import 'dotenv/config';
+import { injectable } from 'tsyringe';
 
+@injectable()
 class PasswordResetService {
   private userModel: UserModel;
   private userPasswordResetModel: UserPasswordResetModel;

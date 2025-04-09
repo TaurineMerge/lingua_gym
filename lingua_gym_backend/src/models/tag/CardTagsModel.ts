@@ -1,6 +1,8 @@
 import Database from '../../database/config/db-connection.js';
 import logger from '../../utils/logger/Logger.js';
+import { injectable } from 'tsyringe';
 
+@injectable()
 class CardTagsModel {
     private db;
 

@@ -1,7 +1,9 @@
 import { SetCardsModel } from '../../../src/models/dictionary/dictionary.js';
 import { DictionaryCard, SetCards } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
+import { injectable } from 'tsyringe';
 
+@injectable()
 class SetCardsService {
     private model: SetCardsModel;
 

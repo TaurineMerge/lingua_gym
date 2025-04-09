@@ -1,4 +1,4 @@
-import UserMetadataModel from "./UserMetadataModel";
-import UserModel from "./UserModel";
-import UserPasswordResetModel from "./UserPasswordResetModel";
+import UserMetadataModel from "./UserMetadataModel.js";
+import UserModel from "./UserModel.js";
+import UserPasswordResetModel from "./UserPasswordResetModel.js";
 export { UserMetadataModel, UserModel, UserPasswordResetModel };

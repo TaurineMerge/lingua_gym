@@ -1,7 +1,9 @@
 import { DictionarySetModel } from '../../models/dictionary/dictionary.js';
 import logger from '../../utils/logger/Logger.js';
 import { DictionarySet } from '../../database/interfaces/DbInterfaces.js';
+import { injectable } from 'tsyringe';
 
+@injectable()
 class DictionarySetService {
     private model: DictionarySetModel;
 

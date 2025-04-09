@@ -1,7 +1,9 @@
 import Database from '../../database/config/db-connection.js';
 import { UserPasswordReset } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
+import { injectable } from 'tsyringe';
 
+@injectable()
 class UserPasswordResetModel {
   private db;
 

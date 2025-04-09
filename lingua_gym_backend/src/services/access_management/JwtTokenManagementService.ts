@@ -3,7 +3,9 @@ import { UserModel } from '../../models/access_management/access_management.js';
 import { User } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 import 'dotenv/config';
+import { injectable } from 'tsyringe';
 
+@injectable()
 class TokenManagementService {
   private userModel: UserModel;
   private jwtSecret: string;

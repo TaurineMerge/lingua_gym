@@ -3,7 +3,9 @@ import { UserModel, UserMetadataModel } from '../../models/access_management/acc
 import hashPassword from '../../utils/hash/HashPassword.js';
 import logger from '../../utils/logger/Logger.js';
 import { User } from '../../database/interfaces/DbInterfaces.js';
+import { injectable } from 'tsyringe';
 
+@injectable()
 class RegistrationService {
     private userModel: UserModel;
     private userMetadataModel: UserMetadataModel;

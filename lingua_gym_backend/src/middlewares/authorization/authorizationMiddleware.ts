@@ -3,7 +3,7 @@ import container from "../../di/Container.js";
 import logger from "../../utils/logger/Logger.js";
 import { JwtTokenManagementService } from "../../services/access_management/access_management.js";
 
-const jwtService = container.resolve<JwtTokenManagementService>("jwtTokenService");
+const jwtService = container.resolve<JwtTokenManagementService>("JwtTokenManagementService");
 
 const authenticateToken = (req: Request, res: Response, next: NextFunction): Response | void => {
   const token = req.cookies.refreshToken;

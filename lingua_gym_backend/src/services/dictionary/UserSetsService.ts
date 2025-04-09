@@ -1,7 +1,9 @@
 import { UserSetsModel } from '../../../src/models/dictionary/dictionary.js';
 import logger from '../../utils/logger/Logger.js';
 import { Permission, UserSets } from '../../../src/database/interfaces/DbInterfaces.js';
+import { injectable } from 'tsyringe';
 
+@injectable()
 class UserSetsService {
     private userSetsModel: UserSetsModel;
 

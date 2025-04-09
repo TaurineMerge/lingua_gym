@@ -23,7 +23,6 @@ app.use((req, res) => {
 
 const server = app.listen(PORT, async () => {
   try {
-    await db.connect();
     logger.info(`Server is running on http://localhost:${PORT}`);
   } catch (err) {
     logger.fatal({ err }, 'Failed to start server');

@@ -1,7 +1,9 @@
 import Database from '../../database/config/db-connection.js';
 import { User } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
+import { injectable } from 'tsyringe';
 
+@injectable()
 class UserModel {
   private db;
   

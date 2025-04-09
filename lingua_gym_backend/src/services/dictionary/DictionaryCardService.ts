@@ -1,7 +1,9 @@
 import { DictionaryCardModel } from '../../../src/models/dictionary/dictionary.js';
 import logger from '../../utils/logger/Logger.js';
 import { DictionaryCard, CardTranslation, CardMeaning, CardExample } from '../../database/interfaces/DbInterfaces.js';
+import { injectable } from 'tsyringe';
 
+@injectable()
 class DictionaryCardService {
     private model: DictionaryCardModel;
 

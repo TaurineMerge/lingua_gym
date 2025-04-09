@@ -1,7 +1,9 @@
 import Database from '../../database/config/db-connection.js';
 import logger from '../../utils/logger/Logger.js';
 import Tag from '../../database/interfaces/tag/Tag.js';
+import { injectable } from 'tsyringe';
 
+@injectable()
 class TagModel {
     private db;
 

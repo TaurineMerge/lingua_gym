@@ -1,6 +1,8 @@
 import { SetTagsModel } from '../../../src/models/tag/tag.js';
 import logger from '../../utils/logger/Logger.js';
+import { injectable } from 'tsyringe';
 
+@injectable()
 class SetTagsService {
     private setTagsModel: SetTagsModel;
 

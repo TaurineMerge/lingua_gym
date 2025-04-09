@@ -1,5 +1,6 @@
-import ServiceFactory from "../../services/ServiceFactory.js";
+import container from "../../di/Container.js";
 import logger from "../../utils/logger/Logger.js";
+const jwtService = container.resolve("JwtTokenManagementService");
 const authenticateToken = (req, res, next) => {
     const token = req.cookies.refreshToken;
     if (!token) {
@@ -7,7 +8,6 @@ const authenticateToken = (req, res, next) => {
         return res.status(401).json({ error: "Unauthorized" });
     }
     try {
-        const jwtService = ServiceFactory.getJwtTokenManagementService();
         const user = jwtService.verifyAccessToken(token);
         req.body.userId = user.userId;
         logger.info({ userId: user.userId }, "User authenticated successfully");
@@ -27,7 +27,6 @@ const validateRefreshToken = (req, res, next) => {
         return res.status(400).json({ error: "Refresh token required" });
     }
     try {
-        const jwtService = ServiceFactory.getJwtTokenManagementService();
         const user = jwtService.verifyRefreshToken(refreshToken);
         logger.info({ userId: user.userId }, "Refresh token validated successfully");
         next();
