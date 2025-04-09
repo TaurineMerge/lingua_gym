@@ -1,4 +1,5 @@
 import Database from '../../database/config/db-connection.js';
+import { DictionarySet } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 import { injectable } from 'tsyringe';
 
@@ -32,11 +33,11 @@ class SetTagsModel {
         }
     }
     
-    async getTagsForSet(setId: string): Promise<string[]> {
+    async getTagsForSet(setId: string): Promise<DictionarySet[]> {
         const query = `SELECT t.name FROM "Tags" t INNER JOIN "SetTags" st ON t.tag_id = st.tag_id WHERE st.set_id = $1;`;
         try {
-            const result = await this.db.query<{ name: string }>(query, [setId]);
-            return result.rows.map(row => row.name);
+            const result = await this.db.query<DictionarySet>(query, [setId]);
+            return result.rows;
         } catch (error) {
             logger.error({ error, setId }, 'Error fetching tags for set');
             return [];
