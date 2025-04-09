@@ -8,7 +8,7 @@ class AccessManagementController {
     try {
       logger.info({ email: req.body.email }, 'User registration attempt');
       const { username, email, password } = req.body;
-      const registrationService = container.resolve<RegistrationService>('registrationService');
+      const registrationService = container.resolve<RegistrationService>('RegistrationService');
       const user = await registrationService.register(username, email, password);
       logger.info({ userId: user.user_id }, 'User registered successfully');
       res.status(201).json({ message: 'User registered', user });
@@ -22,7 +22,7 @@ class AccessManagementController {
     try {
       const { email, password } = req.body;
       logger.info({ email }, 'User login attempt');
-      const authenticationService = container.resolve<AuthenticationService>('authenticationService');
+      const authenticationService = container.resolve<AuthenticationService>('AuthenticationService');
       const { accessToken, refreshToken } = await authenticationService.login(email, password);
 
       res.cookie('refreshToken', refreshToken, {
@@ -45,7 +45,7 @@ class AccessManagementController {
       if (!userId) throw new Error('Unauthorized');
 
       logger.info({ userId }, 'User logout attempt');
-      const authenticationService = container.resolve<AuthenticationService>('authenticationService');
+      const authenticationService = container.resolve<AuthenticationService>('AuthenticationService');
       await authenticationService.logout(userId);
 
       res.clearCookie('refreshToken', {
@@ -66,7 +66,7 @@ class AccessManagementController {
       if (!refreshToken) throw new Error('Refresh token missing');
 
       logger.info({}, 'Refreshing access token');
-      const jwtService = container.resolve<JwtTokenManagementService>('jwtTokenManagementService');
+      const jwtService = container.resolve<JwtTokenManagementService>('JwtTokenManagementService');
       const newTokens = await jwtService.refreshToken(refreshToken);
 
       res.cookie('refreshToken', newTokens.refreshToken, {
@@ -85,7 +85,7 @@ class AccessManagementController {
   static async requestPasswordReset(req: Request, res: Response): Promise<void> {
     try {
       logger.info({ email: req.body.email }, 'Password reset request');
-      const passwordResetService = container.resolve<PasswordResetService>('passwordResetService');
+      const passwordResetService = container.resolve<PasswordResetService>('PasswordResetService');
       await passwordResetService.requestPasswordReset(req.body.email);
       res.json({ message: 'Password reset email sent' });
     } catch (error) {
@@ -97,7 +97,7 @@ class AccessManagementController {
   static async resetPassword(req: Request, res: Response): Promise<void> {
     try {
       logger.info({}, 'Resetting password');
-      const passwordResetService = container.resolve<PasswordResetService>('passwordResetService');
+      const passwordResetService = container.resolve<PasswordResetService>('PasswordResetService');
       await passwordResetService.resetPassword(req.body.token, req.body.newPassword);
       res.json({ message: 'Password reset successful' });
     } catch (error) {

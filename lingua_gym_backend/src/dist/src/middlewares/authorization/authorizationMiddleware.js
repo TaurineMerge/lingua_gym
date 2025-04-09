@@ -1,8 +1,9 @@
 import container from "../../di/Container.js";
 import logger from "../../utils/logger/Logger.js";
 const jwtService = container.resolve("JwtTokenManagementService");
-const authenticateToken = (req, res, next) => {
-    const token = req.cookies.refreshToken;
+const validateAccessToken = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    const token = authHeader === null || authHeader === void 0 ? void 0 : authHeader.split(' ')[1]; // "Bearer <access_token>"
     if (!token) {
         logger.warn({ path: req.path }, "Unauthorized access attempt: No token provided");
         return res.status(401).json({ error: "Unauthorized" });
@@ -14,7 +15,7 @@ const authenticateToken = (req, res, next) => {
         next();
     }
     catch (error) {
-        logger.error({ error, path: req.path }, "Token verification failed");
+        logger.error({ error, path: req.path }, "Access token verification failed");
         return res.status(403).json({
             error: error instanceof Error ? error.message : "Invalid token",
         });
@@ -38,4 +39,4 @@ const validateRefreshToken = (req, res, next) => {
         });
     }
 };
-export { authenticateToken, validateRefreshToken };
+export { validateAccessToken, validateRefreshToken };

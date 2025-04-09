@@ -15,7 +15,7 @@ class AccessManagementController {
             try {
                 logger.info({ email: req.body.email }, 'User registration attempt');
                 const { username, email, password } = req.body;
-                const registrationService = container.resolve('registrationService');
+                const registrationService = container.resolve('RegistrationService');
                 const user = yield registrationService.register(username, email, password);
                 logger.info({ userId: user.user_id }, 'User registered successfully');
                 res.status(201).json({ message: 'User registered', user });
@@ -31,7 +31,7 @@ class AccessManagementController {
             try {
                 const { email, password } = req.body;
                 logger.info({ email }, 'User login attempt');
-                const authenticationService = container.resolve('authenticationService');
+                const authenticationService = container.resolve('AuthenticationService');
                 const { accessToken, refreshToken } = yield authenticationService.login(email, password);
                 res.cookie('refreshToken', refreshToken, {
                     httpOnly: true,
@@ -54,7 +54,7 @@ class AccessManagementController {
                 if (!userId)
                     throw new Error('Unauthorized');
                 logger.info({ userId }, 'User logout attempt');
-                const authenticationService = container.resolve('authenticationService');
+                const authenticationService = container.resolve('AuthenticationService');
                 yield authenticationService.logout(userId);
                 res.clearCookie('refreshToken', {
                     httpOnly: true,
@@ -76,7 +76,7 @@ class AccessManagementController {
                 if (!refreshToken)
                     throw new Error('Refresh token missing');
                 logger.info({}, 'Refreshing access token');
-                const jwtService = container.resolve('jwtTokenManagementService');
+                const jwtService = container.resolve('JwtTokenManagementService');
                 const newTokens = yield jwtService.refreshToken(refreshToken);
                 res.cookie('refreshToken', newTokens.refreshToken, {
                     httpOnly: true,
@@ -95,7 +95,7 @@ class AccessManagementController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 logger.info({ email: req.body.email }, 'Password reset request');
-                const passwordResetService = container.resolve('passwordResetService');
+                const passwordResetService = container.resolve('PasswordResetService');
                 yield passwordResetService.requestPasswordReset(req.body.email);
                 res.json({ message: 'Password reset email sent' });
             }
@@ -109,7 +109,7 @@ class AccessManagementController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 logger.info({}, 'Resetting password');
-                const passwordResetService = container.resolve('passwordResetService');
+                const passwordResetService = container.resolve('PasswordResetService');
                 yield passwordResetService.resetPassword(req.body.token, req.body.newPassword);
                 res.json({ message: 'Password reset successful' });
             }

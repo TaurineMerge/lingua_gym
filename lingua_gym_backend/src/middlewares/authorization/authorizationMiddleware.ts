@@ -5,8 +5,9 @@ import { JwtTokenManagementService } from "../../services/access_management/acce
 
 const jwtService = container.resolve<JwtTokenManagementService>("JwtTokenManagementService");
 
-const authenticateToken = (req: Request, res: Response, next: NextFunction): Response | void => {
-  const token = req.cookies.refreshToken;
+const validateAccessToken = (req: Request, res: Response, next: NextFunction): Response | void => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.split(' ')[1]; // "Bearer <access_token>"
 
   if (!token) {
     logger.warn({ path: req.path }, "Unauthorized access attempt: No token provided");
@@ -19,7 +20,7 @@ const authenticateToken = (req: Request, res: Response, next: NextFunction): Res
     logger.info({ userId: user.userId }, "User authenticated successfully");
     next();
   } catch (error) {
-    logger.error({ error, path: req.path }, "Token verification failed");
+    logger.error({ error, path: req.path }, "Access token verification failed");
     return res.status(403).json({
       error: error instanceof Error ? error.message : "Invalid token",
     });
@@ -45,4 +46,4 @@ const validateRefreshToken = (req: Request, res: Response, next: NextFunction): 
   }
 };
 
-export { authenticateToken, validateRefreshToken };
+export { validateAccessToken, validateRefreshToken };
