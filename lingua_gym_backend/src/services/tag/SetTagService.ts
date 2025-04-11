@@ -1,5 +1,5 @@
 import { SetTagModel } from '../../../src/models/tag/tag.js';
-import { DictionarySet } from '../../database/interfaces/DbInterfaces.js';
+import { SetTag } from '../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 import { injectable } from 'tsyringe';
 
@@ -39,7 +39,7 @@ class SetTagService {
         }
     }
 
-    async getTagsForSet(setId: string): Promise<DictionarySet[]> {
+    async getTagsForSet(setId: string): Promise<SetTag[]> {
         if (!setId) {
             logger.warn('Set ID is required to get tags');
             return [];

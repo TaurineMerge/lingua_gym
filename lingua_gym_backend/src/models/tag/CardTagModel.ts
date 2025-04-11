@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import Database from '../../database/config/db-connection.js';
 import logger from '../../utils/logger/Logger.js';
 import { injectable } from 'tsyringe';
+import { CardTag } from '../../database/interfaces/DbInterfaces.js';
 
 @injectable()
 class CardTagModel {
@@ -33,11 +34,11 @@ class CardTagModel {
         }
     }
 
-    async getTagsForCard(cardId: string): Promise<string[]> {
-        const query = `SELECT t.name FROM "Tag" t INNER JOIN "CardTag" ct ON t.tag_id = ct.tag_id WHERE ct.card_id = $1;`;
+    async getTagsForCard(cardId: string): Promise<Array<CardTag & { tagName: string }>> {
+        const query = `SELECT t.name AS "tagName", t.tag_id AS "tagId", ct.card_id AS "cardId" FROM "Tag" t INNER JOIN "CardTag" ct ON t.tag_id = ct.tag_id WHERE ct.card_id = $1;`;
         try {
-            const result = await this.db.query<{ name: string }>(query, [cardId]);
-            return result.rows.map(row => row.name);
+            const result = await this.db.query<CardTag & { tagName: string }>(query, [cardId]);
+            return result.rows;
         } catch (error) {
             logger.error({ error, cardId }, 'Error fetching tags for card');
             return [];

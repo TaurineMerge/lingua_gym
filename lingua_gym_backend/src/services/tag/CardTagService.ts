@@ -1,4 +1,5 @@
 import { CardTagModel } from '../../../src/models/tag/tag.js';
+import { CardTag } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 import { injectable } from 'tsyringe';
 
@@ -38,7 +39,7 @@ class CardTagService {
         }
     }
 
-    async getTagsForCard(cardId: string): Promise<string[]> {
+    async getTagsForCard(cardId: string): Promise<Array<CardTag & { tagName: string }>> {
         if (!cardId) {
             logger.warn('Card ID is required to get tags');
             return [];

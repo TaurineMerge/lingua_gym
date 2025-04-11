@@ -2,13 +2,15 @@ import { setupTestModelContainer, setupTestServiceContainer, clearDatabase, clos
 import { TagModel } from '../../../src/models/tag/tag.js';
 import CardTagService from '../../../src/services/tag/CardTagService.js';
 import { DictionaryCardModel } from '../../../src/models/dictionary/dictionary.js';
-import { randomUUID } from 'crypto';
+import { v4 as uuidv4 } from 'uuid';
+import { CardExample, CardMeaning, CardTranslation, DictionaryCard } from '../../../src/database/interfaces/DbInterfaces.js';
 
 let cardTagService: CardTagService;
 let tagModel: TagModel;
 let cardModel: DictionaryCardModel;
 
 beforeAll(async () => {
+  await clearDatabase();
   const modelContainer = await setupTestModelContainer();
   tagModel = modelContainer.resolve(TagModel);
   cardModel = modelContainer.resolve(DictionaryCardModel);
@@ -26,15 +28,59 @@ afterAll(async () => {
   await closeDatabase();
 });
 
+const createCardData = async (): Promise<DictionaryCard & { translations: Array<CardTranslation>, meanings: Array<CardMeaning>, examples: Array<CardExample> }> => {
+    const cardId = uuidv4();
+
+    const card: DictionaryCard = {
+        cardId: cardId,
+        original: 'cat',
+        transcription: '/kæt/',
+        pronunciation: 'https://example.com/pronunciation/cat.mp3'
+    }
+
+    const translations: Array<CardTranslation> = [
+        {
+            cardId: cardId,
+            translation: 'кот',
+            translationId: uuidv4()
+        },
+        {
+            cardId: cardId,
+            translation: 'кошка',
+            translationId: uuidv4()
+        }
+    ]
+
+    const meanings: Array<CardMeaning> = [
+        {
+            cardId: cardId,
+            meaning: 'domestic furry animal',
+            dictionaryMeaningId: uuidv4()
+        }
+    ]
+
+    const examples: Array<CardExample> = [
+        {
+            cardId: cardId,
+            example: 'I have two dogs and a cat',
+            exampleId: uuidv4(),
+            translation: 'у меня есть два собаки и кошка'
+        }
+    ]
+
+    return { ...card, translations, meanings, examples };
+}
+
 describe('CardTagService', () => {
   test('should add a tag to a card', async () => {
-    const cardId = randomUUID();
-    const tagId = randomUUID();
+    const card = await createCardData();
+    
+    const tagId = uuidv4();
 
-    await cardModel.createCard(cardId, 'dog', 'собака', 'user1', 'set1');
+    await cardModel.createCard(card, card.translations, card.meanings, card.examples);
     await tagModel.createTag(tagId, 'Animals');
 
-    const result = await cardTagService.addTagToCard(cardId, tagId);
+    const result = await cardTagService.addTagToCard(card.cardId, tagId);
     expect(result).toBe(true);
   });
 
@@ -44,14 +90,15 @@ describe('CardTagService', () => {
   });
 
   test('should remove a tag from a card', async () => {
-    const cardId = randomUUID();
-    const tagId = randomUUID();
+    const card = await createCardData();
+    
+    const tagId = uuidv4();
 
-    await cardModel.createCard(cardId, 'cat', 'кошка', 'user2', 'set2');
+    await cardModel.createCard(card, card.translations, card.meanings, card.examples);
     await tagModel.createTag(tagId, 'Pets');
-    await cardTagService.addTagToCard(cardId, tagId);
+    await cardTagService.addTagToCard(card.cardId, tagId);
 
-    const result = await cardTagService.removeTagFromCard(cardId, tagId);
+    const result = await cardTagService.removeTagFromCard(card.cardId, tagId);
     expect(result).toBe(true);
   });
 
@@ -61,17 +108,17 @@ describe('CardTagService', () => {
   });
 
   test('should get tags for a card', async () => {
-    const cardId = randomUUID();
-    const tagId1 = randomUUID();
-    const tagId2 = randomUUID();
+    const card = await createCardData();
+    const tagId1 = uuidv4();
+    const tagId2 = uuidv4();
 
-    await cardModel.createCard(cardId, 'apple', 'яблоко', 'user3', 'set3');
-    await tagModel.createTag(tagId1, 'Fruits');
-    await tagModel.createTag(tagId2, 'Food');
-    await cardTagService.addTagToCard(cardId, tagId1);
-    await cardTagService.addTagToCard(cardId, tagId2);
+    await cardModel.createCard(card, card.translations, card.meanings, card.examples);
+    await tagModel.createTag(tagId1, 'Pets');
+    await tagModel.createTag(tagId2, 'Animals');
+    await cardTagService.addTagToCard(card.cardId, tagId1);
+    await cardTagService.addTagToCard(card.cardId, tagId2);
 
-    const tags = await cardTagService.getTagsForCard(cardId);
+    const tags = (await cardTagService.getTagsForCard(card.cardId)).map(tag => tag.tagId);
     expect(tags).toEqual(expect.arrayContaining([tagId1, tagId2]));
   });
 

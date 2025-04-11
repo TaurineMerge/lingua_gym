@@ -2,6 +2,7 @@ import express from 'express';
 import 'dotenv/config';
 import cookieParser from 'cookie-parser';
 import accessManagementRoutes from './routes/AccessManagementRoutes.js';
+import dictionaryRoutes from './routes/DictionaryRoutes.js';
 import container from './di/Container.js';
 import Database from './database/config/db-connection.js';
 import { Logger } from 'pino';
@@ -15,7 +16,8 @@ const logger: Logger = container.resolve('Logger');
 app.use(express.json());
 app.use(cookieParser());
 
-app.use('/access_management', accessManagementRoutes);
+app.use('/api/access_management', accessManagementRoutes);
+app.use('/api/dictionary', dictionaryRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: 'Not Found' });

@@ -1,7 +1,7 @@
-interface SetsTag {
+interface SetTag {
     setId: string;
     tagId: string;
     createdAt?: Date
 }
 
-export default SetsTag;
+export default SetTag;
