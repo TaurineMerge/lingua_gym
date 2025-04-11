@@ -12,7 +12,7 @@ class DictionaryCardService {
     }
 
     async createCard(card: DictionaryCard, cardTranslations: Array<CardTranslation>, cardMeanings: Array<CardMeaning>, cardExamples: Array<CardExample>): Promise<string | null> {
-        if (!card.dictionaryCardId || !card.original) {
+        if (!card.cardId || !card.original) {
             logger.warn({ card }, 'Validation failed while creating dictionary card');
             return null;
         }

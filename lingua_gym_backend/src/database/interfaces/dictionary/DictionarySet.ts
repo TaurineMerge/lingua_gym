@@ -4,7 +4,8 @@ interface DictionarySet {
     name: string;
     description: string;
     isPublic: boolean;
-    createdAt: Date;
+    languageCode: string;
+    createdAt?: Date;
 }
 
 export default DictionarySet;

@@ -19,14 +19,14 @@ describe('UserModel', () => {
   });
 
   const mockUser: User = {
-    user_id: '123',
+    userId: '123',
     username: 'testUser',
-    display_name: 'Test User',
-    password_hash: 'hashed_password',
+    displayName: 'Test User',
+    passwordHash: 'hashed_password',
     email: 'test@example.com',
-    profile_picture: 'avatar.png',
-    email_verified: true,
-    token_version: 1,
+    profilePicture: 'avatar.png',
+    emailVerified: true,
+    tokenVersion: 1,
   };
 
   test('createUser() should call db.query() with correct arguments', async () => {
@@ -34,14 +34,14 @@ describe('UserModel', () => {
 
     expect(db.query).toHaveBeenCalledWith('INSERT INTO "User" (user_id, username, display_name, password_hash, email, token_version, profile_picture, email_verified) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
       [
-        mockUser.user_id,
+        mockUser.userId,
         mockUser.username,
-        mockUser.display_name,
-        mockUser.password_hash,
+        mockUser.displayName,
+        mockUser.passwordHash,
         mockUser.email,
-        mockUser.token_version,
-        mockUser.profile_picture,
-        mockUser.email_verified,
+        mockUser.tokenVersion,
+        mockUser.profilePicture,
+        mockUser.emailVerified,
       ]
     );
 
@@ -66,16 +66,16 @@ describe('UserModel', () => {
         fields: [],
     });
 
-    const result = await userModel.getUserById(mockUser.user_id);
+    const result = await userModel.getUserById(mockUser.userId);
 
-    expect(db.query).toHaveBeenCalledWith('SELECT * FROM "User" WHERE user_id = $1', [mockUser.user_id]);
+    expect(db.query).toHaveBeenCalledWith('SELECT * FROM "User" WHERE user_id = $1', [mockUser.userId]);
     expect(result).toEqual(mockUser);
   });
 
   test('getUserById() should return null if no user found', async () => {
     db.query.mockResolvedValue({ rows: [], rowCount: 0, command: '', oid: 0, fields: [] });
 
-    const result = await userModel.getUserById(mockUser.user_id);
+    const result = await userModel.getUserById(mockUser.userId);
 
     expect(result).toBeNull();
   });
@@ -84,7 +84,7 @@ describe('UserModel', () => {
     const error = new Error('Database error');
     db.query.mockRejectedValue(error);
 
-    await expect(userModel.getUserById(mockUser.user_id)).rejects.toThrow(error);
+    await expect(userModel.getUserById(mockUser.userId)).rejects.toThrow(error);
   });
 
   test('getUserByEmail() should return a user if found', async () => {
@@ -118,31 +118,31 @@ describe('UserModel', () => {
   });
 
   test('updateUser() should call db.query() with correct SQL and parameters', async () => {
-    const updates = { display_name: 'New Name', email_verified: false };
+    const updates = { displayName: 'New Name', emailVerified: false };
     const query = 'UPDATE "User" SET "display_name" = $2, "email_verified" = $3 WHERE user_id = $1';
 
-    await userModel.updateUserById(mockUser.user_id, updates);
+    await userModel.updateUserById(mockUser.userId, updates);
 
-    expect(db.query).toHaveBeenCalledWith(query, [mockUser.user_id, updates.display_name, updates.email_verified]);
+    expect(db.query).toHaveBeenCalledWith(query, [mockUser.userId, updates.displayName, updates.emailVerified]);
   });
 
   test('updateUser() should throw an error if db.query() fails', async () => {
     const error = new Error('Update failed');
     db.query.mockRejectedValue(error);
 
-    await expect(userModel.updateUserById(mockUser.user_id, { display_name: 'New Name' })).rejects.toThrow(error);
+    await expect(userModel.updateUserById(mockUser.userId, { displayName: 'New Name' })).rejects.toThrow(error);
   });
 
   test('deleteUser() should call db.query() with correct SQL', async () => {
-    await userModel.deleteUserById(mockUser.user_id);
+    await userModel.deleteUserById(mockUser.userId);
 
-    expect(db.query).toHaveBeenCalledWith('DELETE FROM "User" WHERE user_id = $1', [mockUser.user_id]);
+    expect(db.query).toHaveBeenCalledWith('DELETE FROM "User" WHERE user_id = $1', [mockUser.userId]);
   });
 
   test('deleteUser() should throw an error if db.query() fails', async () => {
     const error = new Error('Delete failed');
     db.query.mockRejectedValue(error);
 
-    await expect(userModel.deleteUserById(mockUser.user_id)).rejects.toThrow(error);
+    await expect(userModel.deleteUserById(mockUser.userId)).rejects.toThrow(error);
   });
 });

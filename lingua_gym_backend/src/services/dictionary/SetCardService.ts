@@ -1,38 +1,38 @@
-import { SetCardsModel } from '../../../src/models/dictionary/dictionary.js';
-import { DictionaryCard, SetCards } from '../../database/interfaces/DbInterfaces.js';
+import { SetCardModel } from '../../../src/models/dictionary/dictionary.js';
+import { DictionaryCard, SetCard } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 import { injectable } from 'tsyringe';
 
 @injectable()
-class SetCardsService {
-    private model: SetCardsModel;
+class SetCardService {
+    private model: SetCardModel;
 
-    constructor(model: SetCardsModel) {
+    constructor(model: SetCardModel) {
         this.model = model;
     }
 
-    async addCardToSet(setId: string, cardId: string): Promise<SetCards | boolean> {
+    async addCardToSet(setId: string, cardId: string): Promise<SetCard | boolean> {
         if (!setId || !cardId) {
             logger.warn({ setId, cardId }, 'Validation failed: setId or cardId missing');
             return false;
         }
 
         try {
-            return await this.model.addCardToSet(setId, cardId) as SetCards;
+            return await this.model.addCardToSet(setId, cardId) as SetCard;
         } catch (error) {
             logger.error({ error, setId, cardId }, 'Failed to add card to set');
             return false;
         }
     }
 
-    async removeCardFromSet(setId: string, cardId: string): Promise<SetCards | boolean> {
+    async removeCardFromSet(setId: string, cardId: string): Promise<SetCard | boolean> {
         if (!setId || !cardId) {
             logger.warn({ setId, cardId }, 'Validation failed: setId or cardId missing');
             return false;
         }
 
         try {
-            return await this.model.removeCardFromSet(setId, cardId) as SetCards;
+            return await this.model.removeCardFromSet(setId, cardId) as SetCard;
         } catch (error) {
             logger.error({ error, setId, cardId }, 'Failed to remove card from set');
             return false;
@@ -54,4 +54,4 @@ class SetCardsService {
     }
 }
 
-export default SetCardsService;
+export default SetCardService;

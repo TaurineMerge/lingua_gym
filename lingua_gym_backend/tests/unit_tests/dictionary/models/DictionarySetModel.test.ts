@@ -1,12 +1,12 @@
 import Database from '../../../../src/database/config/db-connection.js';
 import { DictionarySetModel } from '../../../../src/models/dictionary/dictionary.js';
 import { DictionarySet, Tag } from '../../../../src/database/interfaces/DbInterfaces.js';
-import { SetTagsModel } from '../../../../src/models/tag/tag.js';
+import { SetTagModel } from '../../../../src/models/tag/tag.js';
 
 describe('DictionarySetModel', () => {
     let dbMock: jest.Mocked<Database>;
     let setModel: DictionarySetModel;
-    let setTagsModel: SetTagsModel;
+    let setTagsModel: SetTagModel;
 
     let set: DictionarySet;
     let setId: string;
@@ -27,7 +27,7 @@ describe('DictionarySetModel', () => {
             ownerId: setOwnerId,
             description: setDescription,
             isPublic: false,
-            createdAt: new Date(),
+            languageCode: 'en',
         };
 
         tags = [{ tagId: 'tag-123', name: 'tag1' }, { tagId: 'tag-456', name: 'tag2' }];
@@ -39,7 +39,7 @@ describe('DictionarySetModel', () => {
         } as unknown as jest.Mocked<Database>;
 
         setModel = new DictionarySetModel(dbMock);
-        setTagsModel = new SetTagsModel(dbMock);
+        setTagsModel = new SetTagModel(dbMock);
     });
 
     test('createSet should insert a set and return it', async () => {
@@ -103,6 +103,6 @@ describe('DictionarySetModel', () => {
         dbMock.query.mockResolvedValueOnce({ rows: [{ name: tags[0].name }, { name: tags[1].name }], rowCount: 2, command: 'INSERT', oid: 0, fields: [] });
 
         const result = await setTagsModel.getTagsForSet(setId);
-        expect(result).toEqual([tags[0].name, tags[1].name]);
+        expect(result).toEqual([{name: tags[0].name}, {name: tags[1].name}]);
     });
 });

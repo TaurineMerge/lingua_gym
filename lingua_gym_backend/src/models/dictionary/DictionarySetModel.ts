@@ -14,15 +14,16 @@ class DictionarySetModel {
 
     async createSet(dictionarySet: DictionarySet): Promise<DictionarySet> {
         const query = `
-            INSERT INTO "DictionarySets" 
-                (dictionary_set_id, name, owner_id, description, is_public) 
+            INSERT INTO "DictionarySet" 
+                (set_id, name, owner_id, description, language_code, is_public) 
             VALUES 
-                ($1, $2, $3, $4, $5) 
+                ($1, $2, $3, $4, $5, $6) 
             RETURNING 
-                dictionary_set_id as "dictionarySetId",
+                set_id as "dictionarySetId",
                 name,
                 owner_id as "ownerId",
                 description,
+                language_code as "languageCode",
                 is_public as "isPublic",
                 created_at as "createdAt"
         `;
@@ -32,6 +33,7 @@ class DictionarySetModel {
             dictionarySet.name,
             dictionarySet.ownerId,
             dictionarySet.description || null,
+            dictionarySet.languageCode,
             dictionarySet.isPublic || false,
         ];
         
@@ -47,14 +49,15 @@ class DictionarySetModel {
     async getSetById(setId: string): Promise<DictionarySet | null> {
         const query = `
             SELECT 
-                dictionary_set_id as "dictionarySetId",
+                set_id as "dictionarySetId",
                 name,
                 owner_id as "ownerId",
                 description,
+                language_code as "languageCode",
                 is_public as "isPublic",
                 created_at as "createdAt"
-            FROM "DictionarySets" 
-            WHERE dictionary_set_id = $1
+            FROM "DictionarySet" 
+            WHERE set_id = $1
         `;
         
         try {
@@ -68,13 +71,14 @@ class DictionarySetModel {
 
     async deleteSet(setId: string): Promise<DictionarySet | null> {
         const query = `
-            DELETE FROM "DictionarySets" 
-            WHERE dictionary_set_id = $1 
+            DELETE FROM "DictionarySet" 
+            WHERE set_id = $1 
             RETURNING 
-                dictionary_set_id as "dictionarySetId",
+                set_id as "dictionarySetId",
                 name,
                 owner_id as "ownerId",
                 description,
+                language_code as "languageCode",
                 is_public as "isPublic",
                 created_at as "createdAt"
         `;

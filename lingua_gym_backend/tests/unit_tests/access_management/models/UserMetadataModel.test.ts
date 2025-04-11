@@ -24,9 +24,9 @@ describe('UserModel', () => {
 
   test('createUserMetadata() should call db.query() with correct arguments', async () => {
     const userMetadata: UserMetadata = {
-      user_id: '123',
-      last_login: new Date(),
-      signup_date: new Date(),
+      userId: '123',
+      lastLogin: new Date(),
+      signupDate: new Date(),
     };
 
     await userMetadataModel.createUserMetadata(userMetadata);
@@ -36,7 +36,7 @@ describe('UserModel', () => {
       INSERT INTO "UserMetadata" (user_id, last_login, signup_date)
       VALUES ($1, $2, $3)
     `,
-      [userMetadata.user_id, userMetadata.last_login, userMetadata.signup_date]
+      [userMetadata.userId, userMetadata.lastLogin, userMetadata.signupDate]
     );
 
     expect(logger.info).toHaveBeenCalledWith('Creating user metadata...');
@@ -45,9 +45,9 @@ describe('UserModel', () => {
 
   test('createUserMetadata() should log an error and throw if db.query() fails', async () => {
     const userMetadata: UserMetadata = {
-      user_id: '123',
-      last_login: new Date(),
-      signup_date: new Date(),
+      userId: '123',
+      lastLogin: new Date(),
+      signupDate: new Date(),
     };
 
     const dbError = new Error('Database connection failed');

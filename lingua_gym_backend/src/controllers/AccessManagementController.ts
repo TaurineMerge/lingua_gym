@@ -10,7 +10,7 @@ class AccessManagementController {
       const { username, email, password } = req.body;
       const registrationService = container.resolve<RegistrationService>('RegistrationService');
       const user = await registrationService.register(username, email, password);
-      logger.info({ userId: user.user_id }, 'User registered successfully');
+      logger.info({ userId: user.userId }, 'User registered successfully');
       res.status(201).json({ message: 'User registered', user });
     } catch (error) {
       logger.error({ error }, 'User registration failed');

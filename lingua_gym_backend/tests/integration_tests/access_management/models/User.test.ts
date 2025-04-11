@@ -1,13 +1,19 @@
-import Database from '../../../../src/database/config/db-connection.js';
 import { UserModel } from '../../../../src/models/access_management/access_management.js';
 import { User } from '../../../../src/database/interfaces/DbInterfaces.js';
 import { v4 as uuidv4 } from 'uuid';
+import { clearDatabase, closeDatabase, setupTestModelContainer } from '../../../utils/di/TestContainer.js';
 
-const db = Database.getInstance();
-const userModel = new UserModel(db);
+let userModel: UserModel;
+
+beforeAll(async () => {
+  await clearDatabase();
+  const modelContainer = await setupTestModelContainer();
+  userModel = modelContainer.resolve(UserModel);
+});
 
 afterAll(async () => {
-  await db.close();
+  await clearDatabase();
+  await closeDatabase();
 });
 
 describe('UserModel Integration Tests', () => {
@@ -15,18 +21,18 @@ describe('UserModel Integration Tests', () => {
 
   beforeEach(() => {
     testUser = {
-      user_id: uuidv4(),
+      userId: uuidv4(),
       username: 'testuser',
-      display_name: 'Test User',
-      password_hash: 'hashedpassword',
+      displayName: 'Test User',
+      passwordHash: 'hashedpassword',
       email: 'test@example.com',
-      token_version: 1,
-      email_verified: false,
+      tokenVersion: 1,
+      emailVerified: false,
     };
   });
 
   afterEach(async () => {
-    await userModel.deleteUserById(testUser.user_id);
+    await clearDatabase();
   });
 
   test('should create a user', async () => {
@@ -35,9 +41,9 @@ describe('UserModel Integration Tests', () => {
 
   test('should retrieve a user by ID', async () => {
     await userModel.createUser(testUser);
-    const user = await userModel.getUserById(testUser.user_id);
+    const user = await userModel.getUserById(testUser.userId);
     expect(user).toMatchObject({
-      user_id: testUser.user_id,
+      userId: testUser.userId,
       username: testUser.username,
     });
   });
@@ -56,15 +62,15 @@ describe('UserModel Integration Tests', () => {
 
   test('should update a user', async () => {
     await userModel.createUser(testUser);
-    await userModel.updateUserById(testUser.user_id, { display_name: 'Updated Name' });
-    const updatedUser = await userModel.getUserById(testUser.user_id);
-    expect(updatedUser?.display_name).toBe('Updated Name');
+    await userModel.updateUserById(testUser.userId, { displayName: 'Updated Name' });
+    const updatedUser = await userModel.getUserById(testUser.userId);
+    expect(updatedUser?.displayName).toBe('Updated Name');
   });
 
   test('should delete a user', async () => {
     await userModel.createUser(testUser);
-    await userModel.deleteUserById(testUser.user_id);
-    const user = await userModel.getUserById(testUser.user_id);
+    await userModel.deleteUserById(testUser.userId);
+    const user = await userModel.getUserById(testUser.userId);
     expect(user).toBeNull();
   });
 });

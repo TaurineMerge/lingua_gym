@@ -1,6 +1,6 @@
 import DictionaryCardService from "./DictionaryCardService";
 import DictionarySetService from "./DictionarySetService";
-import SetCardsService from "./SetCardsService";
-import UserSetsService from "./UserSetsService";
+import SetCardService from "./SetCardService";
+import UserSetService from "./UserSetService";
 
-export { DictionaryCardService, DictionarySetService, SetCardsService, UserSetsService };
+export { DictionaryCardService, DictionarySetService, SetCardService, UserSetService };

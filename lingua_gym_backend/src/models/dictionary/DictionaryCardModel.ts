@@ -17,12 +17,11 @@ class DictionaryCardModel {
             await this.db.query('BEGIN');
 
             const cardResult = await this.db.query<DictionaryCard>(
-                `INSERT INTO "DictionaryCards" (dictionary_card_id, original, transcription, pronunciation)
-                 VALUES ($1, $2, $3, $4) RETURNING dictionary_card_id AS "dictionaryCardId"`,
-                [cardGeneralData.dictionaryCardId, cardGeneralData.original, cardGeneralData.transcription, cardGeneralData.pronunciation]
+                `INSERT INTO "DictionaryCard" (card_id, original, transcription, pronunciation)
+                 VALUES ($1, $2, $3, $4) RETURNING card_id AS "cardId"`,
+                [cardGeneralData.cardId, cardGeneralData.original, cardGeneralData.transcription, cardGeneralData.pronunciation]
             );
-
-            const cardId = cardResult.rows[0].dictionaryCardId;
+            const cardId = cardResult.rows[0].cardId;
             
             await this.insertTranslations(cardId, cardTranslations);
             await this.insertMeanings(cardId, cardMeanings);
@@ -38,21 +37,21 @@ class DictionaryCardModel {
     }
 
     private async insertTranslations(cardId: string, cardTranslations: Array<CardTranslation>): Promise<void> {
-        const query = `INSERT INTO "DictionaryTranslations" (dictionary_card_id, translation) VALUES ($1, $2)`;
+        const query = `INSERT INTO "DictionaryTranslation" (card_id, translation) VALUES ($1, $2)`;
         for (const translation of cardTranslations) {
             await this.db.query(query, [cardId, translation.translation]);
         }
     }
 
     private async insertMeanings(cardId: string, cardMeanings: Array<CardMeaning>): Promise<void> {
-        const query = `INSERT INTO "DictionaryMeanings" (dictionary_card_id, meaning) VALUES ($1, $2)`;
+        const query = `INSERT INTO "DictionaryMeaning" (card_id, meaning) VALUES ($1, $2)`;
         for (const meaning of cardMeanings) {
             await this.db.query(query, [cardId, meaning.meaning]);
         }
     }
 
     private async insertExamples(cardId: string, cardExamples: Array<CardExample>): Promise<void> {
-        const query = `INSERT INTO "DictionaryExamples" (dictionary_card_id, example) VALUES ($1, $2)`;
+        const query = `INSERT INTO "DictionaryExample" (card_id, example) VALUES ($1, $2)`;
         for (const example of cardExamples) {
             await this.db.query(query, [cardId, example.example]);
         }
@@ -62,12 +61,12 @@ class DictionaryCardModel {
         try {
             await this.db.query('BEGIN');
     
-            await this.db.query(`DELETE FROM "DictionaryTranslations" WHERE dictionary_card_id = $1`, [cardId]);
-            await this.db.query(`DELETE FROM "DictionaryMeanings" WHERE dictionary_card_id = $1`, [cardId]);
-            await this.db.query(`DELETE FROM "DictionaryExamples" WHERE dictionary_card_id = $1`, [cardId]);
-            await this.db.query(`DELETE FROM "CardTags" WHERE card_id = $1`, [cardId]);
+            await this.db.query(`DELETE FROM "DictionaryTranslation" WHERE card_id = $1`, [cardId]);
+            await this.db.query(`DELETE FROM "DictionaryMeaning" WHERE card_id = $1`, [cardId]);
+            await this.db.query(`DELETE FROM "DictionaryExample" WHERE card_id = $1`, [cardId]);
+            await this.db.query(`DELETE FROM "CardTag" WHERE card_id = $1`, [cardId]);
     
-            const result = await this.db.query(`DELETE FROM "DictionaryCards" WHERE dictionary_card_id = $1 RETURNING dictionary_card_id`, [cardId]);
+            const result = await this.db.query(`DELETE FROM "DictionaryCard" WHERE card_id = $1 RETURNING card_id`, [cardId]);
     
             await this.db.query('COMMIT');
     
@@ -104,7 +103,7 @@ class DictionaryCardModel {
                         .join(', ');
     
                     await this.db.query(
-                        `UPDATE "DictionaryCards" SET ${setClause} WHERE dictionary_card_id = $1`,
+                        `UPDATE "DictionaryCard" SET ${setClause} WHERE card_id = $1`,
                         [cardId, ...fieldsToUpdate.map(field => cardGeneralData[field])]
                     );
                 }
@@ -112,7 +111,7 @@ class DictionaryCardModel {
     
             if (cardTranslations) {
                 await this.db.query(
-                    `DELETE FROM "DictionaryTranslations" WHERE dictionary_card_id = $1`,
+                    `DELETE FROM "DictionaryTranslation" WHERE card_id = $1`,
                     [cardId]
                 );
                 await this.insertTranslations(cardId, cardTranslations);
@@ -120,7 +119,7 @@ class DictionaryCardModel {
 
             if (cardMeanings) {
                 await this.db.query(
-                    `DELETE FROM "DictionaryMeanings" WHERE dictionary_card_id = $1`,
+                    `DELETE FROM "DictionaryMeaning" WHERE card_id = $1`,
                     [cardId]
                 );
                 await this.insertMeanings(cardId, cardMeanings);
@@ -128,7 +127,7 @@ class DictionaryCardModel {
 
             if (cardExamples) {
                 await this.db.query(
-                    `DELETE FROM "DictionaryExamples" WHERE dictionary_card_id = $1`,
+                    `DELETE FROM "DictionaryExample" WHERE card_id = $1`,
                     [cardId]
                 );
                 await this.insertExamples(cardId, cardExamples);
@@ -144,10 +143,10 @@ class DictionaryCardModel {
     }
 
     async getCardById(cardId: string): Promise<DictionaryCard & { translation: string[], meaning: string[], example: string[] } | null> {
-        const cardQuery = `SELECT * FROM "DictionaryCards" WHERE dictionary_card_id = $1`;
-        const translationQuery = `SELECT translation FROM "DictionaryTranslations" WHERE dictionary_card_id = $1`;
-        const meaningQuery = `SELECT meaning FROM "DictionaryMeanings" WHERE dictionary_card_id = $1`;
-        const exampleQuery = `SELECT example FROM "DictionaryExamples" WHERE dictionary_card_id = $1`;
+        const cardQuery = `SELECT * FROM "DictionaryCard" WHERE card_id = $1`;
+        const translationQuery = `SELECT translation FROM "DictionaryTranslation" WHERE card_id = $1`;
+        const meaningQuery = `SELECT meaning FROM "DictionaryMeaning" WHERE card_id = $1`;
+        const exampleQuery = `SELECT example FROM "DictionaryExample" WHERE card_id = $1`;
         
         const cardResult = await this.db.query<DictionaryCard>(cardQuery, [cardId]);
         if (cardResult.rows.length === 0) return null;

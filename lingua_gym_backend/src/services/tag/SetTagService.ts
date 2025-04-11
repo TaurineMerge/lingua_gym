@@ -1,13 +1,14 @@
-import { SetTagsModel } from '../../../src/models/tag/tag.js';
+import { SetTagModel } from '../../../src/models/tag/tag.js';
+import { DictionarySet } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 import { injectable } from 'tsyringe';
 
 @injectable()
-class SetTagsService {
-    private setTagsModel: SetTagsModel;
+class SetTagService {
+    private setTagModel: SetTagModel;
 
-    constructor(model: SetTagsModel) {
-        this.setTagsModel = model;
+    constructor(model: SetTagModel) {
+        this.setTagModel = model;
     }
 
     async addTagToSet(setId: string, tagId: string): Promise<boolean> {
@@ -17,7 +18,7 @@ class SetTagsService {
         }
 
         try {
-            return await this.setTagsModel.addTagToSet(setId, tagId);
+            return await this.setTagModel.addTagToSet(setId, tagId);
         } catch (error) {
             logger.error({ error, setId, tagId }, 'Failed to add tag to set');
             return false;
@@ -31,21 +32,21 @@ class SetTagsService {
         }
 
         try {
-            return await this.setTagsModel.removeTagFromSet(setId, tagId);
+            return await this.setTagModel.removeTagFromSet(setId, tagId);
         } catch (error) {
             logger.error({ error, setId, tagId }, 'Failed to remove tag from set');
             return false;
         }
     }
 
-    async getTagsForSet(setId: string): Promise<string[]> {
+    async getTagsForSet(setId: string): Promise<DictionarySet[]> {
         if (!setId) {
             logger.warn('Set ID is required to get tags');
             return [];
         }
 
         try {
-            return await this.setTagsModel.getTagsForSet(setId);
+            return await this.setTagModel.getTagsForSet(setId);
         } catch (error) {
             logger.error({ error, setId }, 'Failed to get tags for set');
             return [];
@@ -53,4 +54,4 @@ class SetTagsService {
     }
 }
 
-export default SetTagsService;
+export default SetTagService;

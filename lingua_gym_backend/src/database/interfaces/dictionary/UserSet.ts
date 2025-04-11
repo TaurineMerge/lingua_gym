@@ -3,10 +3,11 @@ enum Permission {
     WRITE = 'write'
 }
 
-interface UserSets {
+interface UserSet {
     userId: string;
     setId: string;
     permission: Permission;
+    grantedAt?: Date;
 }
 
-export { Permission, UserSets };
+export { Permission, UserSet };

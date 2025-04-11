@@ -20,7 +20,7 @@ describe('DictionarySetService', () => {
     ownerId: 'owner-123',
     description: 'Test set description',
     isPublic: false,
-    createdAt: new Date(),
+    languageCode: 'en',
   };
 
   beforeEach(() => {

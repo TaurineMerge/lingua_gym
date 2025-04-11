@@ -6,10 +6,10 @@ import CardMeaning from './dictionary/CardMeaning.js';
 import CardTranslation from './dictionary/CardTranslation.js';
 import DictionaryCard from './dictionary/DictionaryCard.js';
 import DictionarySet from './dictionary/DictionarySet.js';
-import SetCards from './dictionary/SetCards.js';
-import { Permission, UserSets } from './dictionary/UserSets.js';
+import SetCard from './dictionary/SetCard.js';
+import { Permission, UserSet } from './dictionary/UserSet.js';
 import Tag from './tag/Tag.js';
 
 export { User, UserMetadata, UserPasswordReset };
-export { CardExample, CardMeaning, CardTranslation, DictionaryCard, DictionarySet, SetCards, UserSets, Permission };
+export { CardExample, CardMeaning, CardTranslation, DictionaryCard, DictionarySet, SetCard, UserSet, Permission };
 export { Tag };

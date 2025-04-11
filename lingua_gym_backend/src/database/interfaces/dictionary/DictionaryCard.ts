@@ -1,8 +1,9 @@
 interface DictionaryCard {
-    dictionaryCardId: string;
+    cardId: string;
     original: string;
     transcription: string | null;
     pronunciation: string;
+    createdAt?: Date
 }
 
 export default DictionaryCard;

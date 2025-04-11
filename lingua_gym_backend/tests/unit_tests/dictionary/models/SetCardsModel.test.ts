@@ -1,10 +1,10 @@
-import { SetCardsModel } from '../../../../src/models/dictionary/dictionary.js';
+import { SetCardModel } from '../../../../src/models/dictionary/dictionary.js';
 import Database from '../../../../src/database/config/db-connection.js';
 import { DictionaryCard } from '../../../../src/database/interfaces/DbInterfaces.js';
 
 describe('SetCardsModel', () => {
     let mockDb: jest.Mocked<Database>;
-    let setCardsModel: SetCardsModel;
+    let setCardModel: SetCardModel;
 
     let mockCards: Array<DictionaryCard>;
 
@@ -15,11 +15,11 @@ describe('SetCardsModel', () => {
             query: jest.fn(),
         } as unknown as jest.Mocked<Database>;
 
-        setCardsModel = new SetCardsModel(mockDb as unknown as Database);
+        setCardModel = new SetCardModel(mockDb as unknown as Database);
 
         mockCards = [
-            { dictionaryCardId: 'card1', original: 'test1', transcription: 'tɛst1', pronunciation: 'protocol://some/url.com' },
-            { dictionaryCardId: 'card2', original: 'test2', transcription: 'tɛst2', pronunciation: 'protocol://some/url.com' }
+            { cardId: 'card1', original: 'test1', transcription: 'tɛst1', pronunciation: 'protocol://some/url.com' },
+            { cardId: 'card2', original: 'test2', transcription: 'tɛst2', pronunciation: 'protocol://some/url.com' }
         ];
     });
 
@@ -27,7 +27,7 @@ describe('SetCardsModel', () => {
         const mockCard = mockCards[0];
         mockDb.query.mockResolvedValueOnce({ rows: [mockCard], rowCount: 1, command: 'INSERT', oid: 0, fields: [] });
 
-        const result = await setCardsModel.addCardToSet('set1', mockCard.dictionaryCardId);
+        const result = await setCardModel.addCardToSet('set1', mockCard.cardId);
         
         expect(result).toEqual(mockCard);
     });
@@ -35,7 +35,7 @@ describe('SetCardsModel', () => {
     test('addCardToSet - should throw an error on failure', async () => {
         mockDb.query.mockRejectedValueOnce(new Error('Database error'));
         
-        await expect(setCardsModel.addCardToSet('set1', 'card1')).rejects.toThrow('Database error');
+        await expect(setCardModel.addCardToSet('set1', 'card1')).rejects.toThrow('Database error');
         expect(mockDb.query).toHaveBeenCalled();
     });
 
@@ -43,7 +43,7 @@ describe('SetCardsModel', () => {
         const mockCard = mockCards[0];
         mockDb.query.mockResolvedValueOnce({ rows: [mockCard], rowCount: 1, command: 'INSERT', oid: 0, fields: [] });
 
-        const result = await setCardsModel.removeCardFromSet('set1', mockCard.dictionaryCardId);
+        const result = await setCardModel.removeCardFromSet('set1', mockCard.cardId);
         
         expect(result).toEqual(mockCard);
     });
@@ -51,7 +51,7 @@ describe('SetCardsModel', () => {
     test('removeCardFromSet - should return null if no card is removed', async () => {
         mockDb.query.mockResolvedValueOnce({ rows: [], rowCount: 0, command: 'INSERT', oid: 0, fields: [] });
         
-        const result = await setCardsModel.removeCardFromSet('set1', 'card1');
+        const result = await setCardModel.removeCardFromSet('set1', 'card1');
         
         expect(mockDb.query).toHaveBeenCalled();
         expect(result).toBeNull();
@@ -60,7 +60,7 @@ describe('SetCardsModel', () => {
     test('getCardsBySet - should fetch all cards for a given set', async () => {
         mockDb.query.mockResolvedValueOnce({ rows: mockCards, rowCount: 2, command: 'INSERT', oid: 0, fields: [] });
 
-        const result = await setCardsModel.getCardsBySet('set1');
+        const result = await setCardModel.getCardsBySet('set1');
         
         expect(result).toEqual(mockCards);
     });
@@ -68,7 +68,7 @@ describe('SetCardsModel', () => {
     test('getCardsBySet - should return null if no cards are found', async () => {
         mockDb.query.mockResolvedValueOnce({ rows: [], rowCount: 0, command: 'INSERT', oid: 0, fields: [] });
 
-        const result = await setCardsModel.getCardsBySet('set1');
+        const result = await setCardModel.getCardsBySet('set1');
         
         expect(mockDb.query).toHaveBeenCalled();
         expect(result).toBeNull();

@@ -4,7 +4,7 @@ import logger from '../../utils/logger/Logger.js';
 import { injectable } from 'tsyringe';
 
 @injectable()
-class CardTagsModel {
+class CardTagModel {
     private db;
 
     constructor(dbInstance: Database) {
@@ -12,7 +12,7 @@ class CardTagsModel {
     }
 
     async addTagToCard(cardId: string, tagId: string): Promise<boolean> {
-        const query = `INSERT INTO "CardTags" (card_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;
+        const query = `INSERT INTO "CardTag" (card_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING RETURNING card_id AS "cardId", tag_id AS "tagId";`;
         try {
             const result = await this.db.query(query, [cardId, tagId]);
             return result.rowCount! > 0;
@@ -23,7 +23,7 @@ class CardTagsModel {
     }
 
     async removeTagFromCard(cardId: string, tagId: string): Promise<boolean> {
-        const query = `DELETE FROM "CardTags" WHERE card_id = $1 AND tag_id = $2;`;
+        const query = `DELETE FROM "CardTag" WHERE card_id = $1 AND tag_id = $2 RETURNING card_id AS "cardId", tag_id AS "tagId";`;
         try {
             const result = await this.db.query(query, [cardId, tagId]);
             return result.rowCount! > 0;
@@ -34,7 +34,7 @@ class CardTagsModel {
     }
 
     async getTagsForCard(cardId: string): Promise<string[]> {
-        const query = `SELECT t.name FROM "Tags" t INNER JOIN "CardTags" ct ON t.tag_id = ct.tag_id WHERE ct.card_id = $1;`;
+        const query = `SELECT t.name FROM "Tag" t INNER JOIN "CardTag" ct ON t.tag_id = ct.tag_id WHERE ct.card_id = $1;`;
         try {
             const result = await this.db.query<{ name: string }>(query, [cardId]);
             return result.rows.map(row => row.name);
@@ -45,4 +45,4 @@ class CardTagsModel {
     }
 }
 
-export default CardTagsModel;
+export default CardTagModel;

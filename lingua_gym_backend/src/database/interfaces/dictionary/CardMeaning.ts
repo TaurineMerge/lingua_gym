@@ -1,6 +1,8 @@
 interface DictionaryMeaning {
-    dictionaryCardId: string;
+    dictionaryMeaningId: string;
+    cardId: string;
     meaning: string | null;
+    createdAt?: Date
 }
 
 export default DictionaryMeaning;

@@ -1,5 +1,5 @@
-import { SetCardsService } from '../../../../src/services/dictionary/dictionary.js';
-import { SetCardsModel } from '../../../../src/models/dictionary/dictionary.js';
+import { SetCardService } from '../../../../src/services/dictionary/dictionary.js';
+import { SetCardModel } from '../../../../src/models/dictionary/dictionary.js';
 import { DictionaryCard, SetCards } from '../../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../../../src/utils/logger/Logger.js';
 
@@ -9,8 +9,8 @@ jest.mock('../../../../src/utils/logger/Logger.js', () => ({
 }));
 
 describe('SetCardsService', () => {
-  let mockSetCardsModel: jest.Mocked<SetCardsModel>;
-  let service: SetCardsService;
+  let mockSetCardModel: jest.Mocked<SetCardModel>;
+  let service: SetCardService;
   
   const mockSetId = 'test-set-id-123';
   const mockCardId = 'test-card-id-456';
@@ -22,7 +22,7 @@ describe('SetCardsService', () => {
   
   const mockDictionaryCards: DictionaryCard[] = [
     {
-      dictionaryCardId: mockCardId,
+      cardId: mockCardId,
       original: 'test',
       transcription: 'tɛst',
       pronunciation: 'protocol://some/url.com'
@@ -30,31 +30,31 @@ describe('SetCardsService', () => {
   ];
 
   beforeEach(() => {
-    mockSetCardsModel = {
+    mockSetCardModel = {
       addCardToSet: jest.fn(),
       removeCardFromSet: jest.fn(),
       getCardsBySet: jest.fn(),
-    } as unknown as jest.Mocked<SetCardsModel>;
+    } as unknown as jest.Mocked<SetCardModel>;
     
-    service = new SetCardsService(mockSetCardsModel);
+    service = new SetCardService(mockSetCardModel);
     
     jest.clearAllMocks();
   });
 
   describe('addCardToSet', () => {
     test('should successfully add a card to a set and return the relation', async () => {
-      mockSetCardsModel.addCardToSet.mockResolvedValue(mockSetCards);
+      mockSetCardModel.addCardToSet.mockResolvedValue(mockSetCards);
       
       const result = await service.addCardToSet(mockSetId, mockCardId);
       
-      expect(mockSetCardsModel.addCardToSet).toHaveBeenCalledWith(mockSetId, mockCardId);
+      expect(mockSetCardModel.addCardToSet).toHaveBeenCalledWith(mockSetId, mockCardId);
       expect(result).toBe(mockSetCards);
     });
     
     test('should return false if setId is missing', async () => {
       const result = await service.addCardToSet('', mockCardId);
       
-      expect(mockSetCardsModel.addCardToSet).not.toHaveBeenCalled();
+      expect(mockSetCardModel.addCardToSet).not.toHaveBeenCalled();
       expect(logger.warn).toHaveBeenCalled();
       expect(result).toBe(false);
     });
@@ -62,45 +62,45 @@ describe('SetCardsService', () => {
     test('should return false if cardId is missing', async () => {
       const result = await service.addCardToSet(mockSetId, '');
       
-      expect(mockSetCardsModel.addCardToSet).not.toHaveBeenCalled();
+      expect(mockSetCardModel.addCardToSet).not.toHaveBeenCalled();
       expect(logger.warn).toHaveBeenCalled();
       expect(result).toBe(false);
     });
     
     test('should handle errors and return false when an exception occurs', async () => {
-      mockSetCardsModel.addCardToSet.mockRejectedValue(new Error('DB Error'));
+      mockSetCardModel.addCardToSet.mockRejectedValue(new Error('DB Error'));
       
       const result = await service.addCardToSet(mockSetId, mockCardId);
       
-      expect(mockSetCardsModel.addCardToSet).toHaveBeenCalled();
+      expect(mockSetCardModel.addCardToSet).toHaveBeenCalled();
       expect(logger.error).toHaveBeenCalled();
       expect(result).toBe(false);
     });
     
     test('should handle when model returns a boolean value', async () => {
-      mockSetCardsModel.addCardToSet.mockResolvedValue(mockSetCards);
+      mockSetCardModel.addCardToSet.mockResolvedValue(mockSetCards);
       
       const result = await service.addCardToSet(mockSetId, mockCardId);
       
-      expect(mockSetCardsModel.addCardToSet).toHaveBeenCalledWith(mockSetId, mockCardId);
+      expect(mockSetCardModel.addCardToSet).toHaveBeenCalledWith(mockSetId, mockCardId);
       expect(result).toBe(mockSetCards);
     });
   });
   
   describe('removeCardFromSet', () => {
     test('should successfully remove a card from a set and return the relation', async () => {
-      mockSetCardsModel.removeCardFromSet.mockResolvedValue(mockSetCards);
+      mockSetCardModel.removeCardFromSet.mockResolvedValue(mockSetCards);
       
       const result = await service.removeCardFromSet(mockSetId, mockCardId);
       
-      expect(mockSetCardsModel.removeCardFromSet).toHaveBeenCalledWith(mockSetId, mockCardId);
+      expect(mockSetCardModel.removeCardFromSet).toHaveBeenCalledWith(mockSetId, mockCardId);
       expect(result).toBe(mockSetCards);
     });
     
     test('should return false if setId is missing', async () => {
       const result = await service.removeCardFromSet('', mockCardId);
       
-      expect(mockSetCardsModel.removeCardFromSet).not.toHaveBeenCalled();
+      expect(mockSetCardModel.removeCardFromSet).not.toHaveBeenCalled();
       expect(logger.warn).toHaveBeenCalled();
       expect(result).toBe(false);
     });
@@ -108,55 +108,55 @@ describe('SetCardsService', () => {
     test('should return false if cardId is missing', async () => {
       const result = await service.removeCardFromSet(mockSetId, '');
       
-      expect(mockSetCardsModel.removeCardFromSet).not.toHaveBeenCalled();
+      expect(mockSetCardModel.removeCardFromSet).not.toHaveBeenCalled();
       expect(logger.warn).toHaveBeenCalled();
       expect(result).toBe(false);
     });
     
     test('should handle errors and return false when an exception occurs', async () => {
-      mockSetCardsModel.removeCardFromSet.mockRejectedValue(new Error('DB Error'));
+      mockSetCardModel.removeCardFromSet.mockRejectedValue(new Error('DB Error'));
       
       const result = await service.removeCardFromSet(mockSetId, mockCardId);
       
-      expect(mockSetCardsModel.removeCardFromSet).toHaveBeenCalled();
+      expect(mockSetCardModel.removeCardFromSet).toHaveBeenCalled();
       expect(logger.error).toHaveBeenCalled();
       expect(result).toBe(false);
     });
     
     test('should handle when model returns a boolean value', async () => {
-      mockSetCardsModel.removeCardFromSet.mockResolvedValue(mockSetCards);
+      mockSetCardModel.removeCardFromSet.mockResolvedValue(mockSetCards);
 
       const result = await service.removeCardFromSet(mockSetId, mockCardId);
       
-      expect(mockSetCardsModel.removeCardFromSet).toHaveBeenCalledWith(mockSetId, mockCardId);
+      expect(mockSetCardModel.removeCardFromSet).toHaveBeenCalledWith(mockSetId, mockCardId);
       expect(result).toBe(mockSetCards);
     });
   });
   
   describe('getCardsForSet', () => {
     test('should successfully retrieve cards for a set', async () => {
-      mockSetCardsModel.getCardsBySet.mockResolvedValue(mockDictionaryCards);
+      mockSetCardModel.getCardsBySet.mockResolvedValue(mockDictionaryCards);
       
       const result = await service.getCardsForSet(mockSetId);
       
-      expect(mockSetCardsModel.getCardsBySet).toHaveBeenCalledWith(mockSetId);
+      expect(mockSetCardModel.getCardsBySet).toHaveBeenCalledWith(mockSetId);
       expect(result).toEqual(mockDictionaryCards);
     });
     
     test('should return empty array if setId is not provided', async () => {
       const result = await service.getCardsForSet('');
       
-      expect(mockSetCardsModel.getCardsBySet).not.toHaveBeenCalled();
+      expect(mockSetCardModel.getCardsBySet).not.toHaveBeenCalled();
       expect(logger.warn).toHaveBeenCalled();
       expect(result).toEqual([]);
     });
     
     test('should handle errors and return empty array when an exception occurs', async () => {
-      mockSetCardsModel.getCardsBySet.mockRejectedValue(new Error('DB Error'));
+      mockSetCardModel.getCardsBySet.mockRejectedValue(new Error('DB Error'));
       
       const result = await service.getCardsForSet(mockSetId);
       
-      expect(mockSetCardsModel.getCardsBySet).toHaveBeenCalled();
+      expect(mockSetCardModel.getCardsBySet).toHaveBeenCalled();
       expect(logger.error).toHaveBeenCalled();
       expect(result).toEqual([]);
     });

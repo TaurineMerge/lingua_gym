@@ -15,7 +15,7 @@ describe('DictionaryCardService', () => {
   const mockCardId = 'test-card-id-123';
   
   const mockCard: DictionaryCard = {
-    dictionaryCardId: mockCardId,
+    cardId: mockCardId,
     original: 'test',
     transcription: 'tɛst',
     pronunciation: 'protocol://some/url.com'
@@ -23,22 +23,26 @@ describe('DictionaryCardService', () => {
   
   const mockTranslations: CardTranslation[] = [
     { 
-      dictionaryCardId: mockCardId,
-      translation: 'test'
+      cardId: mockCardId,
+      translationId: 'translation-123',
+      translation: 'test',
     }
   ];
   
   const mockMeanings: CardMeaning[] = [
     {
-      dictionaryCardId: mockCardId,
+      cardId: mockCardId,
+      dictionaryMeaningId: 'meaning-123',
       meaning: 'test'
     }
   ];
   
   const mockExamples: CardExample[] = [
     {
-      dictionaryCardId: mockCardId,
-      example: 'test'
+      cardId: mockCardId,
+      exampleId: 'example-123',
+      example: 'test',
+      translation: 'тест'
     }
   ];
 
@@ -78,7 +82,7 @@ describe('DictionaryCardService', () => {
   describe('getCardById', () => {
     test('should successfully retrieve card by ID', async () => {
       mockDictionaryCardModel.getCardById.mockResolvedValue({
-        dictionaryCardId: mockCard.dictionaryCardId,
+        cardId: mockCard.cardId,
         original: mockCard.original,
         transcription: mockCard.transcription,
         pronunciation: mockCard.pronunciation,
@@ -91,7 +95,7 @@ describe('DictionaryCardService', () => {
       
       expect(mockDictionaryCardModel.getCardById).toHaveBeenCalledWith(mockCardId);
       expect(result).toEqual({
-        dictionaryCardId: mockCard.dictionaryCardId,
+        cardId: mockCard.cardId,
         original: mockCard.original,
         transcription: mockCard.transcription,
         pronunciation: mockCard.pronunciation,

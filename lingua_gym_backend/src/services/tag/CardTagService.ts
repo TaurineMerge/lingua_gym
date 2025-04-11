@@ -1,12 +1,12 @@
-import { CardTagsModel } from '../../../src/models/tag/tag.js';
+import { CardTagModel } from '../../../src/models/tag/tag.js';
 import logger from '../../utils/logger/Logger.js';
 import { injectable } from 'tsyringe';
 
 @injectable()
-class CardTagsService {
-    private model: CardTagsModel;
+class CardTagService {
+    private model: CardTagModel;
 
-    constructor(model: CardTagsModel) {
+    constructor(model: CardTagModel) {
         this.model = model;
     }
 
@@ -53,4 +53,4 @@ class CardTagsService {
     }
 }
 
-export default CardTagsService;
+export default CardTagService;

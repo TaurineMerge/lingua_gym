@@ -15,9 +15,9 @@ class UserPasswordResetModel {
   async createResetEntry(reset: UserPasswordReset): Promise<void> {
     const query = 'INSERT INTO "UserPasswordReset" (user_id, password_reset_token, password_reset_token_expiration) VALUES ($1, $2, $3)';
     const values = [
-      reset.user_id,
-      reset.password_reset_token,
-      reset.password_reset_token_expiration,
+      reset.userId,
+      reset.passwordResetToken,
+      reset.passwordResetTokenExpiration,
     ];
     try {
       logger.info('Creating password reset entry...');
@@ -30,7 +30,13 @@ class UserPasswordResetModel {
   }
 
   async getByToken(password_reset_token: string): Promise<UserPasswordReset | null> {
-    const query = 'SELECT * FROM "UserPasswordReset" WHERE password_reset_token = $1';
+    const query = `
+    SELECT 
+      user_id as "userId",
+      password_reset_token as "passwordResetToken",
+      password_reset_token_expiration as "passwordResetTokenExpiration",
+      created_at as "createdAt"
+    FROM "UserPasswordReset" WHERE password_reset_token = $1`;
     try {
       logger.info('Fetching password reset entry by token...');
       const result = await this.db.query<UserPasswordReset>(query, [password_reset_token]);

@@ -11,9 +11,9 @@ const mockDb = {
 const userPasswordResetModel = new UserPasswordResetModel(mockDb);
 
 const mockResetEntry: UserPasswordReset = {
-  user_id: '123',
-  password_reset_token: 'reset-token',
-  password_reset_token_expiration: new Date(Date.now() + 3600000),
+  userId: '123',
+  passwordResetToken: 'reset-token',
+  passwordResetTokenExpiration: new Date(Date.now() + 3600000),
 };
 
 describe('UserPasswordResetModel', () => {
@@ -28,7 +28,7 @@ describe('UserPasswordResetModel', () => {
 
     expect(mockDb.query).toHaveBeenCalledWith(
       'INSERT INTO "UserPasswordReset" (user_id, password_reset_token, password_reset_token_expiration) VALUES ($1, $2, $3)',
-      [mockResetEntry.user_id, mockResetEntry.password_reset_token, mockResetEntry.password_reset_token_expiration]
+      [mockResetEntry.userId, mockResetEntry.passwordResetToken, mockResetEntry.passwordResetTokenExpiration]
     );
   });
 
@@ -41,9 +41,9 @@ describe('UserPasswordResetModel', () => {
       fields: [],
     });
 
-    const result = await userPasswordResetModel.getByToken(mockResetEntry.password_reset_token);
+    const result = await userPasswordResetModel.getByToken(mockResetEntry.passwordResetToken);
 
-    expect(mockDb.query).toHaveBeenCalledWith('SELECT * FROM "UserPasswordReset" WHERE password_reset_token = $1',[mockResetEntry.password_reset_token]);
+    expect(mockDb.query).toHaveBeenCalledWith('SELECT * FROM "UserPasswordReset" WHERE password_reset_token = $1',[mockResetEntry.passwordResetToken]);
     expect(result).toEqual(mockResetEntry);
   });
 
@@ -64,22 +64,22 @@ describe('UserPasswordResetModel', () => {
   test('invalidateToken() should delete the reset token', async () => {
     (mockDb.query as jest.Mock).mockResolvedValue({});
 
-    await userPasswordResetModel.invalidateToken(mockResetEntry.password_reset_token);
+    await userPasswordResetModel.invalidateToken(mockResetEntry.passwordResetToken);
 
     expect(mockDb.query).toHaveBeenCalledWith(
       'DELETE FROM "UserPasswordReset" WHERE password_reset_token = $1',
-      [mockResetEntry.password_reset_token]
+      [mockResetEntry.passwordResetToken]
     );
   });
 
   test('deleteRequestByUserId() should delete requests by user_id', async () => {
     (mockDb.query as jest.Mock).mockResolvedValue({});
 
-    await userPasswordResetModel.deleteRequestByUserId(mockResetEntry.user_id);
+    await userPasswordResetModel.deleteRequestByUserId(mockResetEntry.userId);
 
     expect(mockDb.query).toHaveBeenCalledWith(
       'DELETE FROM "UserPasswordReset" WHERE user_id = $1',
-      [mockResetEntry.user_id]
+      [mockResetEntry.userId]
     );
   });
 
