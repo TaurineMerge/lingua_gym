@@ -24,7 +24,11 @@ class TagModel {
     }
 
     async getTagById(tagId: string): Promise<Tag | null> {
-        const query = `SELECT * FROM "Tag" WHERE tag_id = $1;`;
+        const query = `
+        SELECT
+            tag_id AS "tagId",
+            name AS "name"
+        FROM "Tag" WHERE tag_id = $1;`;
         try {
             const result = await this.db.query<Tag>(query, [tagId]);
             return result.rows[0] || null;
@@ -35,7 +39,11 @@ class TagModel {
     }
 
     async getAllTags(): Promise<Array<Tag>> {
-        const query = `SELECT * FROM "Tag" ORDER BY name;`;
+        const query = `
+        SELECT
+            tag_id AS "tagId",
+            name
+        FROM "Tag";`;
         try {
             const result = await this.db.query<Tag>(query);
             return result.rows;
@@ -46,9 +54,9 @@ class TagModel {
     }
 
     async updateTag(tagId: string, name: string): Promise<boolean> {
-        const query = `UPDATE "Tag" SET name = $1, description = $2 WHERE tag_id = $3;`;
+        const query = `UPDATE "Tag" SET name = $1 WHERE tag_id = $2 RETURNING tag_id AS "tagId", name;`;
         try {
-            const result = await this.db.query(query, [tagId, name]);
+            const result = await this.db.query(query, [name, tagId]);
             return result.rowCount! > 0;
         } catch (error) {
             logger.error({ error, tagId }, 'Error updating tag');
@@ -57,7 +65,7 @@ class TagModel {
     }
 
     async deleteTag(tagId: string): Promise<boolean> {
-        const query = `DELETE FROM "Tags" WHERE tag_id = $1;`;
+        const query = `DELETE FROM "Tag" WHERE tag_id = $1 RETURNING tag_id AS "tagId", name;`;
         try {
             const result = await this.db.query(query, [tagId]);
             return result.rowCount! > 0;
