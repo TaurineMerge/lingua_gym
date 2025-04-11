@@ -6,8 +6,8 @@ class Database {
   private static instance: Database | null = null;
   private pool: pg.Pool;
 
-  private constructor() {
-    this.pool = new pg.Pool({
+  public constructor(pool?: pg.Pool) {
+    this.pool = pool || new pg.Pool({
       host: process.env.DB_HOST || 'localhost',
       port: parseInt(process.env.DB_PORT || '5432', 10),
       user: process.env.DB_USER || 'user',

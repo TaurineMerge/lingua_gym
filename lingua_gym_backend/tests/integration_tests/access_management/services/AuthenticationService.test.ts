@@ -1,61 +1,58 @@
-import Database from '../../../../src/database/config/db-connection.js';
-import AuthenticationService from '../../../../src/services/access_management/AuthenticationService.js';
-import UserModel from '../../../../src/models/access_management/UserModel.js';
-import TokenManagementService from '../../../../src/services/access_management/JwtTokenManagementService.js';
+import { AuthenticationService, RegistrationService } from '../../../../src/services/access_management/access_management.js';
+import { UserModel } from '../../../../src/models/access_management/access_management.js';
 import bcrypt from 'bcrypt';
-import { v4 as uuidv4 } from 'uuid';
+import { clearDatabase, closeDatabase, setupTestModelContainer, setupTestServiceContainer } from '../../../utils/di/TestContainer.js';
 
-const db = Database.getInstance();
-const userModel = new UserModel(db);
-const jwtTokenService = new TokenManagementService(userModel);
-const authService = new AuthenticationService(userModel, jwtTokenService);
+let userModel: UserModel;
+let authService: AuthenticationService;
+let registrationService: RegistrationService;
 
-const testUser = {
-  user_id: uuidv4(),
+const testUserData = {
+  userId: '',
   username: 'testuser',
   email: 'test@example.com',
   password: 'password123',
-  password_hash: bcrypt.hashSync('password123', 10),
-  token_version: 0,
-  email_verified: true,
+  passwordHash: bcrypt.hashSync('password123', 10),
+  tokenVersion: 0,
+  emailVerified: true,
 };
 
-beforeEach(async () => {
-  await db.query('DELETE FROM "UserMetadata"');
-  await db.query('DELETE FROM "User"');
-  await db.query(
-    `INSERT INTO "User" (user_id, username, email, password_hash, token_version, email_verified)
-     VALUES ($1, $2, $3, $4, $5, $6)`,
-    [testUser.user_id, testUser.username, testUser.email, testUser.password_hash, testUser.token_version, testUser.email_verified]
-  );
-});
+beforeAll(async () => {
+  await clearDatabase();
+  const modelContainer = await setupTestModelContainer();
+  userModel = modelContainer.resolve(UserModel);
+  const serviceContainer = await setupTestServiceContainer();
+  authService = serviceContainer.resolve(AuthenticationService);
+  registrationService = serviceContainer.resolve(RegistrationService);
+
+  testUserData.userId = (await registrationService.register(testUserData.username, testUserData.email, testUserData.password)).userId;
+})
 
 afterAll(async () => {
-  await db.query('DELETE FROM "UserMetadata"');
-  await db.query('DELETE FROM "User"');
-  await db.close();
+  await clearDatabase();
+  await closeDatabase();
 });
 
 describe('AuthenticationService (Integration)', () => {
-  it('should login with correct credentials', async () => {
-    const tokens = await authService.login(testUser.email, testUser.password);
+  test('should login with correct credentials', async () => {
+    const tokens = await authService.login(testUserData.email, testUserData.password);
 
     expect(tokens).toHaveProperty('accessToken');
     expect(tokens).toHaveProperty('refreshToken');
   });
 
-  it('should fail to login with incorrect password', async () => {
-    await expect(authService.login(testUser.email, 'wrongpassword')).rejects.toThrow('Invalid password');
+  test('should fail to login with incorrect password', async () => {
+    await expect(authService.login(testUserData.email, 'wrongpassword')).rejects.toThrow('Invalid password');
   });
 
-  it('should fail to login with non-existing email', async () => {
+  test('should fail to login with non-existing email', async () => {
     await expect(authService.login('nonexistent@example.com', 'password123')).rejects.toThrow('User not found');
   });
 
-  it('should invalidate refresh token on logout', async () => {
-    await authService.logout(testUser.user_id);
+  test('should invalidate refresh token on logout', async () => {
+    await authService.logout(testUserData.userId);
 
-    const updatedUser = await userModel.getUserById(testUser.user_id);
-    expect(updatedUser?.token_version).toBe(testUser.token_version + 1);
+    const updatedUser = await userModel.getUserById(testUserData.userId);
+    expect(updatedUser?.tokenVersion).toBe(testUserData.tokenVersion + 1);
   });
 });

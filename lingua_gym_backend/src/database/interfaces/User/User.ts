@@ -1,12 +1,14 @@
 interface User {
-  user_id: string;
+  userId: string;
   username: string;
-  display_name?: string;
-  password_hash: string;
+  displayName?: string;
+  passwordHash: string;
   email: string;
-  profile_picture?: string;
-  email_verified: boolean;
-  token_version: number;
+  profilePicture?: string;
+  emailVerified: boolean;
+  tokenVersion: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export default User;

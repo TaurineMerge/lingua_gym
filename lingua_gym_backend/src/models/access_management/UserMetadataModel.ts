@@ -1,7 +1,10 @@
+import 'reflect-metadata';
 import Database from '../../database/config/db-connection.js';
-import UserMetadata from '../../database/interfaces/User/UserMetadata.js';
+import { UserMetadata } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
+import { injectable } from 'tsyringe';
 
+@injectable()
 class UserMetadataModel {
   private db;
 
@@ -15,9 +18,9 @@ class UserMetadataModel {
       VALUES ($1, $2, $3)
     `;
     const values = [
-      userMetadata.user_id,
-      userMetadata.last_login,
-      userMetadata.signup_date
+      userMetadata.userId,
+      userMetadata.lastLogin,
+      userMetadata.signupDate
     ];
     try {
       logger.info('Creating user metadata...');
@@ -30,7 +33,13 @@ class UserMetadataModel {
   }
 
   async getUserMetadataById(user_id: string): Promise<UserMetadata | null> {
-    const query = `SELECT * FROM "UserMetadata" WHERE user_id = $1`;
+    const query = `
+    SELECT 
+      user_id as "userId", 
+      last_login as "lastLogin", 
+      signup_date as "signupDate" 
+    FROM "UserMetadata" 
+    WHERE user_id = $1`;
     try {
       const result = await this.db.query<UserMetadata>(query, [user_id]);
       return result.rows[0] || null;
@@ -42,7 +51,16 @@ class UserMetadataModel {
 
   async updateUserMetadataById(user_id: string, updates: Partial<UserMetadata>): Promise<void> {
     const fields = Object.keys(updates)
-      .map((key, index) => `"${key}" = $${index + 2}`)
+      .map((key, index) => { 
+        const keyMapping: Record<string, string> = {
+          lastLogin: 'last_login',
+          signupDate: 'signup_date'
+        };
+
+        key = keyMapping[key] || key;
+
+        return `"${key}" = $${index + 2}`
+    })
       .join(", ");
     const values = [user_id, ...Object.values(updates)];
     const query = `UPDATE "UserMetadata" SET ${fields} WHERE user_id = $1`;

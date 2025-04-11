@@ -1,7 +1,7 @@
 interface UserMetadata {
-  user_id: string;
-  last_login?: Date;
-  signup_date: Date;
+  userId: string;
+  lastLogin?: Date;
+  signupDate: Date;
 }
 
 export default UserMetadata;

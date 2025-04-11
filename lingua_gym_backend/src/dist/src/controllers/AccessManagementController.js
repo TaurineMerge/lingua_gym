@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import ServiceFactory from '../services/ServiceFactory.js';
+import container from '../di/Container.js';
 import logger from '../utils/logger/Logger.js';
 class AccessManagementController {
     static register(req, res) {
@@ -15,7 +15,8 @@ class AccessManagementController {
             try {
                 logger.info({ email: req.body.email }, 'User registration attempt');
                 const { username, email, password } = req.body;
-                const user = yield ServiceFactory.getRegistrationService().register(username, email, password);
+                const registrationService = container.resolve('RegistrationService');
+                const user = yield registrationService.register(username, email, password);
                 logger.info({ userId: user.user_id }, 'User registered successfully');
                 res.status(201).json({ message: 'User registered', user });
             }
@@ -30,7 +31,8 @@ class AccessManagementController {
             try {
                 const { email, password } = req.body;
                 logger.info({ email }, 'User login attempt');
-                const { accessToken, refreshToken } = yield ServiceFactory.getAuthenticationService().login(email, password);
+                const authenticationService = container.resolve('AuthenticationService');
+                const { accessToken, refreshToken } = yield authenticationService.login(email, password);
                 res.cookie('refreshToken', refreshToken, {
                     httpOnly: true,
                     secure: process.env.NODE_ENV === 'production',
@@ -49,12 +51,15 @@ class AccessManagementController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const userId = req.body.userId;
-                if (!userId) {
+                if (!userId)
                     throw new Error('Unauthorized');
-                }
                 logger.info({ userId }, 'User logout attempt');
-                yield ServiceFactory.getAuthenticationService().logout(userId);
-                res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+                const authenticationService = container.resolve('AuthenticationService');
+                yield authenticationService.logout(userId);
+                res.clearCookie('refreshToken', {
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                });
                 logger.info({ userId }, 'User logged out successfully');
                 res.json({ message: 'Logged out' });
             }
@@ -68,11 +73,11 @@ class AccessManagementController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const refreshToken = req.cookies.refreshToken;
-                if (!refreshToken) {
+                if (!refreshToken)
                     throw new Error('Refresh token missing');
-                }
                 logger.info({}, 'Refreshing access token');
-                const newTokens = yield ServiceFactory.getJwtTokenManagementService().refreshToken(refreshToken);
+                const jwtService = container.resolve('JwtTokenManagementService');
+                const newTokens = yield jwtService.refreshToken(refreshToken);
                 res.cookie('refreshToken', newTokens.refreshToken, {
                     httpOnly: true,
                     secure: process.env.NODE_ENV === 'production',
@@ -90,7 +95,8 @@ class AccessManagementController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 logger.info({ email: req.body.email }, 'Password reset request');
-                yield ServiceFactory.getPasswordResetService().requestPasswordReset(req.body.email);
+                const passwordResetService = container.resolve('PasswordResetService');
+                yield passwordResetService.requestPasswordReset(req.body.email);
                 res.json({ message: 'Password reset email sent' });
             }
             catch (error) {
@@ -103,7 +109,8 @@ class AccessManagementController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 logger.info({}, 'Resetting password');
-                yield ServiceFactory.getPasswordResetService().resetPassword(req.body.token, req.body.newPassword);
+                const passwordResetService = container.resolve('PasswordResetService');
+                yield passwordResetService.resetPassword(req.body.token, req.body.newPassword);
                 res.json({ message: 'Password reset successful' });
             }
             catch (error) {

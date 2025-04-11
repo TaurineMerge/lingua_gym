@@ -1,47 +1,54 @@
-import Database from '../../../../src/database/config/db-connection.js';
 import RegistrationService from '../../../../src/services/access_management/RegistrationService.js';
-import UserModel from '../../../../src/models/access_management/UserModel.js';
-import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel.js';
+import { UserModel, UserMetadataModel } from '../../../../src/models/access_management/access_management.js';
 import bcrypt from 'bcrypt';
+import { clearDatabase, closeDatabase, setupTestModelContainer, setupTestServiceContainer } from '../../../utils/di/TestContainer.js';
 
-const db = Database.getInstance();
-const userModel = new UserModel(db);
-const userMetadataModel = new UserMetadataModel(db);
-const registrationService = new RegistrationService(userModel, userMetadataModel);
+let userModel: UserModel;
+let userMetadataModel: UserMetadataModel;
+let registrationService: RegistrationService;
+
+beforeAll(async () => {
+  await clearDatabase();
+
+  const modelContainer = await setupTestModelContainer();
+  userModel = modelContainer.resolve(UserModel);
+
+  const serviceContainer = await setupTestServiceContainer(); 
+  userMetadataModel = serviceContainer.resolve(UserMetadataModel);
+  registrationService = serviceContainer.resolve(RegistrationService);
+});
 
 beforeEach(async () => {
-  await db.query('DELETE FROM "UserMetadata"');
-  await db.query('DELETE FROM "User"');
+  await clearDatabase();
 });
 
 afterAll(async () => {
-  await db.query('DELETE FROM "UserMetadata"');
-  await db.query('DELETE FROM "User"');
-  await db.close();
+  await clearDatabase();
+  await closeDatabase();
 });
 
 describe('RegistrationService (Integration)', () => {
-  it('should register a new user', async () => {
+  test('should register a new user', async () => {
     const password = 'password';
-    const user = {
+    const userData = {
       username: 'testuser',
-      display_name: null,
       email: 'test@example.com',
-      token_version: 0,
-      email_verified: false,
+      displayName: 'Test User',
+      tokenVersion: 0,
+      emailVerified: false
     }
 
-    await registrationService.register(user.username, user.email, password);
+    await registrationService.register(userData.username, userData.email, password, userData.displayName);
 
     const userResult = await userModel.getUserByEmail('test@example.com');
-    expect(userResult).toMatchObject({ ...user, password_hash: expect.any(String), user_id: expect.any(String) });
-    expect(bcrypt.compareSync(password, userResult?.password_hash == null ? expect.any(String) : userResult.password_hash)).toBe(true);
+    expect(userResult).toMatchObject({ ...userData, passwordHash: expect.any(String), userId: expect.any(String) });
+    expect(bcrypt.compareSync(password, userResult?.passwordHash == null ? expect.any(String) : userResult.passwordHash)).toBe(true);
 
-    const metadataResult = await userMetadataModel.getUserMetadataById(userResult?.user_id == null ? expect.any(String) : userResult.user_id);
-    expect(metadataResult).toMatchObject({ user_id: userResult?.user_id == null ? expect.any(String) : userResult.user_id, signup_date: expect.any(Date), last_login: null });
+    const metadataResult = await userMetadataModel.getUserMetadataById(userResult?.userId == null ? expect.any(String) : userResult.userId);
+    expect(metadataResult).toMatchObject({ userId: userResult?.userId == null ? expect.any(String) : userResult.userId, signupDate: expect.any(Date), lastLogin: null });
   });
 
-  it('should fail if email already exists', async () => {
+  test('should fail if email already exists', async () => {
     await registrationService.register('testuser', 'test@example.com', 'password123');
 
     await expect(registrationService.register('anotheruser', 'test@example.com', 'password456')).rejects.toThrow(
@@ -49,7 +56,7 @@ describe('RegistrationService (Integration)', () => {
     );
   });
 
-  it('should fail if username already exists', async () => {
+  test('should fail if username already exists', async () => {
     await registrationService.register('testuser', 'test@example.com', 'password123');
 
     await expect(registrationService.register('testuser', 'newemail@example.com', 'password456')).rejects.toThrow(
@@ -57,3 +64,4 @@ describe('RegistrationService (Integration)', () => {
     );
   });
 });
+

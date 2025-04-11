@@ -1,8 +1,10 @@
 import bcrypt from 'bcrypt';
-import UserModel from '../../models/access_management/UserModel.js';
+import { UserModel } from '../../models/access_management/access_management.js';
 import logger from '../../utils/logger/Logger.js';
 import TokenManagementService from './JwtTokenManagementService.js';
+import { injectable } from 'tsyringe';
 
+@injectable()
 class AuthenticationService {
   private userModel: UserModel;
   private jwtTokenService: TokenManagementService;
@@ -20,8 +22,8 @@ class AuthenticationService {
       logger.warn({ email }, 'Login failed: User not found');
       throw new Error('User not found');
     }
-
-    const isPasswordValid = this.verifyPassword(password, user.password_hash);
+    
+    const isPasswordValid = this.verifyPassword(password, user.passwordHash);
     if (!isPasswordValid) {
       logger.warn({ email }, 'Login failed: Invalid password');
       throw new Error('Invalid password');
@@ -30,7 +32,7 @@ class AuthenticationService {
     const accessToken = this.jwtTokenService.generateAccessToken(user);
     const refreshToken = this.jwtTokenService.generateRefreshToken(user);
 
-    logger.info({ userId: user.user_id }, 'User successfully logged in');
+    logger.info({ userId: user.userId }, 'User successfully logged in');
     return { accessToken, refreshToken };
   }
 

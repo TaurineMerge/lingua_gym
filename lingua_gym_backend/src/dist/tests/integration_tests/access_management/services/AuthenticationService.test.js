@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import Database from '../../../../src/database/config/db-connection.js';
 import AuthenticationService from '../../../../src/services/access_management/AuthenticationService.js';
-import UserModel from '../../../../src/models/access_management/UserModel.js';
+import { UserModel } from '../../../../src/models/access_management/access_management.js';
 import TokenManagementService from '../../../../src/services/access_management/JwtTokenManagementService.js';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';

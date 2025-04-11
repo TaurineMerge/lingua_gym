@@ -1,3 +1,4 @@
 node_modules/
 .env
 *.log
+lingua_gym_backend/tests/.env.test

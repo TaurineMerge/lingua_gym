@@ -1,10 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
-import UserModel from '../../models/access_management/UserModel.js';
-import UserMetadataModel from '../../models/access_management/UserMetadataModel.js';
+import { UserModel, UserMetadataModel } from '../../models/access_management/access_management.js';
 import hashPassword from '../../utils/hash/HashPassword.js';
 import logger from '../../utils/logger/Logger.js';
-import User from '../../database/interfaces/User/User.js';
+import { User } from '../../database/interfaces/DbInterfaces.js';
+import { injectable } from 'tsyringe';
 
+@injectable()
 class RegistrationService {
     private userModel: UserModel;
     private userMetadataModel: UserMetadataModel;
@@ -14,7 +15,7 @@ class RegistrationService {
       this.userMetadataModel = userMetadataModel;
     }
     
-    async register(username: string, email: string, password: string): Promise<User> {
+    async register(username: string, email: string, password: string, displayName?: string): Promise<User> {
       logger.info({ username, email }, 'User registration started');
 
       const existingEmail = await this.userModel.getUserByEmail(email);
@@ -31,22 +32,23 @@ class RegistrationService {
 
       const hashedPassword = hashPassword(password);
       const userId = uuidv4();
-    
+      
       const user: User = {
-        user_id: userId,
+        userId: userId,
         username,
+        displayName,
         email,
-        password_hash: hashedPassword,
-        token_version: 0,
-        email_verified: false
+        passwordHash: hashedPassword,
+        tokenVersion: 0,
+        emailVerified: false
       }
 
       await this.userModel.createUser(user);
     
       const signupDate = new Date();
       await this.userMetadataModel.createUserMetadata({
-        user_id: userId,
-        signup_date: signupDate,
+        userId: userId,
+        signupDate: signupDate,
       });
     
       logger.info({ userId, username, email }, 'User successfully registered');

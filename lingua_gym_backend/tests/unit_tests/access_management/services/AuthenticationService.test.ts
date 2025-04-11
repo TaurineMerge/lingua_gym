@@ -1,11 +1,11 @@
 import bcrypt from 'bcrypt';
 import AuthenticationService from '../../../../src/services/access_management/AuthenticationService.js';
-import UserModel from '../../../../src/models/access_management/UserModel.js';
+import { UserModel } from '../../../../src/models/access_management/access_management.js';
 import TokenManagementService from '../../../../src/services/access_management/JwtTokenManagementService.js';
 import Database from '../../../../src/database/config/db-connection.js';
 
-jest.mock('../../../../src/models/UserModel');
-jest.mock('../../../../src/services/access_management/JwtTokenManagementService');
+jest.mock('../../../../src/models/access_management/access_management.js');
+jest.mock('../../../../src/services/access_management/JwtTokenManagementService.js');
 
 const mockDbInstance = {} as Database;
 
@@ -25,14 +25,14 @@ describe('AuthenticationService', () => {
       const password = 'password';
       const passwordHashSalt = 10;
       const user = {
-        user_id: '123',
+        userId: '123',
         username: 'testUser',
-        display_name: 'Test User',
-        password_hash: bcrypt.hashSync(password, passwordHashSalt),
+        displayName: 'Test User',
+        passwordHash: bcrypt.hashSync(password, passwordHashSalt),
         email: 'test@example.com',
-        profile_picture: 'avatar.png',
-        email_verified: true,
-        token_version: 1,
+        profilePicture: 'avatar.png',
+        emailVerified: true,
+        tokenVersion: 1,
       };
     
       mockUserModel.getUserByEmail.mockResolvedValue(user);
@@ -63,14 +63,14 @@ describe('AuthenticationService', () => {
       const password = 'password';
       const passwordHashSalt = 10;
       const user = {
-        user_id: '123',
+        userId: '123',
         username: 'testUser',
-        display_name: 'Test User',
-        password_hash: bcrypt.hashSync(password, passwordHashSalt),
+        displayName: 'Test User',
+        passwordHash: bcrypt.hashSync(password, passwordHashSalt),
         email: 'test@example.com',
-        profile_picture: 'avatar.png',
-        email_verified: true,
-        token_version: 1,
+        profilePicture: 'avatar.png',
+        emailVerified: true,
+        tokenVersion: 1,
       };
 
       mockUserModel.getUserByEmail.mockResolvedValue(user);

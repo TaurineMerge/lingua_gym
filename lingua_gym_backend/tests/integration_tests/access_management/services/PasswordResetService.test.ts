@@ -1,30 +1,34 @@
 import PasswordResetService from '../../../../src/services/access_management/PasswordResetService.js';
-import UserModel from '../../../../src/models/access_management/UserModel.js';
-import UserPasswordResetModel from '../../../../src/models/access_management/UserPasswordResetModel.js';
-import Database from '../../../../src/database/config/db-connection.js';
 import 'dotenv/config';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import RegistrationService from '../../../../src/services/access_management/RegistrationService.js';
-import UserMetadataModel from '../../../../src/models/access_management/UserMetadataModel.js';
-import User from '../../../../src/database/interfaces/User/User.js';
+import { UserModel } from '../../../../src/models/access_management/access_management.js';
+import { User } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { clearDatabase, closeDatabase, setupTestModelContainer, setupTestServiceContainer } from '../../../utils/di/TestContainer.js';
 
-const db = Database.getInstance();
-const userModel = new UserModel(db);
-const userMetadataModel = new UserMetadataModel(db);
-const registrationService = new RegistrationService(userModel, userMetadataModel);
-const userPasswordResetModel = new UserPasswordResetModel(db);
-const passwordResetService = new PasswordResetService(userModel, userPasswordResetModel);
+let userModel: UserModel;
+let registrationService: RegistrationService;
+let passwordResetService: PasswordResetService;
+
+beforeAll(async () => {
+  await clearDatabase();
+  
+  const modelContainer = await setupTestModelContainer();
+  userModel = modelContainer.resolve(UserModel);
+
+  const serviceContainer = await setupTestServiceContainer();
+  registrationService = serviceContainer.resolve(RegistrationService);
+  passwordResetService = serviceContainer.resolve(PasswordResetService);
+});
 
 describe('PasswordResetService Integration Tests', () => {
   let testUser: User;
   let resetToken: string;
 
   beforeEach(async () => {
-    await db.query('DELETE FROM "User"');
-    await db.query('DELETE FROM "UserPasswordReset"');
-    await db.query('DELETE FROM "UserMetadata"');
+    await clearDatabase();
 
     const email = `test_${uuidv4()}@example.com`;
     const password = await bcrypt.hash('password123', 10);
@@ -33,7 +37,8 @@ describe('PasswordResetService Integration Tests', () => {
   });
 
   afterAll(async () => {
-    await db.close();
+    await clearDatabase();
+    await closeDatabase();
   });
 
   test('should generate a reset token and save it to the database', async () => {
@@ -47,11 +52,10 @@ describe('PasswordResetService Integration Tests', () => {
     resetToken = await passwordResetService.requestPasswordReset(testUser.email);
     await passwordResetService.resetPassword(resetToken, newPassword);
     
-    const userResult = await userModel.getUserById(testUser.user_id);
-    console.log(newPassword);
-    console.log(userResult?.password_hash);
-    expect(userResult!.token_version).toBe(testUser.token_version + 1);
-    expect(await bcrypt.compare(newPassword, userResult!.password_hash)).toBe(true);
+    const userResult = await userModel.getUserById(testUser.userId);
+  
+    expect(userResult!.tokenVersion).toBe(testUser.tokenVersion + 1);
+    expect(await bcrypt.compare(newPassword, userResult!.passwordHash)).toBe(true);
   });
 
   test('should fail for invalid reset token', async () => {
@@ -61,7 +65,7 @@ describe('PasswordResetService Integration Tests', () => {
 
   test('should fail for expired reset token', async () => {
     const expiredToken = jwt.sign(
-      { userId: testUser.user_id, tokenVersion: testUser.token_version },
+      { userId: testUser.userId, tokenVersion: testUser.tokenVersion },
       process.env.RESET_TOKEN_SECRET || 'SECRET',
       { expiresIn: '-1s' }
     );

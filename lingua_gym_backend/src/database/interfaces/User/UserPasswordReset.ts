@@ -1,7 +1,8 @@
 interface UserPasswordReset {
-  user_id: string;
-  password_reset_token: string;
-  password_reset_token_expiration: Date;
+  userId: string;
+  passwordResetToken: string;
+  passwordResetTokenExpiration: Date;
+  created_at?: Date;
 }
 
 export default UserPasswordReset;

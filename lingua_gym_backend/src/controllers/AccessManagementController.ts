@@ -1,14 +1,16 @@
 import { Request, Response } from 'express';
-import ServiceFactory from '../services/ServiceFactory.js';
+import container from '../di/Container.js';
 import logger from '../utils/logger/Logger.js';
+import { RegistrationService, AuthenticationService, JwtTokenManagementService, PasswordResetService } from '../services/access_management/access_management.js';
 
 class AccessManagementController {
   static async register(req: Request, res: Response): Promise<void> {
     try {
       logger.info({ email: req.body.email }, 'User registration attempt');
       const { username, email, password } = req.body;
-      const user = await ServiceFactory.getRegistrationService().register(username, email, password);
-      logger.info({ userId: user.user_id }, 'User registered successfully');
+      const registrationService = container.resolve<RegistrationService>('RegistrationService');
+      const user = await registrationService.register(username, email, password);
+      logger.info({ userId: user.userId }, 'User registered successfully');
       res.status(201).json({ message: 'User registered', user });
     } catch (error) {
       logger.error({ error }, 'User registration failed');
@@ -20,9 +22,9 @@ class AccessManagementController {
     try {
       const { email, password } = req.body;
       logger.info({ email }, 'User login attempt');
-      
-      const { accessToken, refreshToken } = await ServiceFactory.getAuthenticationService().login(email, password);
-      
+      const authenticationService = container.resolve<AuthenticationService>('AuthenticationService');
+      const { accessToken, refreshToken } = await authenticationService.login(email, password);
+
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -40,14 +42,16 @@ class AccessManagementController {
   static async logout(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.body.userId;
-      if (!userId) {
-        throw new Error('Unauthorized');
-      }
+      if (!userId) throw new Error('Unauthorized');
 
       logger.info({ userId }, 'User logout attempt');
-      await ServiceFactory.getAuthenticationService().logout(userId);
-      
-      res.clearCookie('refreshToken', { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+      const authenticationService = container.resolve<AuthenticationService>('AuthenticationService');
+      await authenticationService.logout(userId);
+
+      res.clearCookie('refreshToken', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+      });
       logger.info({ userId }, 'User logged out successfully');
       res.json({ message: 'Logged out' });
     } catch (error) {
@@ -59,13 +63,12 @@ class AccessManagementController {
   static async refreshToken(req: Request, res: Response): Promise<void> {
     try {
       const refreshToken = req.cookies.refreshToken;
-      if (!refreshToken) {
-        throw new Error('Refresh token missing');
-      }
+      if (!refreshToken) throw new Error('Refresh token missing');
 
       logger.info({}, 'Refreshing access token');
-      const newTokens = await ServiceFactory.getJwtTokenManagementService().refreshToken(refreshToken);
-      
+      const jwtService = container.resolve<JwtTokenManagementService>('JwtTokenManagementService');
+      const newTokens = await jwtService.refreshToken(refreshToken);
+
       res.cookie('refreshToken', newTokens.refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -82,7 +85,8 @@ class AccessManagementController {
   static async requestPasswordReset(req: Request, res: Response): Promise<void> {
     try {
       logger.info({ email: req.body.email }, 'Password reset request');
-      await ServiceFactory.getPasswordResetService().requestPasswordReset(req.body.email);
+      const passwordResetService = container.resolve<PasswordResetService>('PasswordResetService');
+      await passwordResetService.requestPasswordReset(req.body.email);
       res.json({ message: 'Password reset email sent' });
     } catch (error) {
       logger.error({ error }, 'Password reset request failed');
@@ -93,7 +97,8 @@ class AccessManagementController {
   static async resetPassword(req: Request, res: Response): Promise<void> {
     try {
       logger.info({}, 'Resetting password');
-      await ServiceFactory.getPasswordResetService().resetPassword(req.body.token, req.body.newPassword);
+      const passwordResetService = container.resolve<PasswordResetService>('PasswordResetService');
+      await passwordResetService.resetPassword(req.body.token, req.body.newPassword);
       res.json({ message: 'Password reset successful' });
     } catch (error) {
       logger.error({ error }, 'Password reset failed');

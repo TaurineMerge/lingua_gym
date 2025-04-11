@@ -1,12 +1,13 @@
-import UserPasswordResetModel from '../../models/access_management/UserPasswordResetModel.js';
-import UserModel from '../../models/access_management/UserModel.js';
-import User from '../../database/interfaces/User/User.js';
+import { UserPasswordResetModel, UserModel } from '../../models/access_management/access_management.js'; 
+import { User } from '../../database/interfaces/DbInterfaces.js';
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import hashPassword from '../../utils/hash/HashPassword.js';
 import logger from '../../utils/logger/Logger.js';
 import 'dotenv/config';
+import { injectable } from 'tsyringe';
 
+@injectable()
 class PasswordResetService {
   private userModel: UserModel;
   private userPasswordResetModel: UserPasswordResetModel;
@@ -51,13 +52,13 @@ class PasswordResetService {
     const resetToken = this.generateResetToken(user);
 
     await this.userPasswordResetModel.createResetEntry({
-      user_id: user.user_id,
-      password_reset_token: resetToken,
-      password_reset_token_expiration: new Date(Date.now() + this.parseExpiry(this.tokenExpiry)),
+      userId: user.userId,
+      passwordResetToken: resetToken,
+      passwordResetTokenExpiration: new Date(Date.now() + this.parseExpiry(this.tokenExpiry)),
     });
 
     await this.sendResetEmail(email, resetToken);
-    logger.info(`Password reset token generated for user: ${user.user_id}`);
+    logger.info(`Password reset token generated for user: ${user.userId}`);
 
     return resetToken;
   }
@@ -67,14 +68,14 @@ class PasswordResetService {
     const payload = this.verifyResetToken(resetToken);
     const resetEntry = await this.userPasswordResetModel.getByToken(resetToken);
 
-    if (!resetEntry || resetEntry.password_reset_token_expiration < new Date()) {
+    if (!resetEntry || resetEntry.passwordResetTokenExpiration < new Date()) {
       logger.warn(`Invalid or expired reset token: ${resetToken}`);
       throw new Error('Invalid or expired reset token');
     }
 
     await this.userModel.updateUserById(payload.userId, {
-      password_hash: hashPassword(newPassword),
-      token_version: (payload.tokenVersion || 0) + 1,
+      passwordHash: hashPassword(newPassword),
+      tokenVersion: (payload.tokenVersion || 0) + 1,
     });
 
     await this.userPasswordResetModel.invalidateToken(resetToken);
@@ -82,9 +83,9 @@ class PasswordResetService {
   }
 
   private generateResetToken(user: User): string {
-    logger.info(`Generating password reset token for user: ${user.user_id}`);
+    logger.info(`Generating password reset token for user: ${user.userId}`);
     return jwt.sign(
-      { userId: user.user_id, tokenVersion: user.token_version },
+      { userId: user.userId, tokenVersion: user.tokenVersion },
       this.resetSecret,
       { expiresIn: this.tokenExpiry },
     );
