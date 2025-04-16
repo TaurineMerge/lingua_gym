@@ -1,0 +1,120 @@
+import { Box, Typography, IconButton, SliderProps } from '@mui/material';
+import { Card } from './components';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
+import Slider from 'react-slick';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+
+const dummyData = new Array(10).fill(null).map((_, idx) => ({
+  title: `Title ${idx + 1}`,
+  description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. ',
+  username: 'UserName',
+  tags: ['tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6', 'tag7', 'tag8'],
+  language: 'Eng',
+}));
+
+const SampleNextArrow = ({ onClick, currentSlide, slideCount }: SliderProps & { slideCount?: number, currentSlide?: number }) => {
+  return (
+    <IconButton
+      onClick={onClick}
+      disabled={currentSlide === (slideCount || 0) - 1}
+      sx={{
+        position: 'absolute',
+        right: '-40px',
+        top: '50%',
+        transform: 'translateY(-50%)',
+        zIndex: 1,
+        color: '#E5E5E7',
+        '&:hover': {
+          backgroundColor: 'rgba(255, 255, 255, 0.08)',
+        },
+        '&:disabled': {
+          opacity: 0.3,
+          cursor: 'not-allowed'
+        }
+      }}
+    >
+      <ArrowForwardIosIcon />
+    </IconButton>
+  );
+};
+
+const SamplePrevArrow = ({ onClick, currentSlide }: SliderProps & { slideCount?: number, currentSlide?: number }) => {
+  return (
+    <IconButton
+      onClick={onClick}
+      disabled={currentSlide === 0}
+      sx={{
+        position: 'absolute',
+        left: '-40px',
+        top: '50%',
+        transform: 'translateY(-50%)',
+        zIndex: 1,
+        color: '#E5E5E7',
+        '&:hover': {
+          backgroundColor: 'rgba(255, 255, 255, 0.08)',
+        },
+        '&:disabled': {
+          opacity: 0.3,
+          cursor: 'not-allowed'
+        }
+      }}
+    >
+      <ArrowBackIosNewIcon />
+    </IconButton>
+  );
+};
+
+const settings = {
+  dots: false,
+  infinite: false,
+  speed: 500,
+  slidesToShow: 4,
+  slidesToScroll: 3,
+  nextArrow: <SampleNextArrow />,
+  prevArrow: <SamplePrevArrow />,
+  responsive: [
+    {
+      breakpoint: 1024,
+      settings: {
+        slidesToShow: 2,
+        slidesToScroll: 1,
+        nextArrow: <SampleNextArrow />,
+        prevArrow: <SamplePrevArrow />,
+      },
+    },
+    {
+      breakpoint: 600,
+      settings: {
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        nextArrow: <SampleNextArrow />,
+        prevArrow: <SamplePrevArrow />,
+      },
+    },
+  ],
+};
+
+const Carousel = () => {
+  return (
+    <>
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Typography variant="h6" color="#E5E5E7">Recommended</Typography>
+        <Typography variant="body2" color="primary" sx={{ cursor: 'pointer', padding: '4px', transition: 'all 0.3s ease', "&:hover": { backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '4px' } }}>
+          View all
+        </Typography>
+      </Box>
+
+      <Box position="relative">
+        <Slider {...settings}>
+          {dummyData.map((item, idx) => (
+            <Card key={idx} {...item} />
+          ))}
+        </Slider>
+      </Box>
+    </>
+  );
+};
+
+export default Carousel;
