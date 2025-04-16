@@ -1,7 +1,7 @@
-import AppRoutes from './routes/index.tsx';
 import { Box } from '@mui/material';
 import TopBar from './components/TopBar';
 import LetterOverlay from './components/LetterOverlay';
+import { Outlet } from 'react-router-dom';
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
       <LetterOverlay />
       <Box sx={{ position: 'relative', zIndex: 1, height: '100vh' }}>
         <TopBar />
-        <AppRoutes />
+        <Outlet />
       </Box>
     </Box>
   );

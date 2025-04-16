@@ -1,7 +1,7 @@
 import { Tabs, Tab } from '@mui/material';
 import { useState } from 'react';
 
-const TabComponent = () => {
+const TabComponent = ({ labels }: { labels: string[] }) => {
   const [value, setValue] = useState(0);
 
   return (
@@ -12,8 +12,8 @@ const TabComponent = () => {
       indicatorColor="primary"
       sx={{ mb: 2 }}
     >
-      <Tab label="Sets" />
-      <Tab label="Texts" />
+      <Tab label={ labels[0] } />
+      <Tab label={ labels[1] } />
     </Tabs>
   );
 };

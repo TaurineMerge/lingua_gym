@@ -1,12 +1,18 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import NewMaterials from '../pages/NewMaterialsPage';
+import App from '../App';
+import AuthPage from '../pages/AuthPage';
+import NewMaterialsPage from '../pages/NewMaterialsPage';
+import { createBrowserRouter } from 'react-router-dom';
 
-const AppRoutes = () => (
-  <BrowserRouter>
-    <Routes>
-      <Route path="/materials" element={<NewMaterials />} />
-    </Routes>
-  </BrowserRouter>
-);
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <App />,
+    children: [
+      { path: '/' },
+      { path: '/materials', element: <NewMaterialsPage  /> },
+      { path: '/auth', element: <AuthPage /> },
+    ],
+  },
+]);
 
-export default AppRoutes;
+export default router;

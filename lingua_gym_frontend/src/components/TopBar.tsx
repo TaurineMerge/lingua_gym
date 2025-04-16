@@ -1,6 +1,7 @@
 import { AppBar, Toolbar, Typography, Box, IconButton, Stack, Button } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import { Link } from 'react-router-dom';
 
 const TopBar = () => {
   return (
@@ -17,6 +18,8 @@ const TopBar = () => {
       <Toolbar disableGutters sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
         <Box display="flex" alignItems="center" justifyContent={'space-between'} width={'50%'}>
           <Typography
+            component={Link}
+            to="/"
             variant="h6"
             sx={{
               fontWeight: 700,
@@ -25,13 +28,13 @@ const TopBar = () => {
               cursor: 'pointer',
             }}
           >
-            LinguaGym
+              LinguaGym
           </Typography>
-          <Stack direction="row" spacing={{ xs: 0.25, sm: 0.5, md: 0.75, lg: 1 }}>
-            <Button sx={{ color: '#FFFFFF', fontSize: '1rem', textTransform: 'none' }}>
+          <Stack  direction="row" spacing={{ xs: 0.25, sm: 0.5, md: 0.75, lg: 1 }}>
+            <Button component={Link} to={'/library'} sx={{ color: '#FFFFFF', fontSize: '1rem', textTransform: 'none' }}>
               My Library
             </Button>
-            <Button sx={{ color: '#FFFFFF', fontSize: '1rem', textTransform: 'none' }}>
+            <Button component={Link} to={'/materials'} sx={{ color: '#FFFFFF', fontSize: '1rem', textTransform: 'none' }}>
               New Materials
             </Button>
           </Stack>

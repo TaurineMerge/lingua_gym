@@ -21,7 +21,7 @@ const MaterialsPage = () => {
         <SearchBar />
       </Box>
       <Box mt={2}>
-        <Tab />
+        <Tab labels={['Sets', 'Texts']} />
       </Box>
       <Box mt={2}>
         <Carousel />
