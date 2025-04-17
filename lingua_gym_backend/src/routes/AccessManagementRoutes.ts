@@ -10,5 +10,7 @@ router.post('/logout', validateAccessToken as express.RequestHandler, AuthContro
 router.post('/refresh-token', validateRefreshToken as express.RequestHandler, AuthController.refreshToken);
 router.post('/request-password-reset', AuthController.requestPasswordReset);
 router.post('/reset-password', AuthController.resetPassword);
+router.post('/check-email-exists', AuthController.checkIfEmailExists);
+router.post('/check-username-exists', AuthController.checkIfUsernameExists);
 
 export default router;
