@@ -1,6 +1,6 @@
-import Card from './Card';
-import SearchBar from './SearchBar';
-import Tab from './Tab';
-import Carousel from './Carousel';
+import CarouselCard from './materials/CarouselCard';
+import SearchBar from './materials/SearchBar';
+import Tab from './main/Tab';
+import Carousel from './materials/Carousel';
 
-export { Card, SearchBar, Tab, Carousel };
+export { CarouselCard, SearchBar, Tab, Carousel };

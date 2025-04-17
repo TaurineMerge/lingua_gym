@@ -1,5 +1,5 @@
 import { Box, Typography, IconButton, SliderProps } from '@mui/material';
-import { Card } from './components';
+import { CarouselCard } from '../components';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import Slider from 'react-slick';
@@ -109,7 +109,7 @@ const Carousel = () => {
       <Box position="relative">
         <Slider {...settings}>
           {dummyData.map((item, idx) => (
-            <Card key={idx} {...item} />
+            <CarouselCard key={idx} {...item} />
           ))}
         </Slider>
       </Box>

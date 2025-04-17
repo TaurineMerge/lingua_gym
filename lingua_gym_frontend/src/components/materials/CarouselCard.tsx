@@ -3,7 +3,7 @@ import {
     useTheme,
   } from '@mui/material';
   import ArticleIcon from '@mui/icons-material/Article';
-  import { MaterialsCardProps } from '../types/NewMaterials';
+  import { MaterialsCardProps } from '../../types/NewMaterials';
   
   const CardComponent = ({ title, description, username, tags, language }: MaterialsCardProps) => {
     const theme = useTheme();
@@ -25,8 +25,11 @@ import {
           <Button variant="contained">View</Button>
           <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box display="flex" flexWrap="wrap" gap={0.5} width="80%">
-            {tags.map((tag, index) => {
-              const typographyStyle = {
+          {tags.slice(0, 2).map((tag, index) => (
+            <Typography
+              key={`tag-${index}`}
+              variant="caption"
+              sx={{
                 backgroundColor: '#1C1C1C',
                 color: '#fff',
                 borderRadius: '12px',
@@ -34,44 +37,46 @@ import {
                 py: 0.5,
                 fontSize: '0.75rem',
                 whiteSpace: 'nowrap',
-              }
-
-              if (index == 2) return (
-                <>
-                  <Typography
-                    key={index}
-                    variant="caption"
-                    sx={{
-                      ...typographyStyle
-                    }}
-                  >
-                    ...
-                  </Typography>
-                  <Typography
-                    key={index}
-                    variant="caption"
-                    sx={{
-                      ...typographyStyle
-                    }}
-                  >
-                    +{tags.length - 2}
-                  </Typography>
-                </>
-              );
-              if (index > 2) return null;
-              return (
-                <Typography
-                  key={index}
-                  variant="caption"
-                  sx={{
-                    ...typographyStyle
-                  }}
-                >
-                  #{tag}
-                </Typography>
-              );
-            })}
-          </Box>
+              }}
+            >
+              #{tag}
+            </Typography>
+          ))}
+          {tags.length > 2 && (
+            <>
+              <Typography
+                key="ellipsis"
+                variant="caption"
+                sx={{
+                  backgroundColor: '#1C1C1C',
+                  color: '#fff',
+                  borderRadius: '12px',
+                  px: 1,
+                  py: 0.5,
+                  fontSize: '0.75rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                ...
+              </Typography>
+              <Typography
+                key="remaining-count"
+                variant="caption"
+                sx={{
+                  backgroundColor: '#1C1C1C',
+                  color: '#fff',
+                  borderRadius: '12px',
+                  px: 1,
+                  py: 0.5,
+                  fontSize: '0.75rem',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                +{tags.length - 2}
+              </Typography>
+            </>
+          )}
+        </Box>
 
           <Typography variant="caption" sx={{ color: theme.palette.text.secondary }}>
             {language}

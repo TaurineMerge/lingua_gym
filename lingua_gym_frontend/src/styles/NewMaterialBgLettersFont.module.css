@@ -1,6 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Martian+Mono:wght@100..800&display=swap');
 
-.new_material_bg_letters_font {
+.new_materialBgLettersFont {
     font-family: 'Pacifico', cursive;
 }
 
+.hideOnSmall {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .hideOnSmall {
+        display: block;
+    }
+}

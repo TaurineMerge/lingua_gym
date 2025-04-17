@@ -12,9 +12,9 @@ const root = ReactDOM.createRoot(
 
 root.render(
     <React.StrictMode>
-            <ThemeProvider theme={theme}>
-                <CssBaseline />
-                <RouterProvider router={routes} />
-            </ThemeProvider>
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <RouterProvider router={routes} />
+        </ThemeProvider>
     </React.StrictMode>
 );

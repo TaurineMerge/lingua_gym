@@ -1,5 +1,5 @@
 import App from '../App';
-import AuthPage from '../pages/AuthPage';
+import { AuthPage } from '../pages/AuthPage';
 import NewMaterialsPage from '../pages/NewMaterialsPage';
 import { createBrowserRouter } from 'react-router-dom';
 

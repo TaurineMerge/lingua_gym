@@ -12,7 +12,6 @@ const TopBar = () => {
         backgroundColor: 'transparent',
         boxShadow: 'none',
         padding: '1rem 2rem',
-        borderBottom: '1px solid #444',
       }}
     >
       <Toolbar disableGutters sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
@@ -26,6 +25,7 @@ const TopBar = () => {
               color: '#0A84FF',
               fontSize: '2rem',
               cursor: 'pointer',
+              textDecoration: 'none',
             }}
           >
               LinguaGym
