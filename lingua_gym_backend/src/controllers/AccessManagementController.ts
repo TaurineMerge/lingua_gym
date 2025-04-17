@@ -105,6 +105,28 @@ class AccessManagementController {
       res.status(400).json({ error: (error as Error).message });
     }
   }
+
+  static async checkIfEmailExists(req: Request, res: Response): Promise<void> {
+    try {
+      const registrationService = container.resolve<RegistrationService>('AuthenticationService');
+      const exists = await registrationService.checkIfEmailExists(req.params.email);
+      res.json({ exists });
+    } catch (error) {
+      logger.error({ error }, 'Checking if email exists failed');
+      res.status(400).json({ error: (error as Error).message });
+    }
+  }
+
+  static async checkIfUsernameExists(req: Request, res: Response): Promise<void> {
+    try {
+      const registrationService = container.resolve<RegistrationService>('RegistrationService');
+      const exists = await registrationService.checkIfUsernameExists(req.params.username);
+      res.json({ exists });
+    } catch (error) {
+      logger.error({ error }, 'Checking if username exists failed');
+      res.status(400).json({ error: (error as Error).message });
+    }
+  }
 }
 
 export default AccessManagementController;

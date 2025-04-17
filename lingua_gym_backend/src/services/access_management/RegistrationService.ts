@@ -4,6 +4,7 @@ import hashPassword from '../../utils/hash/HashPassword.js';
 import logger from '../../utils/logger/Logger.js';
 import { User } from '../../database/interfaces/DbInterfaces.js';
 import { injectable } from 'tsyringe';
+import { validateEmail, validateUsername, validatePassword } from '../../utils/validators/validators.js';
 
 @injectable()
 class RegistrationService {
@@ -18,16 +19,17 @@ class RegistrationService {
     async register(username: string, email: string, password: string, displayName?: string): Promise<User> {
       logger.info({ username, email }, 'User registration started');
 
-      const existingEmail = await this.userModel.getUserByEmail(email);
-      if (existingEmail) {
-        logger.warn({ email }, 'Registration failed: Email already exists');
-        throw new Error('Email already exists');
+      try {
+        await this.checkIfEmailExists(email);
+        await this.checkIfUsernameExists(username);
+      } catch (error) {
+        logger.error({ error }, 'Registration failed: Email or username already exists');
+        throw error;
       }
 
-      const existingUsername = await this.userModel.getUserByUsername(username);
-      if (existingUsername) {
-        logger.warn({ username }, 'Registration failed: Username already exists');
-        throw new Error('Username already exists');
+      if (!validatePassword(password)) {
+        logger.warn({ password }, 'Registration failed: Password does not meet requirements');
+        throw new Error('Password does not meet requirements');
       }
 
       const hashedPassword = hashPassword(password);
@@ -53,6 +55,42 @@ class RegistrationService {
     
       logger.info({ userId, username, email }, 'User successfully registered');
       return user;
+    }
+
+    async checkIfEmailExists(email: string): Promise<boolean> { // !NOT TESTED!
+      if (!validateEmail(email)) {
+        logger.warn({ email }, 'Registration failed: Invalid email');
+        throw new Error('Invalid email');
+      }
+
+      logger.info({ email }, 'Checking if email exists');
+      const existingEmail = await this.userModel.getUserByEmail(email);
+      
+      if (existingEmail) {
+        logger.warn({ email }, 'Registration failed: Email already exists');
+      } else {
+        logger.info({ email }, 'Email does not exist');
+      }
+
+      return !!existingEmail;
+    }
+
+    async checkIfUsernameExists(username: string): Promise<boolean> { // !NOT TESTED!
+      if (!validateUsername(username)) {
+        logger.warn({ username }, 'Registration failed: Invalid username');
+        throw new Error('Invalid username');
+      }
+      
+      logger.info({ username }, 'Checking if username exists');
+      const existingUsername = await this.userModel.getUserByUsername(username);
+      
+      if (existingUsername) {
+        logger.warn({ username }, 'Registration failed: Username already exists');
+      } else {
+        logger.info({ username }, 'Username does not exist');
+      }
+
+      return !!existingUsername;
     }
 }
 
