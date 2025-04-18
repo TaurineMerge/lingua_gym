@@ -122,9 +122,9 @@ class AccessManagementController {
     static checkIfEmailExists(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const registrationService = container.resolve('AuthenticationService');
+                const registrationService = container.resolve('RegistrationService');
                 const exists = yield registrationService.checkIfEmailExists(req.body.email);
-                res.json({ exists });
+                res.json({ 'available': !exists });
             }
             catch (error) {
                 logger.error({ error }, 'Checking if email exists failed');
@@ -137,7 +137,7 @@ class AccessManagementController {
             try {
                 const registrationService = container.resolve('RegistrationService');
                 const exists = yield registrationService.checkIfUsernameExists(req.body.username);
-                res.json({ 'available': exists });
+                res.json({ 'available': !exists });
             }
             catch (error) {
                 logger.error({ error }, 'Checking if username exists failed');

@@ -38,6 +38,35 @@ export const AuthProvider = ({
     isChecking: isCheckingUsername,
   } = useAvailabilityCheck(formData.username, 'http://localhost:3000/api/access_management/check-username-exists', 'username');
 
+  const {
+    isAvailable: isEmailAvailable,
+    isChecking: isCheckingEmail,
+  } = useAvailabilityCheck(formData.email, 'http://localhost:3000/api/access_management/check-email-exists', 'email');
+
+  useEffect(() => {
+    const isOnSignup = activeTab === 1;
+    const isValidEmail = validateEmail(formData.email || '');
+  
+    if (!isValidEmail || isEmailAvailable === null) return;
+  
+    if (isEmailAvailable === false && isOnSignup) {
+      setErrors(prev => ({
+        ...prev,
+        email: '',
+      }));
+    } else if (isEmailAvailable === true && !isOnSignup) {
+      setErrors(prev => ({
+        ...prev,
+        email: '',
+      }));
+    } else {
+      setErrors(prev => ({
+        ...prev,
+        email: '',
+      }));
+    }
+  }, [isEmailAvailable, formData.email, activeTab]);
+
   useEffect(() => {
     const isOnSignup = activeTab === 1;
     const isValidLocally = !validateLocalUsername(formData.username || '');
@@ -47,7 +76,7 @@ export const AuthProvider = ({
     if (isUsernameAvailable) {
       setErrors(prev => ({
         ...prev,
-        username: 'This username is already taken.',
+        username: '',
       }));
     } else {
       setErrors(prev => ({
@@ -106,7 +135,7 @@ export const AuthProvider = ({
   }, [activeTab, formData]);
 
   const handleSubmit = useCallback(async () => {
-    if (!(await validateForm())) return;
+    if (!(validateForm())) return;
 
     setIsSubmitting(true);
     setErrors(prev => ({ ...prev, form: '' }));
@@ -159,6 +188,8 @@ export const AuthProvider = ({
     setErrors,
     isUsernameAvailable,
     isCheckingUsername,
+    isEmailAvailable,
+    isCheckingEmail
   }), [
     formData,
     errors,
@@ -175,6 +206,8 @@ export const AuthProvider = ({
     setErrors,
     isUsernameAvailable,
     isCheckingUsername,
+    isEmailAvailable,
+    isCheckingEmail
   ]);
 
   return (

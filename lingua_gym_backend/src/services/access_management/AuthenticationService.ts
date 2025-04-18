@@ -6,7 +6,7 @@ import { injectable, inject } from 'tsyringe';
 
 @injectable()
 class AuthenticationService {
-  constructor(@inject('UserModel') private userModel: UserModel, @inject('JwtTokenService') private jwtTokenService: TokenManagementService) {}
+  constructor(@inject('UserModel') private userModel: UserModel, @inject('JwtTokenManagementService') private jwtTokenService: TokenManagementService) {}
 
   async login(email: string, password: string): Promise<{ accessToken: string; refreshToken: string }> {
     logger.info({ email }, 'User login attempt');

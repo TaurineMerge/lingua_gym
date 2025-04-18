@@ -108,9 +108,9 @@ class AccessManagementController {
 
   static async checkIfEmailExists(req: Request, res: Response): Promise<void> {
     try {
-      const registrationService = container.resolve<RegistrationService>('AuthenticationService');
+      const registrationService = container.resolve<RegistrationService>('RegistrationService');
       const exists = await registrationService.checkIfEmailExists(req.body.email);
-      res.json({ exists });
+      res.json({ 'available': !exists });
     } catch (error) {
       logger.error({ error }, 'Checking if email exists failed');
       res.status(400).json({ error: (error as Error).message });
@@ -121,7 +121,7 @@ class AccessManagementController {
     try {
       const registrationService = container.resolve<RegistrationService>('RegistrationService');
       const exists = await registrationService.checkIfUsernameExists(req.body.username);
-      res.json({ 'available': exists });
+      res.json({ 'available': !exists });
     } catch (error) {
       logger.error({ error }, 'Checking if username exists failed');
       res.status(400).json({ error: (error as Error).message });

@@ -30,6 +30,8 @@ interface AuthContextType {
   isTabSwitching: boolean;
   isUsernameAvailable: boolean | null;
   isCheckingUsername: boolean;
+  isEmailAvailable: boolean | null;
+  isCheckingEmail: boolean;
 
   // State setters
   setErrors: React.Dispatch<React.SetStateAction<AuthErrors>>;

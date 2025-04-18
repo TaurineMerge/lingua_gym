@@ -67,7 +67,7 @@ let AuthenticationService = class AuthenticationService {
 AuthenticationService = __decorate([
     injectable(),
     __param(0, inject('UserModel')),
-    __param(1, inject('JwtTokenService')),
+    __param(1, inject('JwtTokenManagementService')),
     __metadata("design:paramtypes", [UserModel, TokenManagementService])
 ], AuthenticationService);
 export default AuthenticationService;
