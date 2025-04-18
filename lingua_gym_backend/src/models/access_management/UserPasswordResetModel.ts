@@ -2,15 +2,11 @@ import 'reflect-metadata';
 import Database from '../../database/config/db-connection.js';
 import { UserPasswordReset } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 @injectable()
 class UserPasswordResetModel {
-  private db;
-
-  constructor(dbInstance: Database) {
-    this.db = dbInstance;
-  }
+  constructor(@inject('Database') private db: Database) {}
 
   async createResetEntry(reset: UserPasswordReset): Promise<void> {
     const query = 'INSERT INTO "UserPasswordReset" (user_id, password_reset_token, password_reset_token_expiration) VALUES ($1, $2, $3)';

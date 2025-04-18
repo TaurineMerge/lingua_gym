@@ -7,6 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -16,20 +19,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import 'reflect-metadata';
 import Database from '../../database/config/db-connection.js';
 import logger from '../../utils/logger/Logger.js';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 let UserPasswordResetModel = class UserPasswordResetModel {
-    constructor(dbInstance) {
-        this.db = dbInstance;
+    constructor(db) {
+        this.db = db;
     }
     createResetEntry(reset) {
         return __awaiter(this, void 0, void 0, function* () {
             const query = 'INSERT INTO "UserPasswordReset" (user_id, password_reset_token, password_reset_token_expiration) VALUES ($1, $2, $3)';
             const values = [
-                reset.user_id,
-                reset.password_reset_token,
-                reset.password_reset_token_expiration,
+                reset.userId,
+                reset.passwordResetToken,
+                reset.passwordResetTokenExpiration,
             ];
             try {
                 logger.info('Creating password reset entry...');
@@ -44,7 +48,13 @@ let UserPasswordResetModel = class UserPasswordResetModel {
     }
     getByToken(password_reset_token) {
         return __awaiter(this, void 0, void 0, function* () {
-            const query = 'SELECT * FROM "UserPasswordReset" WHERE password_reset_token = $1';
+            const query = `
+    SELECT 
+      user_id as "userId",
+      password_reset_token as "passwordResetToken",
+      password_reset_token_expiration as "passwordResetTokenExpiration",
+      created_at as "createdAt"
+    FROM "UserPasswordReset" WHERE password_reset_token = $1`;
             try {
                 logger.info('Fetching password reset entry by token...');
                 const result = yield this.db.query(query, [password_reset_token]);
@@ -107,6 +117,7 @@ let UserPasswordResetModel = class UserPasswordResetModel {
 };
 UserPasswordResetModel = __decorate([
     injectable(),
+    __param(0, inject('Database')),
     __metadata("design:paramtypes", [Database])
 ], UserPasswordResetModel);
 export default UserPasswordResetModel;

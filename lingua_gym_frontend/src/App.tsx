@@ -2,7 +2,6 @@ import { Box } from '@mui/material';
 import TopBar from './components/main/TopBar';
 import LetterOverlay from './components/main/LetterOverlay';
 import { Outlet } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthProvider';
 
 function App() {
   return (
@@ -17,10 +16,8 @@ function App() {
     >
       <LetterOverlay />
         <Box sx={{ position: 'relative', zIndex: 1, height: '100vh' }}>
-          <AuthProvider>  
-            <TopBar />
-            <Outlet />
-          </AuthProvider>
+          <TopBar />
+          <Outlet />
         </Box>
     </Box>
   );

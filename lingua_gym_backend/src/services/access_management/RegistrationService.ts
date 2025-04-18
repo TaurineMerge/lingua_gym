@@ -3,18 +3,12 @@ import { UserModel, UserMetadataModel } from '../../models/access_management/acc
 import hashPassword from '../../utils/hash/HashPassword.js';
 import logger from '../../utils/logger/Logger.js';
 import { User } from '../../database/interfaces/DbInterfaces.js';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 import { validateEmail, validateUsername, validatePassword } from '../../utils/validators/validators.js';
 
 @injectable()
 class RegistrationService {
-    private userModel: UserModel;
-    private userMetadataModel: UserMetadataModel;
-  
-    constructor(userModel: UserModel, userMetadataModel: UserMetadataModel) {
-      this.userModel = userModel;
-      this.userMetadataModel = userMetadataModel;
-    }
+    constructor(@inject('UserModel') private userModel: UserModel, @inject('UserMetadataModel') private userMetadataModel: UserMetadataModel) {}
     
     async register(username: string, email: string, password: string, displayName?: string): Promise<User> {
       logger.info({ username, email }, 'User registration started');

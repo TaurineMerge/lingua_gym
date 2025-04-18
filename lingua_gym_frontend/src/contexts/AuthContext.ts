@@ -26,23 +26,21 @@ interface AuthContextType {
   errors: AuthErrors;
   touched: TouchedFields;
   isSubmitting: boolean;
-  isUsernameAvailable: boolean | null;
-  isCheckingUsername: boolean;
   activeTab: number;
   isTabSwitching: boolean;
-  
+  isUsernameAvailable: boolean | null;
+  isCheckingUsername: boolean;
+
   // State setters
   setErrors: React.Dispatch<React.SetStateAction<AuthErrors>>;
-  setIsUsernameAvailable: React.Dispatch<React.SetStateAction<boolean | null>>;
-  setIsCheckingUsername: React.Dispatch<React.SetStateAction<boolean>>;
-  
+
   // Handlers
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: () => Promise<void>;
   handleTabChange: (newValue: number) => void;
   handleGoogleLogin: () => void;
   resetForm: () => void;
-  debouncedValidate: (name: string, value: string, password: string) => void;
+  debouncedValidate: (name: string, value: string, password?: string) => void;
 }
 
-export const AuthContext = createContext<AuthContextType>({} as AuthContextType);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);

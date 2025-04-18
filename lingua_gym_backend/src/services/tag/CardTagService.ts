@@ -1,15 +1,11 @@
 import { CardTagModel } from '../../../src/models/tag/tag.js';
 import { CardTag } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 @injectable()
 class CardTagService {
-    private model: CardTagModel;
-
-    constructor(model: CardTagModel) {
-        this.model = model;
-    }
+    constructor(@inject('CardTagModel') private model: CardTagModel) {}
 
     async addTagToCard(cardId: string, tagId: string): Promise<boolean> {
         if (!cardId || !tagId) {

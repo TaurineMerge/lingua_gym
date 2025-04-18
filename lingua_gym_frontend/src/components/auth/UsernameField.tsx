@@ -26,6 +26,7 @@ export const UsernameField = () => {
       helperText={
         touched.username ? (
           <>
+            {console.log(isUsernameAvailable, errors.username, isCheckingUsername)}
             {errors.username}
             {isCheckingUsername && (
               <Typography variant="caption" color="text.secondary">
@@ -33,13 +34,13 @@ export const UsernameField = () => {
               </Typography>
             )}
             {isUsernameAvailable === false && !errors.username && (
-              <Typography variant="caption" color="error">
-                Username is already taken
+              <Typography variant="caption" color="success.main">
+                Username is available
               </Typography>
             )}
             {isUsernameAvailable && (
-              <Typography variant="caption" color="success.main">
-                Username is available
+              <Typography variant="caption" color="error">
+                Username is already taken
               </Typography>
             )}
           </>
@@ -52,18 +53,18 @@ export const UsernameField = () => {
         '& .MuiOutlinedInput-root': {
           '& fieldset': { 
             borderColor: errors.username && touched.username ? 'error.main' : 
-              isUsernameAvailable === false ? 'error.main' : 
-              isUsernameAvailable ? 'success.main' : '#333' 
+              isUsernameAvailable === false ? 'success.main' : 
+              isUsernameAvailable ? 'error.main' : '#333' 
           },
           '&:hover fieldset': { 
             borderColor: errors.username && touched.username ? 'error.main' : 
-              isUsernameAvailable === false ? 'error.main' : 
-              isUsernameAvailable ? 'success.main' : '#888' 
+              isUsernameAvailable === false ? 'success.main' : 
+              isUsernameAvailable ? 'error.main' : '#888' 
           },
           '&.Mui-focused fieldset': { 
             borderColor: errors.username && touched.username ? 'error.main' : 
-              isUsernameAvailable === false ? 'error.main' : 
-              isUsernameAvailable ? 'success.main' : '#00e676' 
+              isUsernameAvailable === false ? 'success.main' : 
+              isUsernameAvailable ? 'error.main' : '#00e676' 
           },
         },
       }}

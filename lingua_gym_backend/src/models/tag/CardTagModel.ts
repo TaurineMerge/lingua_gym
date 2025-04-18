@@ -1,16 +1,12 @@
 import 'reflect-metadata';
 import Database from '../../database/config/db-connection.js';
 import logger from '../../utils/logger/Logger.js';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 import { CardTag } from '../../database/interfaces/DbInterfaces.js';
 
 @injectable()
 class CardTagModel {
-    private db;
-
-    constructor(dbInstance: Database) {
-        this.db = dbInstance;
-    }
+    constructor(@inject('Database') private db: Database) {}
 
     async addTagToCard(cardId: string, tagId: string): Promise<boolean> {
         const query = `INSERT INTO "CardTag" (card_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING RETURNING card_id AS "cardId", tag_id AS "tagId";`;

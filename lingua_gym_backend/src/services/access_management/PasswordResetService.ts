@@ -5,16 +5,14 @@ import nodemailer from 'nodemailer';
 import hashPassword from '../../utils/hash/HashPassword.js';
 import logger from '../../utils/logger/Logger.js';
 import 'dotenv/config';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 @injectable()
 class PasswordResetService {
-  private userModel: UserModel;
-  private userPasswordResetModel: UserPasswordResetModel;
   private resetSecret: string;
   private tokenExpiry: string;
 
-  constructor(userModel: UserModel, userPasswordResetModel: UserPasswordResetModel) {
+  constructor(@inject('UserModel') private userModel: UserModel, @inject('UserPasswordResetModel') private userPasswordResetModel: UserPasswordResetModel) {
     this.userModel = userModel;
     this.userPasswordResetModel = userPasswordResetModel;
     this.resetSecret = process.env.RESET_TOKEN_SECRET || '';

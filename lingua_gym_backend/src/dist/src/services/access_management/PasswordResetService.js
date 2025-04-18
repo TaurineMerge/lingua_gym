@@ -7,6 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -22,9 +25,11 @@ import nodemailer from 'nodemailer';
 import hashPassword from '../../utils/hash/HashPassword.js';
 import logger from '../../utils/logger/Logger.js';
 import 'dotenv/config';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 let PasswordResetService = class PasswordResetService {
     constructor(userModel, userPasswordResetModel) {
+        this.userModel = userModel;
+        this.userPasswordResetModel = userPasswordResetModel;
         this.userModel = userModel;
         this.userPasswordResetModel = userPasswordResetModel;
         this.resetSecret = process.env.RESET_TOKEN_SECRET || '';
@@ -60,12 +65,12 @@ let PasswordResetService = class PasswordResetService {
             }
             const resetToken = this.generateResetToken(user);
             yield this.userPasswordResetModel.createResetEntry({
-                user_id: user.user_id,
-                password_reset_token: resetToken,
-                password_reset_token_expiration: new Date(Date.now() + this.parseExpiry(this.tokenExpiry)),
+                userId: user.userId,
+                passwordResetToken: resetToken,
+                passwordResetTokenExpiration: new Date(Date.now() + this.parseExpiry(this.tokenExpiry)),
             });
             yield this.sendResetEmail(email, resetToken);
-            logger.info(`Password reset token generated for user: ${user.user_id}`);
+            logger.info(`Password reset token generated for user: ${user.userId}`);
             return resetToken;
         });
     }
@@ -74,21 +79,21 @@ let PasswordResetService = class PasswordResetService {
             logger.info(`Resetting password using token: ${resetToken}`);
             const payload = this.verifyResetToken(resetToken);
             const resetEntry = yield this.userPasswordResetModel.getByToken(resetToken);
-            if (!resetEntry || resetEntry.password_reset_token_expiration < new Date()) {
+            if (!resetEntry || resetEntry.passwordResetTokenExpiration < new Date()) {
                 logger.warn(`Invalid or expired reset token: ${resetToken}`);
                 throw new Error('Invalid or expired reset token');
             }
             yield this.userModel.updateUserById(payload.userId, {
-                password_hash: hashPassword(newPassword),
-                token_version: (payload.tokenVersion || 0) + 1,
+                passwordHash: hashPassword(newPassword),
+                tokenVersion: (payload.tokenVersion || 0) + 1,
             });
             yield this.userPasswordResetModel.invalidateToken(resetToken);
             logger.info(`Password successfully reset for user: ${payload.userId}`);
         });
     }
     generateResetToken(user) {
-        logger.info(`Generating password reset token for user: ${user.user_id}`);
-        return jwt.sign({ userId: user.user_id, tokenVersion: user.token_version }, this.resetSecret, { expiresIn: this.tokenExpiry });
+        logger.info(`Generating password reset token for user: ${user.userId}`);
+        return jwt.sign({ userId: user.userId, tokenVersion: user.tokenVersion }, this.resetSecret, { expiresIn: this.tokenExpiry });
     }
     verifyResetToken(token) {
         try {
@@ -114,6 +119,8 @@ let PasswordResetService = class PasswordResetService {
 };
 PasswordResetService = __decorate([
     injectable(),
+    __param(0, inject('UserModel')),
+    __param(1, inject('UserPasswordResetModel')),
     __metadata("design:paramtypes", [UserModel, UserPasswordResetModel])
 ], PasswordResetService);
 export default PasswordResetService;

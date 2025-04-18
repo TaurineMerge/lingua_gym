@@ -7,6 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -16,20 +19,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import 'reflect-metadata';
 import Database from '../../database/config/db-connection.js';
 import logger from '../../utils/logger/Logger.js';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 let DictionaryCardModel = class DictionaryCardModel {
-    constructor(dbInstance) {
-        this.db = dbInstance;
+    constructor(db) {
+        this.db = db;
     }
     createCard(cardGeneralData, cardTranslations, cardMeanings, cardExamples) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 yield this.db.query('BEGIN');
-                const cardResult = yield this.db.query(`INSERT INTO "DictionaryCards" (dictionary_card_id, original, transcription, pronunciation)
-                 VALUES ($1, $2, $3, $4) RETURNING dictionary_card_id AS "dictionaryCardId"`, [cardGeneralData.dictionaryCardId, cardGeneralData.original, cardGeneralData.transcription, cardGeneralData.pronunciation]);
-                const cardId = cardResult.rows[0].dictionaryCardId;
+                const cardResult = yield this.db.query(`INSERT INTO "DictionaryCard" (card_id, original, transcription, pronunciation)
+                 VALUES ($1, $2, $3, $4) RETURNING card_id AS "cardId"`, [cardGeneralData.cardId, cardGeneralData.original, cardGeneralData.transcription, cardGeneralData.pronunciation]);
+                const cardId = cardResult.rows[0].cardId;
                 yield this.insertTranslations(cardId, cardTranslations);
                 yield this.insertMeanings(cardId, cardMeanings);
                 yield this.insertExamples(cardId, cardExamples);
@@ -45,7 +49,7 @@ let DictionaryCardModel = class DictionaryCardModel {
     }
     insertTranslations(cardId, cardTranslations) {
         return __awaiter(this, void 0, void 0, function* () {
-            const query = `INSERT INTO "DictionaryTranslations" (dictionary_card_id, translation) VALUES ($1, $2)`;
+            const query = `INSERT INTO "DictionaryTranslation" (card_id, translation) VALUES ($1, $2)`;
             for (const translation of cardTranslations) {
                 yield this.db.query(query, [cardId, translation.translation]);
             }
@@ -53,7 +57,7 @@ let DictionaryCardModel = class DictionaryCardModel {
     }
     insertMeanings(cardId, cardMeanings) {
         return __awaiter(this, void 0, void 0, function* () {
-            const query = `INSERT INTO "DictionaryMeanings" (dictionary_card_id, meaning) VALUES ($1, $2)`;
+            const query = `INSERT INTO "DictionaryMeaning" (card_id, meaning) VALUES ($1, $2)`;
             for (const meaning of cardMeanings) {
                 yield this.db.query(query, [cardId, meaning.meaning]);
             }
@@ -61,7 +65,7 @@ let DictionaryCardModel = class DictionaryCardModel {
     }
     insertExamples(cardId, cardExamples) {
         return __awaiter(this, void 0, void 0, function* () {
-            const query = `INSERT INTO "DictionaryExamples" (dictionary_card_id, example) VALUES ($1, $2)`;
+            const query = `INSERT INTO "DictionaryExample" (card_id, example) VALUES ($1, $2)`;
             for (const example of cardExamples) {
                 yield this.db.query(query, [cardId, example.example]);
             }
@@ -71,11 +75,11 @@ let DictionaryCardModel = class DictionaryCardModel {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 yield this.db.query('BEGIN');
-                yield this.db.query(`DELETE FROM "DictionaryTranslations" WHERE dictionary_card_id = $1`, [cardId]);
-                yield this.db.query(`DELETE FROM "DictionaryMeanings" WHERE dictionary_card_id = $1`, [cardId]);
-                yield this.db.query(`DELETE FROM "DictionaryExamples" WHERE dictionary_card_id = $1`, [cardId]);
-                yield this.db.query(`DELETE FROM "CardTags" WHERE card_id = $1`, [cardId]);
-                const result = yield this.db.query(`DELETE FROM "DictionaryCards" WHERE dictionary_card_id = $1 RETURNING dictionary_card_id`, [cardId]);
+                yield this.db.query(`DELETE FROM "DictionaryTranslation" WHERE card_id = $1`, [cardId]);
+                yield this.db.query(`DELETE FROM "DictionaryMeaning" WHERE card_id = $1`, [cardId]);
+                yield this.db.query(`DELETE FROM "DictionaryExample" WHERE card_id = $1`, [cardId]);
+                yield this.db.query(`DELETE FROM "CardTag" WHERE card_id = $1`, [cardId]);
+                const result = yield this.db.query(`DELETE FROM "DictionaryCard" WHERE card_id = $1 RETURNING card_id`, [cardId]);
                 yield this.db.query('COMMIT');
                 if (result.rowCount > 0) {
                     return true;
@@ -103,19 +107,19 @@ let DictionaryCardModel = class DictionaryCardModel {
                         const setClause = fieldsToUpdate
                             .map((field, index) => `${field} = $${index + 2}`)
                             .join(', ');
-                        yield this.db.query(`UPDATE "DictionaryCards" SET ${setClause} WHERE dictionary_card_id = $1`, [cardId, ...fieldsToUpdate.map(field => cardGeneralData[field])]);
+                        yield this.db.query(`UPDATE "DictionaryCard" SET ${setClause} WHERE card_id = $1`, [cardId, ...fieldsToUpdate.map(field => cardGeneralData[field])]);
                     }
                 }
                 if (cardTranslations) {
-                    yield this.db.query(`DELETE FROM "DictionaryTranslations" WHERE dictionary_card_id = $1`, [cardId]);
+                    yield this.db.query(`DELETE FROM "DictionaryTranslation" WHERE card_id = $1`, [cardId]);
                     yield this.insertTranslations(cardId, cardTranslations);
                 }
                 if (cardMeanings) {
-                    yield this.db.query(`DELETE FROM "DictionaryMeanings" WHERE dictionary_card_id = $1`, [cardId]);
+                    yield this.db.query(`DELETE FROM "DictionaryMeaning" WHERE card_id = $1`, [cardId]);
                     yield this.insertMeanings(cardId, cardMeanings);
                 }
                 if (cardExamples) {
-                    yield this.db.query(`DELETE FROM "DictionaryExamples" WHERE dictionary_card_id = $1`, [cardId]);
+                    yield this.db.query(`DELETE FROM "DictionaryExample" WHERE card_id = $1`, [cardId]);
                     yield this.insertExamples(cardId, cardExamples);
                 }
                 yield this.db.query('COMMIT');
@@ -130,10 +134,10 @@ let DictionaryCardModel = class DictionaryCardModel {
     }
     getCardById(cardId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const cardQuery = `SELECT * FROM "DictionaryCards" WHERE dictionary_card_id = $1`;
-            const translationQuery = `SELECT translation FROM "DictionaryTranslations" WHERE dictionary_card_id = $1`;
-            const meaningQuery = `SELECT meaning FROM "DictionaryMeanings" WHERE dictionary_card_id = $1`;
-            const exampleQuery = `SELECT example FROM "DictionaryExamples" WHERE dictionary_card_id = $1`;
+            const cardQuery = `SELECT * FROM "DictionaryCard" WHERE card_id = $1`;
+            const translationQuery = `SELECT translation FROM "DictionaryTranslation" WHERE card_id = $1`;
+            const meaningQuery = `SELECT meaning FROM "DictionaryMeaning" WHERE card_id = $1`;
+            const exampleQuery = `SELECT example FROM "DictionaryExample" WHERE card_id = $1`;
             const cardResult = yield this.db.query(cardQuery, [cardId]);
             if (cardResult.rows.length === 0)
                 return null;
@@ -146,6 +150,7 @@ let DictionaryCardModel = class DictionaryCardModel {
 };
 DictionaryCardModel = __decorate([
     injectable(),
+    __param(0, inject('Database')),
     __metadata("design:paramtypes", [Database])
 ], DictionaryCardModel);
 export default DictionaryCardModel;

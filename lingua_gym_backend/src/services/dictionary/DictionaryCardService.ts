@@ -1,15 +1,11 @@
 import { DictionaryCardModel } from '../../../src/models/dictionary/dictionary.js';
 import logger from '../../utils/logger/Logger.js';
 import { DictionaryCard, CardTranslation, CardMeaning, CardExample } from '../../database/interfaces/DbInterfaces.js';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 
 @injectable()
 class DictionaryCardService {
-    private model: DictionaryCardModel;
-
-    constructor(model: DictionaryCardModel) {
-        this.model = model;
-    }
+    constructor(@inject('DictionaryCardModel') private model: DictionaryCardModel) {}
 
     async createCard(card: DictionaryCard, cardTranslations: Array<CardTranslation>, cardMeanings: Array<CardMeaning>, cardExamples: Array<CardExample>): Promise<string | null> {
         if (!card.cardId || !card.original) {

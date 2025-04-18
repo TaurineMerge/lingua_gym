@@ -1,4 +1,4 @@
 import TagModel from "./TagModel.js";
-import CardTagsModel from "./CardTagsModel.js";
-import SetTagsModel from "./SetTagsModel.js";
-export { TagModel, CardTagsModel, SetTagsModel };
+import CardTagModel from "./CardTagModel.js";
+import SetTagModel from "./SetTagModel.js";
+export { TagModel, CardTagModel, SetTagModel };

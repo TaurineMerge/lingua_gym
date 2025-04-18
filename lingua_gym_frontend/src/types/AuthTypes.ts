@@ -7,6 +7,11 @@ export type AuthFormData = {
   
   export type AuthErrors = AuthFormData & {
     form: string;
+    email: string;
+    password: string;
+    username: string;
+    displayName: string;
+    confirmPassword: string;
   };
   
   export type TouchedFields = {

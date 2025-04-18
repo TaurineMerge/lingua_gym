@@ -2,15 +2,11 @@ import 'reflect-metadata';
 import Database from '../../database/config/db-connection.js';
 import { User } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 
 @injectable()
 class UserModel {
-  private db;
-  
-  constructor(dbInstance: Database) {
-    this.db = dbInstance;
-  }
+  constructor(@inject('Database') private db: Database) {}
 
   async createUser(user: User): Promise<void> {
     const query = 'INSERT INTO "User" (user_id, username, display_name, password_hash, email, token_version, profile_picture, email_verified) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)';

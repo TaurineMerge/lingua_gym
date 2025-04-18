@@ -2,15 +2,11 @@ import 'reflect-metadata';
 import Database from '../../database/config/db-connection.js';
 import { UserMetadata } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 @injectable()
 class UserMetadataModel {
-  private db;
-
-  constructor(dbInstance: Database) {
-    this.db = dbInstance;
-  }
+  constructor(@inject('Database') private db: Database) {}
 
   async createUserMetadata(userMetadata: UserMetadata): Promise<void> {
     const query = `

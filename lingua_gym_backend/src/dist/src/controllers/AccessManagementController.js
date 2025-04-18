@@ -17,7 +17,7 @@ class AccessManagementController {
                 const { username, email, password } = req.body;
                 const registrationService = container.resolve('RegistrationService');
                 const user = yield registrationService.register(username, email, password);
-                logger.info({ userId: user.user_id }, 'User registered successfully');
+                logger.info({ userId: user.userId }, 'User registered successfully');
                 res.status(201).json({ message: 'User registered', user });
             }
             catch (error) {
@@ -115,6 +115,32 @@ class AccessManagementController {
             }
             catch (error) {
                 logger.error({ error }, 'Password reset failed');
+                res.status(400).json({ error: error.message });
+            }
+        });
+    }
+    static checkIfEmailExists(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const registrationService = container.resolve('AuthenticationService');
+                const exists = yield registrationService.checkIfEmailExists(req.body.email);
+                res.json({ exists });
+            }
+            catch (error) {
+                logger.error({ error }, 'Checking if email exists failed');
+                res.status(400).json({ error: error.message });
+            }
+        });
+    }
+    static checkIfUsernameExists(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const registrationService = container.resolve('RegistrationService');
+                const exists = yield registrationService.checkIfUsernameExists(req.body.username);
+                res.json({ 'available': exists });
+            }
+            catch (error) {
+                logger.error({ error }, 'Checking if username exists failed');
                 res.status(400).json({ error: error.message });
             }
         });

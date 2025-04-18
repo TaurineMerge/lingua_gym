@@ -10,21 +10,10 @@ export const validatePassword = (password: string): string => {
     return '';
 };
   
-export const validateUsername = async (
-    username: string,
-    setIsAvailable: (value: boolean | null) => void,
-    setIsChecking: (value: boolean) => void,
-    checkUsernameAvailability: (username: string) => Promise<boolean>
-): Promise<string> => {
+export const validateLocalUsername = (username: string): string => {
     if (!username) return 'Username is required';
     if (username.length < 3) return 'Username must be at least 3 characters';
-
-    setIsChecking(true);
-    const isAvailable = await checkUsernameAvailability(username);
-    setIsAvailable(isAvailable);
-    setIsChecking(false);
-
-    return isAvailable ? '' : 'Username is already taken';
+    return '';
 };
   
 export const validateConfirmPassword = (confirmPassword: string, password: string): string => {

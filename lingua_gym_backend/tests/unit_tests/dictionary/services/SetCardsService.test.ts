@@ -1,6 +1,6 @@
 import { SetCardService } from '../../../../src/services/dictionary/dictionary.js';
 import { SetCardModel } from '../../../../src/models/dictionary/dictionary.js';
-import { DictionaryCard, SetCards } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { DictionaryCard, SetCard } from '../../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../../../src/utils/logger/Logger.js';
 
 jest.mock('../../../../src/utils/logger/Logger.js', () => ({
@@ -15,7 +15,7 @@ describe('SetCardsService', () => {
   const mockSetId = 'test-set-id-123';
   const mockCardId = 'test-card-id-456';
   
-  const mockSetCards: SetCards = {
+  const mockSetCards: SetCard = {
     setId: mockSetId,
     cardId: mockCardId
   };

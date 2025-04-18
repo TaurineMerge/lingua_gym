@@ -5,6 +5,7 @@ import { CssBaseline } from '@mui/material';
 import theme from './theme.ts';
 import { RouterProvider } from 'react-router-dom';
 import routes from './routes/index.tsx';
+import { AuthProvider } from './contexts/AuthProvider.tsx';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -14,7 +15,9 @@ root.render(
     <React.StrictMode>
         <ThemeProvider theme={theme}>
             <CssBaseline />
-            <RouterProvider router={routes} />
+            <AuthProvider>  
+                <RouterProvider router={routes} />
+            </AuthProvider>
         </ThemeProvider>
     </React.StrictMode>
 );

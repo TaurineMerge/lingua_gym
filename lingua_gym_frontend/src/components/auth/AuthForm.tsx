@@ -13,7 +13,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 export const AuthForm = () => {
   const { errors, activeTab, isTabSwitching } = useAuth();
-
   return (
     <motion.div
       transition={{ layout: { duration: 0.4, ease: 'easeInOut' } }}

@@ -1,4 +1,4 @@
-import CardTagsService from "./CardTagsService";
+import CardTagService from "./CardTagService";
 import TagService from "./TagService";
-import SetTagsService from "./SetTagsService";
-export { CardTagsService, TagService, SetTagsService };
+import SetTagService from "./SetTagService";
+export { CardTagService, TagService, SetTagService };

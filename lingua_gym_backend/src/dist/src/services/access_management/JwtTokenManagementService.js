@@ -7,6 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -20,7 +23,7 @@ import jwt from 'jsonwebtoken';
 import { UserModel } from '../../models/access_management/access_management.js';
 import logger from '../../utils/logger/Logger.js';
 import 'dotenv/config';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 let TokenManagementService = class TokenManagementService {
     constructor(userModel) {
         this.userModel = userModel;
@@ -34,23 +37,23 @@ let TokenManagementService = class TokenManagementService {
             logger.info('Refresh token request received');
             const payload = this.verifyRefreshToken(refreshToken);
             const user = yield this.userModel.getUserById(payload.userId);
-            if (!user || user.token_version !== payload.tokenVersion) {
+            if (!user || user.tokenVersion !== payload.tokenVersion) {
                 logger.warn({ userId: payload.userId }, 'Invalid refresh token');
                 throw new Error('Invalid refresh token');
             }
-            yield this.incrementTokenVersion(user.user_id);
-            const updatedUser = yield this.userModel.getUserById(user.user_id);
+            yield this.incrementTokenVersion(user.userId);
+            const updatedUser = yield this.userModel.getUserById(user.userId);
             const newAccessToken = this.generateAccessToken(updatedUser);
             const newRefreshToken = this.generateRefreshToken(updatedUser);
-            logger.info({ userId: user.user_id }, 'Tokens refreshed');
+            logger.info({ userId: user.userId }, 'Tokens refreshed');
             return { accessToken: newAccessToken, refreshToken: newRefreshToken };
         });
     }
     generateAccessToken(user) {
-        return jwt.sign({ userId: user.user_id }, this.jwtSecret, { expiresIn: this.accessTokenExpiry });
+        return jwt.sign({ userId: user.userId }, this.jwtSecret, { expiresIn: this.accessTokenExpiry });
     }
     generateRefreshToken(user) {
-        return jwt.sign({ userId: user.user_id, tokenVersion: user.token_version }, this.jwtRefreshSecret, { expiresIn: this.refreshTokenExpiry });
+        return jwt.sign({ userId: user.userId, tokenVersion: user.tokenVersion }, this.jwtRefreshSecret, { expiresIn: this.refreshTokenExpiry });
     }
     incrementTokenVersion(userId) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -59,7 +62,7 @@ let TokenManagementService = class TokenManagementService {
                 if (!user) {
                     throw new Error('User not found');
                 }
-                yield this.userModel.updateUserById(userId, { token_version: user.token_version + 1 });
+                yield this.userModel.updateUserById(userId, { tokenVersion: user.tokenVersion + 1 });
                 logger.info({ userId }, 'Token version incremented');
             }
             catch (error) {
@@ -89,6 +92,7 @@ let TokenManagementService = class TokenManagementService {
 };
 TokenManagementService = __decorate([
     injectable(),
+    __param(0, inject('UserModel')),
     __metadata("design:paramtypes", [UserModel])
 ], TokenManagementService);
 export default TokenManagementService;

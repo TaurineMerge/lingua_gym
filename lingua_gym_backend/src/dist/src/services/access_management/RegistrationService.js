@@ -7,6 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -20,48 +23,88 @@ import { v4 as uuidv4 } from 'uuid';
 import { UserModel, UserMetadataModel } from '../../models/access_management/access_management.js';
 import hashPassword from '../../utils/hash/HashPassword.js';
 import logger from '../../utils/logger/Logger.js';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
+import { validateEmail, validateUsername, validatePassword } from '../../utils/validators/validators.js';
 let RegistrationService = class RegistrationService {
     constructor(userModel, userMetadataModel) {
         this.userModel = userModel;
         this.userMetadataModel = userMetadataModel;
     }
-    register(username, email, password) {
+    register(username, email, password, displayName) {
         return __awaiter(this, void 0, void 0, function* () {
             logger.info({ username, email }, 'User registration started');
-            const existingEmail = yield this.userModel.getUserByEmail(email);
-            if (existingEmail) {
-                logger.warn({ email }, 'Registration failed: Email already exists');
-                throw new Error('Email already exists');
+            try {
+                yield this.checkIfEmailExists(email);
+                yield this.checkIfUsernameExists(username);
             }
-            const existingUsername = yield this.userModel.getUserByUsername(username);
-            if (existingUsername) {
-                logger.warn({ username }, 'Registration failed: Username already exists');
-                throw new Error('Username already exists');
+            catch (error) {
+                logger.error({ error }, 'Registration failed: Email or username already exists');
+                throw error;
+            }
+            if (!validatePassword(password)) {
+                logger.warn({ password }, 'Registration failed: Password does not meet requirements');
+                throw new Error('Password does not meet requirements');
             }
             const hashedPassword = hashPassword(password);
             const userId = uuidv4();
             const user = {
-                user_id: userId,
+                userId: userId,
                 username,
+                displayName,
                 email,
-                password_hash: hashedPassword,
-                token_version: 0,
-                email_verified: false
+                passwordHash: hashedPassword,
+                tokenVersion: 0,
+                emailVerified: false
             };
             yield this.userModel.createUser(user);
             const signupDate = new Date();
             yield this.userMetadataModel.createUserMetadata({
-                user_id: userId,
-                signup_date: signupDate,
+                userId: userId,
+                signupDate: signupDate,
             });
             logger.info({ userId, username, email }, 'User successfully registered');
             return user;
         });
     }
+    checkIfEmailExists(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!validateEmail(email)) {
+                logger.warn({ email }, 'Registration failed: Invalid email');
+                throw new Error('Invalid email');
+            }
+            logger.info({ email }, 'Checking if email exists');
+            const existingEmail = yield this.userModel.getUserByEmail(email);
+            if (existingEmail) {
+                logger.warn({ email }, 'Registration failed: Email already exists');
+            }
+            else {
+                logger.info({ email }, 'Email does not exist');
+            }
+            return !!existingEmail;
+        });
+    }
+    checkIfUsernameExists(username) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!validateUsername(username)) {
+                logger.warn({ username }, 'Registration failed: Invalid username');
+                throw new Error('Invalid username');
+            }
+            logger.info({ username }, 'Checking if username exists');
+            const existingUsername = yield this.userModel.getUserByUsername(username);
+            if (existingUsername) {
+                logger.warn({ username }, 'Registration failed: Username already exists');
+            }
+            else {
+                logger.info({ username }, 'Username does not exist');
+            }
+            return !!existingUsername;
+        });
+    }
 };
 RegistrationService = __decorate([
     injectable(),
+    __param(0, inject('UserModel')),
+    __param(1, inject('UserMetadataModel')),
     __metadata("design:paramtypes", [UserModel, UserMetadataModel])
 ], RegistrationService);
 export default RegistrationService;

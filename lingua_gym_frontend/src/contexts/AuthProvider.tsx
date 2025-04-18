@@ -1,16 +1,15 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { AuthContext } from './AuthContext';
 import { initialFormState, initialErrorState, initialTouchedState } from '../utils/auth/Constants';
 import { useValidation } from '../hooks/auth/UseAuthValidation';
-import { checkUsernameAvailability } from '../services/auth/AuthService';
 import { 
   validateEmail, 
   validatePassword, 
   validateConfirmPassword,
   validateDisplayName,
-  validateUsername
+  validateLocalUsername
 } from '../utils/auth/AuthValidators';
-import { debounce } from '@mui/material';
+import { useAvailabilityCheck } from '../hooks/api/UseAvailabilityCheck';
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -26,11 +25,37 @@ export const AuthProvider = ({
   const [errors, setErrors] = useState(initialErrorState);
   const [touched, setTouched] = useState(initialTouchedState);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
-  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [isTabSwitching, setIsTabSwitching] = useState(false);
 
-  const { debouncedValidate } = useValidation();
+  const { debouncedValidate } = useValidation({
+    formData,
+    touched,
+    setErrors
+  });
+
+  const {
+    isAvailable: isUsernameAvailable,
+    isChecking: isCheckingUsername,
+  } = useAvailabilityCheck(formData.username, 'http://localhost:3000/api/access_management/check-username-exists', 'username');
+
+  useEffect(() => {
+    const isOnSignup = activeTab === 1;
+    const isValidLocally = !validateLocalUsername(formData.username || '');
+  
+    if (!isOnSignup || !isValidLocally || isUsernameAvailable === null) return;
+  
+    if (isUsernameAvailable) {
+      setErrors(prev => ({
+        ...prev,
+        username: 'This username is already taken.',
+      }));
+    } else {
+      setErrors(prev => ({
+        ...prev,
+        username: '',
+      }));
+    }
+  }, [isUsernameAvailable, formData.username, activeTab]);
 
   const resetForm = useCallback(() => {
     setFormData(initialFormState);
@@ -40,55 +65,40 @@ export const AuthProvider = ({
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
-    if (name === 'username') {
-      setIsUsernameAvailable(null);
-
-      setFormData(prev => ({...prev, username: value, displayName: value}));
-      setTouched(prev => ({...prev, username: true, displayName: true}));
-    } else {
-      setFormData(prev => ({...prev, [name]: value}));
-      setTouched(prev => ({...prev, [name]: true}));
-    }
-    
-    debounce(async () => {
-      let error = '';
-      if (name === 'email') {
-        error = validateEmail(value);
-      } else if (name === 'password') {
-        error = validatePassword(value);
-        if (touched.confirmPassword) {
-          const confirmError = validateConfirmPassword(formData.confirmPassword, value);
-          setErrors(prev => ({ ...prev, confirmPassword: confirmError }));
-        }
-      } else if (name === 'username') {
-        if (value.length < 3) {
-          error = 'Username must be at least 3 characters';
-        } else {
-          error = await validateUsername(value, setIsUsernameAvailable, setIsCheckingUsername, checkUsernameAvailability);
-        }
-      } else if (name === 'displayName') {
-        error = validateDisplayName(value);
-      }     
-      else if (name === 'confirmPassword') {
-        error = validateConfirmPassword(value, formData.password);
-      }
   
-      setErrors(prev => ({ ...prev, [name]: error }));
-    }, 300)();
-  }, [formData, touched]);
+    const fieldName = name as keyof typeof formData;
+    const isUsernameField = fieldName === 'username';
+  
+    if (isUsernameField) {
+      setFormData(prev => ({ ...prev, username: value, displayName: value }));
+      setTouched(prev => ({ ...prev, username: true, displayName: true }));
+    } else {
+      setFormData(prev => ({ ...prev, [fieldName]: value }));
+      setTouched(prev => ({ ...prev, [fieldName]: true }));
+    }
+  
+    if (fieldName === 'username') {
+      const usernameError = validateLocalUsername(value);
+      setErrors(prev => ({ ...prev, username: usernameError }));
+    } else {
+      debouncedValidate(fieldName, value);
+    }
+  
+  }, [debouncedValidate]);
+  
 
-  const validateForm = useCallback(async () => {
+  const validateForm = useCallback(() => {
     const newErrors = {
       ...initialErrorState,
       email: validateEmail(formData.email || ''),
       password: validatePassword(formData.password || ''),
       username: activeTab === 1
-      ? await validateUsername(formData.username || '', setIsUsernameAvailable, setIsCheckingUsername, checkUsernameAvailability)
-      : '',
+        ? validateLocalUsername(formData.username || '')
+        : '',
       displayName: activeTab === 1 ? validateDisplayName(formData.displayName || '') : '',
-      confirmPassword: activeTab === 1 ? 
-        validateConfirmPassword(formData.confirmPassword || '', formData.password || '') : ''
+      confirmPassword: activeTab === 1
+        ? validateConfirmPassword(formData.confirmPassword || '', formData.password || '')
+        : ''
     };
 
     setErrors(newErrors);
@@ -99,7 +109,7 @@ export const AuthProvider = ({
     if (!(await validateForm())) return;
 
     setIsSubmitting(true);
-    setErrors(prev => ({...prev, form: ''}));
+    setErrors(prev => ({ ...prev, form: '' }));
 
     try {
       console.log(activeTab === 0 ? 'Sign In' : 'Sign Up', formData);
@@ -120,14 +130,13 @@ export const AuthProvider = ({
 
   const handleTabChange = useCallback((newValue: number) => {
     if (newValue === activeTab) return;
-  
+
     setIsTabSwitching(true);
     setTimeout(() => {
       setActiveTab(newValue);
       resetForm();
-      setIsUsernameAvailable(null);
       setIsTabSwitching(false);
-    }, 400); 
+    }, 400);
   }, [activeTab, resetForm]);
 
   const handleGoogleLogin = useCallback(() => {
@@ -139,8 +148,6 @@ export const AuthProvider = ({
     errors,
     touched,
     isSubmitting,
-    isUsernameAvailable,
-    isCheckingUsername,
     isTabSwitching,
     activeTab,
     handleChange,
@@ -150,15 +157,13 @@ export const AuthProvider = ({
     resetForm,
     debouncedValidate,
     setErrors,
-    setIsUsernameAvailable,
-    setIsCheckingUsername,
+    isUsernameAvailable,
+    isCheckingUsername,
   }), [
     formData,
     errors,
     touched,
     isSubmitting,
-    isUsernameAvailable,
-    isCheckingUsername,
     isTabSwitching,
     activeTab,
     handleChange,
@@ -168,10 +173,9 @@ export const AuthProvider = ({
     resetForm,
     debouncedValidate,
     setErrors,
-    setIsUsernameAvailable,
-    setIsCheckingUsername,
+    isUsernameAvailable,
+    isCheckingUsername,
   ]);
-  
 
   return (
     <AuthContext.Provider value={contextValue}>

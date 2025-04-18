@@ -1,5 +1,5 @@
-import DictionaryCardModel from "./DictionaryCardModel";
-import DictionarySetModel from "./DictionarySetModel";
-import SetCardsModel from "./SetCardsModel";
-import UserSetsModel from "./UserSetsModel";
-export { DictionaryCardModel, DictionarySetModel, SetCardsModel, UserSetsModel };
+import DictionaryCardModel from "./DictionaryCardModel.js";
+import DictionarySetModel from "./DictionarySetModel.js";
+import SetCardModel from "./SetCardModel.js";
+import UserSetModel from "./UserSetModel.js";
+export { DictionaryCardModel, DictionarySetModel, SetCardModel, UserSetModel };

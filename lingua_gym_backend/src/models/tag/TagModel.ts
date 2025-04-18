@@ -2,15 +2,11 @@ import 'reflect-metadata';
 import Database from '../../database/config/db-connection.js';
 import logger from '../../utils/logger/Logger.js';
 import Tag from '../../database/interfaces/tag/Tag.js';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 @injectable()
 class TagModel {
-    private db;
-
-    constructor(dbInstance: Database) {
-        this.db = dbInstance;
-    }
+    constructor(@inject('Database') private db: Database) {}
 
     async createTag(tagId: string, name: string): Promise<string | null> {
         const query = `INSERT INTO "Tag" (tag_id, name) VALUES ($1, $2) RETURNING tag_id;`;
