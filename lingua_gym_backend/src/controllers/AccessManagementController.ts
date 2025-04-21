@@ -85,14 +85,14 @@ class AccessManagementController {
     try {
       const { refreshToken } = req.cookies;
       if (!refreshToken) throw new Error('Refresh token missing');
-
+      console.log("Old refresh token: ", refreshToken);
       const jwtService = container.resolve<JwtTokenManagementService>('JwtTokenManagementService');
       const { accessToken, refreshToken: newRefresh } = await jwtService.refreshToken(refreshToken);
-
-      this.setTokenCookies(res, newRefresh, accessToken);
+      console.log("New tokens: ", accessToken, newRefresh);
+      AccessManagementController.setTokenCookies(res, newRefresh, accessToken);
 
       logger.info({}, 'Access token refreshed');
-      res.json({ accessToken });
+      res.json({ refreshed: true });
     } catch (error) {
       logger.warn({}, 'Refresh token failed');
       res.status(403).json({ error: (error as Error).message });

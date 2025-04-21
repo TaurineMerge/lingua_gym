@@ -69,18 +69,46 @@ export const AuthProvider = ({
           },
           mode: 'cors',
         });
-
+  
+        if (!response.ok) throw new Error('Not authenticated');
+  
         const data = await response.json();
         setIsAuthenticated(data.authenticated);
-      } catch {
-        setIsAuthenticated(null);
+      } catch (err) {
+        try {
+          const refreshResponse = await fetch('http://localhost:3000/api/access_management/refresh-token', {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            mode: 'cors',
+          });
+  
+          if (!refreshResponse.ok) throw new Error('Refresh failed');
+          
+          const retryResponse = await fetch('http://localhost:3000/api/access_management/is-authenticated', {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            mode: 'cors',
+          });
+  
+          const retryData = await retryResponse.json();
+          setIsAuthenticated(retryData.authenticated);
+        } catch (refreshErr) {
+          console.error('Authentication failed completely:', refreshErr);
+          setIsAuthenticated(false);
+        }
       } finally {
         setIsAuthLoading(false);
       }
     };
-
+  
     checkAuth();
-  }, []);
+  }, []);  
 
   // email check
   useEffect(() => {
