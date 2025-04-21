@@ -21,7 +21,7 @@ class PasswordResetService {
 
   private async sendResetEmail(email: string, resetToken: string): Promise<void> {
     logger.info(`Sending password reset email to ${email}`);
-    const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+    const resetUrl = `${process.env.CLIENT_URL}/auth/password-reset?token=${resetToken}`;
     const transporter = nodemailer.createTransport({
       service: process.env.SMTP_SERVICE,
       auth: {
@@ -47,6 +47,8 @@ class PasswordResetService {
       throw new Error('User not found');
     }
     
+    this.userPasswordResetModel.deleteRequestByUserId(user.userId);
+
     const resetToken = this.generateResetToken(user);
 
     await this.userPasswordResetModel.createResetEntry({

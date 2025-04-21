@@ -18,9 +18,15 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const db = container.resolve('Database');
 const logger = container.resolve('Logger');
+const corsOptions = {
+    origin: process.env.CLIENT_URL || 'http://localhost:3001',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
 app.use('/api/access_management', accessManagementRoutes);
 //app.use('/api/dictionary', dictionaryRoutes);
 app.use((req, res) => {

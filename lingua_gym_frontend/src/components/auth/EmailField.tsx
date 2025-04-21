@@ -10,6 +10,7 @@ export const EmailField = () => {
       variant="outlined"
       label="Email"
       name="email"
+      autoComplete='off'
       value={formData.email}
       onChange={handleChange}
       error={!!errors.email && touched.email}

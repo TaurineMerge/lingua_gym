@@ -14,9 +14,16 @@ const PORT = process.env.PORT || 3000;
 const db: Database = container.resolve('Database');
 const logger: Logger = container.resolve('Logger');
 
+const corsOptions = {
+  origin: process.env.CLIENT_URL as string || 'http://localhost:3001',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
 
 app.use('/api/access_management', accessManagementRoutes);
 //app.use('/api/dictionary', dictionaryRoutes);

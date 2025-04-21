@@ -32,9 +32,12 @@ interface AuthContextType {
   isCheckingUsername: boolean;
   isEmailAvailable: boolean | null;
   isCheckingEmail: boolean;
+  isAuthLoading: boolean;
+  isAuthenticated: boolean | null;
 
   // State setters
   setErrors: React.Dispatch<React.SetStateAction<AuthErrors>>;
+  setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean | null>>;
 
   // Handlers
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -43,6 +46,7 @@ interface AuthContextType {
   handleGoogleLogin: () => void;
   resetForm: () => void;
   debouncedValidate: (name: string, value: string, password?: string) => void;
+  validateForm: () => boolean;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);

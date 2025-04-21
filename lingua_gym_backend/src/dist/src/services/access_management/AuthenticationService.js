@@ -63,6 +63,17 @@ let AuthenticationService = class AuthenticationService {
             throw new Error('Password verification failed');
         }
     }
+    isAuthenticated(token) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                return !!this.jwtTokenService.verifyAccessToken(token);
+            }
+            catch (err) {
+                logger.error({ error: err }, 'Access token verification failed');
+                throw new Error('Access token verification failed');
+            }
+        });
+    }
 };
 AuthenticationService = __decorate([
     injectable(),

@@ -19,6 +19,7 @@ export const ConfirmPasswordField = () => {
       label="Confirm Password"
       type="password"
       name="confirmPassword"
+      autoComplete='off'
       value={formData.confirmPassword}
       onChange={handleChange}
       error={!!errors.confirmPassword && touched.confirmPassword}

@@ -1,17 +1,15 @@
 import { Tabs, Tab } from '@mui/material';
-import { useState } from 'react';
 
 const TabComponent = ({ 
   labels, 
+  value,
   onChange 
 }: { 
   labels: string[]; 
+  value: number;
   onChange?: (newValue: number) => void; 
 }) => {
-  const [value, setValue] = useState(0);
-
   const handleChange = (_: React.SyntheticEvent, newVal: number) => {
-    setValue(newVal);
     if (onChange) onChange(newVal);
   };
 
@@ -29,5 +27,6 @@ const TabComponent = ({
     </Tabs>
   );
 };
+
 
 export default TabComponent;

@@ -2,7 +2,10 @@ import { Box, Container, Typography } from '@mui/material';
 import { SearchBar, Tab, Carousel } from '../components/components';
 import { useTheme } from '@mui/material/styles';
 
+import { useState } from 'react';
+
 const MaterialsPage = () => {
+  const [tabValue, setTabValue] = useState(0);
   const theme = useTheme();
 
   return (
@@ -13,7 +16,7 @@ const MaterialsPage = () => {
           fontWeight: theme.typography.h3.fontWeight,
           lineHeight: theme.typography.h3.lineHeight,
           fontSize: theme.typography.h3.fontSize
-          }}>
+        }}>
           Search for new materials
         </Typography>
       </Box>
@@ -21,13 +24,18 @@ const MaterialsPage = () => {
         <SearchBar />
       </Box>
       <Box mt={2}>
-        <Tab labels={['Sets', 'Texts']} />
+        <Tab 
+          labels={['Sets', 'Texts']} 
+          value={tabValue}
+          onChange={(newVal) => setTabValue(newVal)}
+        />
       </Box>
       <Box mt={2}>
-        <Carousel />
+        <Carousel tabValue={tabValue} />
       </Box>
     </Container>
   );
 };
+
 
 export default MaterialsPage;

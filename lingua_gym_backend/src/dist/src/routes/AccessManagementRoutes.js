@@ -10,4 +10,5 @@ router.post('/request-password-reset', AuthController.requestPasswordReset);
 router.post('/reset-password', AuthController.resetPassword);
 router.post('/check-email-exists', AuthController.checkIfEmailExists);
 router.post('/check-username-exists', AuthController.checkIfUsernameExists);
+router.get('/is-authenticated', AuthController.checkIfAuthenticated);
 export default router;

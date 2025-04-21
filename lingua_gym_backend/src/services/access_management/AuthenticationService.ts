@@ -43,6 +43,15 @@ class AuthenticationService {
       throw new Error('Password verification failed');
     }
   }
+
+  async isAuthenticated(token: string): Promise<boolean> {
+    try {
+      return !!this.jwtTokenService.verifyAccessToken(token);
+    } catch (err) {
+      logger.error({ error: err }, 'Access token verification failed');
+      throw new Error('Access token verification failed');
+    }
+  }
 }
 
 export default AuthenticationService;

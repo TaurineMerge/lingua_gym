@@ -20,6 +20,7 @@ export const UsernameField = () => {
       variant="outlined"
       label="Username"
       name="username"
+      autoComplete='off'
       value={formData.username}
       onChange={handleChange}
       error={!!errors.username && touched.username}
