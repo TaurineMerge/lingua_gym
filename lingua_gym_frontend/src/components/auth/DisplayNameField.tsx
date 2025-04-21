@@ -18,6 +18,7 @@ export const DisplayNameField = () => {
       variant="outlined"
       label="Display name"
       name="displayName"
+      autoComplete='off'
       value={formData.displayName}
       onChange={handleChange}
       error={!!errors.displayName && touched.displayName}

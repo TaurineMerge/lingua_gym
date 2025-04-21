@@ -1,36 +1,120 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { AuthContext } from './AuthContext';
 import { initialFormState, initialErrorState, initialTouchedState } from '../utils/auth/Constants';
 import { useValidation } from '../hooks/auth/UseAuthValidation';
-import { checkUsernameAvailability } from '../services/auth/AuthService';
-import { 
-  validateEmail, 
-  validatePassword, 
+import {
+  validateEmail,
+  validatePassword,
   validateConfirmPassword,
   validateDisplayName,
-  validateUsername
+  validateLocalUsername,
 } from '../utils/auth/AuthValidators';
-import { debounce } from '@mui/material';
+import { useAvailabilityCheck } from '../hooks/api/UseAvailabilityCheck';
+import { useAuthRequest, AuthResponse, RegisterData, LoginData } from '../hooks/api/UseAuthRequest';
 
 interface AuthProviderProps {
   children: React.ReactNode;
   initialTab?: number;
+  onAuthSuccess?: () => void;
 }
 
-export const AuthProvider = ({ 
+export const AuthProvider = ({
   children,
-  initialTab = 0 
+  initialTab = 0,
+  onAuthSuccess,
 }: AuthProviderProps) => {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [formData, setFormData] = useState(initialFormState);
   const [errors, setErrors] = useState(initialErrorState);
   const [touched, setTouched] = useState(initialTouchedState);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
-  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [isTabSwitching, setIsTabSwitching] = useState(false);
 
-  const { debouncedValidate } = useValidation();
+  const { request: register, loading: isRegistering, error: registrationError } = useAuthRequest<RegisterData, AuthResponse>('http://localhost:3000/api/access_management/register', 'post');
+  const { request: login, loading: isLoggingIn, error: loginError } = useAuthRequest<LoginData, AuthResponse>('http://localhost:3000/api/access_management/login', 'post');
+
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+
+  const { debouncedValidate } = useValidation({ formData, touched, setErrors });
+
+  const {
+    isAvailable: isUsernameAvailable,
+    isChecking: isCheckingUsername,
+  } = useAvailabilityCheck(formData.username, 'http://localhost:3000/api/access_management/check-username-exists', 'username');
+
+  const {
+    isAvailable: isEmailAvailable,
+    isChecking: isCheckingEmail,
+  } = useAvailabilityCheck(formData.email, 'http://localhost:3000/api/access_management/check-email-exists', 'email');
+
+  useEffect(() => {
+    if (loginError) {
+      setErrors(prev => ({
+        ...prev,
+        form: `Login failed: ${loginError.message}`
+      }));
+    }
+  }, [loginError]);
+
+  // current auth check
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/access_management/is-authenticated', {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          mode: 'cors',
+        });
+
+        const data = await response.json();
+        setIsAuthenticated(data.authenticated);
+      } catch {
+        setIsAuthenticated(null);
+      } finally {
+        setIsAuthLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  // email check
+  useEffect(() => {
+    const isValidEmail = validateEmail(formData.email || '');
+
+    if (!isValidEmail || isEmailAvailable === null) return;
+
+    setErrors(prev => ({
+      ...prev,
+      email: '',
+    }));
+  }, [isEmailAvailable, formData.email, activeTab]);
+
+  // username check
+  useEffect(() => {
+    const isOnSignup = activeTab === 1;
+    const isValidLocally = !validateLocalUsername(formData.username || '');
+
+    if (!isOnSignup || !isValidLocally || isUsernameAvailable === null) return;
+
+    setErrors(prev => ({
+      ...prev,
+      username: '',
+    }));
+  }, [isUsernameAvailable, formData.username, activeTab]);
+
+  useEffect(() => {
+    if (registrationError) {
+      setErrors(prev => ({
+        ...prev,
+        form: `Registration failed: ${registrationError.message}`,
+      }));
+    }
+  }, [registrationError]);
 
   const resetForm = useCallback(() => {
     setFormData(initialFormState);
@@ -38,57 +122,34 @@ export const AuthProvider = ({
     setTouched(initialTouchedState);
   }, []);
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    
-    if (name === 'username') {
-      setIsUsernameAvailable(null);
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      const fieldName = name as keyof typeof formData;
 
-      setFormData(prev => ({...prev, username: value, displayName: value}));
-      setTouched(prev => ({...prev, username: true, displayName: true}));
-    } else {
-      setFormData(prev => ({...prev, [name]: value}));
-      setTouched(prev => ({...prev, [name]: true}));
-    }
-    
-    debounce(async () => {
-      let error = '';
-      if (name === 'email') {
-        error = validateEmail(value);
-      } else if (name === 'password') {
-        error = validatePassword(value);
-        if (touched.confirmPassword) {
-          const confirmError = validateConfirmPassword(formData.confirmPassword, value);
-          setErrors(prev => ({ ...prev, confirmPassword: confirmError }));
-        }
-      } else if (name === 'username') {
-        if (value.length < 3) {
-          error = 'Username must be at least 3 characters';
-        } else {
-          error = await validateUsername(value, setIsUsernameAvailable, setIsCheckingUsername, checkUsernameAvailability);
-        }
-      } else if (name === 'displayName') {
-        error = validateDisplayName(value);
-      }     
-      else if (name === 'confirmPassword') {
-        error = validateConfirmPassword(value, formData.password);
+      if (fieldName === 'username') {
+        setFormData(prev => ({ ...prev, username: value, displayName: value }));
+        setTouched(prev => ({ ...prev, username: true, displayName: true }));
+        setErrors(prev => ({ ...prev, username: validateLocalUsername(value) }));
+      } else {
+        setFormData(prev => ({ ...prev, [fieldName]: value }));
+        setTouched(prev => ({ ...prev, [fieldName]: true }));
+        debouncedValidate(fieldName, value);
       }
-  
-      setErrors(prev => ({ ...prev, [name]: error }));
-    }, 300)();
-  }, [formData, touched]);
+    },
+    [debouncedValidate]
+  );
 
-  const validateForm = useCallback(async () => {
+  const validateForm = useCallback(() => {
     const newErrors = {
       ...initialErrorState,
       email: validateEmail(formData.email || ''),
       password: validatePassword(formData.password || ''),
-      username: activeTab === 1
-      ? await validateUsername(formData.username || '', setIsUsernameAvailable, setIsCheckingUsername, checkUsernameAvailability)
-      : '',
+      username: activeTab === 1 ? validateLocalUsername(formData.username || '') : '',
       displayName: activeTab === 1 ? validateDisplayName(formData.displayName || '') : '',
-      confirmPassword: activeTab === 1 ? 
-        validateConfirmPassword(formData.confirmPassword || '', formData.password || '') : ''
+      confirmPassword: activeTab === 1
+        ? validateConfirmPassword(formData.confirmPassword || '', formData.password || '')
+        : '',
     };
 
     setErrors(newErrors);
@@ -96,42 +157,55 @@ export const AuthProvider = ({
   }, [activeTab, formData]);
 
   const handleSubmit = useCallback(async () => {
-    if (!(await validateForm())) return;
+    if (!validateForm()) return;
 
     setIsSubmitting(true);
-    setErrors(prev => ({...prev, form: ''}));
+    setErrors(prev => ({ ...prev, form: '' }));
 
     try {
-      console.log(activeTab === 0 ? 'Sign In' : 'Sign Up', formData);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const authResult = activeTab === 0
+        ? await login(formData as LoginData)
+        : await register({
+            username: formData.username,
+            email: formData.email,
+            password: formData.password,
+            displayName: formData.displayName,
+          } as RegisterData);
+
       resetForm();
+
+      if (authResult?.success) {
+        setIsAuthenticated(true);
+        onAuthSuccess?.(); // navigation
+      } else {
+        throw new Error(authResult?.error || 'Authentication failed');
+      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       setErrors(prev => ({
         ...prev,
-        form: activeTab === 0 
-          ? `Sign in failed: ${errorMessage}` 
-          : `Registration failed: ${errorMessage}`
+        form: activeTab === 0
+          ? `Sign in failed: ${errorMessage}`
+          : `Registration failed: ${errorMessage}`,
       }));
     } finally {
       setIsSubmitting(false);
     }
-  }, [activeTab, formData, validateForm, resetForm]);
+  }, [activeTab, formData, validateForm, register, login, resetForm, onAuthSuccess]);
 
   const handleTabChange = useCallback((newValue: number) => {
     if (newValue === activeTab) return;
-  
     setIsTabSwitching(true);
     setTimeout(() => {
       setActiveTab(newValue);
       resetForm();
-      setIsUsernameAvailable(null);
       setIsTabSwitching(false);
-    }, 400); 
+    }, 400);
   }, [activeTab, resetForm]);
 
   const handleGoogleLogin = useCallback(() => {
-    console.log('Redirecting to Google OAuth');
+    console.log('Redirecting to Google OAuth...');
+    // To be implemented
   }, []);
 
   const contextValue = useMemo(() => ({
@@ -139,8 +213,6 @@ export const AuthProvider = ({
     errors,
     touched,
     isSubmitting,
-    isUsernameAvailable,
-    isCheckingUsername,
     isTabSwitching,
     activeTab,
     handleChange,
@@ -150,15 +222,19 @@ export const AuthProvider = ({
     resetForm,
     debouncedValidate,
     setErrors,
-    setIsUsernameAvailable,
-    setIsCheckingUsername,
+    isUsernameAvailable,
+    isCheckingUsername,
+    isEmailAvailable,
+    isCheckingEmail,
+    validateForm,
+    isAuthenticated,
+    isAuthLoading,
+    setIsAuthenticated,
   }), [
     formData,
     errors,
     touched,
     isSubmitting,
-    isUsernameAvailable,
-    isCheckingUsername,
     isTabSwitching,
     activeTab,
     handleChange,
@@ -168,10 +244,15 @@ export const AuthProvider = ({
     resetForm,
     debouncedValidate,
     setErrors,
-    setIsUsernameAvailable,
-    setIsCheckingUsername,
+    isUsernameAvailable,
+    isCheckingUsername,
+    isEmailAvailable,
+    isCheckingEmail,
+    validateForm,
+    isAuthenticated,
+    isAuthLoading,
+    setIsAuthenticated,
   ]);
-  
 
   return (
     <AuthContext.Provider value={contextValue}>

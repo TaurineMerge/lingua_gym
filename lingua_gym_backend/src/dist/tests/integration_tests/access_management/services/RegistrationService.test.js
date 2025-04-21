@@ -7,45 +7,50 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import Database from '../../../../src/database/config/db-connection.js';
 import RegistrationService from '../../../../src/services/access_management/RegistrationService.js';
 import { UserModel, UserMetadataModel } from '../../../../src/models/access_management/access_management.js';
 import bcrypt from 'bcrypt';
-const db = Database.getInstance();
-const userModel = new UserModel(db);
-const userMetadataModel = new UserMetadataModel(db);
-const registrationService = new RegistrationService(userModel, userMetadataModel);
+import { clearDatabase, closeDatabase, setupTestModelContainer, setupTestServiceContainer } from '../../../utils/di/TestContainer.js';
+let userModel;
+let userMetadataModel;
+let registrationService;
+beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
+    yield clearDatabase();
+    const modelContainer = yield setupTestModelContainer();
+    userModel = modelContainer.resolve(UserModel);
+    const serviceContainer = yield setupTestServiceContainer();
+    userMetadataModel = serviceContainer.resolve(UserMetadataModel);
+    registrationService = serviceContainer.resolve(RegistrationService);
+}));
 beforeEach(() => __awaiter(void 0, void 0, void 0, function* () {
-    yield db.query('DELETE FROM "UserMetadata"');
-    yield db.query('DELETE FROM "User"');
+    yield clearDatabase();
 }));
 afterAll(() => __awaiter(void 0, void 0, void 0, function* () {
-    yield db.query('DELETE FROM "UserMetadata"');
-    yield db.query('DELETE FROM "User"');
-    yield db.close();
+    yield clearDatabase();
+    yield closeDatabase();
 }));
 describe('RegistrationService (Integration)', () => {
-    it('should register a new user', () => __awaiter(void 0, void 0, void 0, function* () {
+    test('should register a new user', () => __awaiter(void 0, void 0, void 0, function* () {
         const password = 'password';
-        const user = {
+        const userData = {
             username: 'testuser',
-            display_name: null,
             email: 'test@example.com',
-            token_version: 0,
-            email_verified: false,
+            displayName: 'Test User',
+            tokenVersion: 0,
+            emailVerified: false
         };
-        yield registrationService.register(user.username, user.email, password);
+        yield registrationService.register(userData.username, userData.email, password, userData.displayName);
         const userResult = yield userModel.getUserByEmail('test@example.com');
-        expect(userResult).toMatchObject(Object.assign(Object.assign({}, user), { password_hash: expect.any(String), user_id: expect.any(String) }));
-        expect(bcrypt.compareSync(password, (userResult === null || userResult === void 0 ? void 0 : userResult.password_hash) == null ? expect.any(String) : userResult.password_hash)).toBe(true);
-        const metadataResult = yield userMetadataModel.getUserMetadataById((userResult === null || userResult === void 0 ? void 0 : userResult.user_id) == null ? expect.any(String) : userResult.user_id);
-        expect(metadataResult).toMatchObject({ user_id: (userResult === null || userResult === void 0 ? void 0 : userResult.user_id) == null ? expect.any(String) : userResult.user_id, signup_date: expect.any(Date), last_login: null });
+        expect(userResult).toMatchObject(Object.assign(Object.assign({}, userData), { passwordHash: expect.any(String), userId: expect.any(String) }));
+        expect(bcrypt.compareSync(password, (userResult === null || userResult === void 0 ? void 0 : userResult.passwordHash) == null ? expect.any(String) : userResult.passwordHash)).toBe(true);
+        const metadataResult = yield userMetadataModel.getUserMetadataById((userResult === null || userResult === void 0 ? void 0 : userResult.userId) == null ? expect.any(String) : userResult.userId);
+        expect(metadataResult).toMatchObject({ userId: (userResult === null || userResult === void 0 ? void 0 : userResult.userId) == null ? expect.any(String) : userResult.userId, signupDate: expect.any(Date), lastLogin: null });
     }));
-    it('should fail if email already exists', () => __awaiter(void 0, void 0, void 0, function* () {
+    test('should fail if email already exists', () => __awaiter(void 0, void 0, void 0, function* () {
         yield registrationService.register('testuser', 'test@example.com', 'password123');
         yield expect(registrationService.register('anotheruser', 'test@example.com', 'password456')).rejects.toThrow('Email already exists');
     }));
-    it('should fail if username already exists', () => __awaiter(void 0, void 0, void 0, function* () {
+    test('should fail if username already exists', () => __awaiter(void 0, void 0, void 0, function* () {
         yield registrationService.register('testuser', 'test@example.com', 'password123');
         yield expect(registrationService.register('testuser', 'newemail@example.com', 'password456')).rejects.toThrow('Username already exists');
     }));

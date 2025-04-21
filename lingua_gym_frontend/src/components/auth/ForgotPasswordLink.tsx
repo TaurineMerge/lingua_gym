@@ -1,4 +1,5 @@
-import { Link, Box } from '@mui/material';
+import { Link as MuiLink, Box } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../../hooks/auth/UseAuthForm';
 
 export const ForgotPasswordLink = () => {
@@ -8,9 +9,10 @@ export const ForgotPasswordLink = () => {
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-      <Link 
-        href="/forgot-password" 
-        sx={{ 
+      <MuiLink
+        component={RouterLink}
+        to="/auth/password-reset"
+        sx={{
           color: '#00e676',
           textDecoration: 'none',
           '&:hover': { textDecoration: 'underline' },
@@ -18,7 +20,7 @@ export const ForgotPasswordLink = () => {
         }}
       >
         Forgot password?
-      </Link>
+      </MuiLink>
     </Box>
   );
 };

@@ -1,15 +1,11 @@
 import { SetTagModel } from '../../../src/models/tag/tag.js';
 import { SetTag } from '../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 @injectable()
 class SetTagService {
-    private setTagModel: SetTagModel;
-
-    constructor(model: SetTagModel) {
-        this.setTagModel = model;
-    }
+    constructor(@inject('SetTagModel') private setTagModel: SetTagModel) {}
 
     async addTagToSet(setId: string, tagId: string): Promise<boolean> {
         if (!setId || !tagId) {

@@ -1,3 +1,5 @@
+import { User } from "./UserTypes";
+
 export type AuthFormData = {
     email: string;
     password: string;
@@ -7,6 +9,11 @@ export type AuthFormData = {
   
   export type AuthErrors = AuthFormData & {
     form: string;
+    email: string;
+    password: string;
+    username: string;
+    displayName: string;
+    confirmPassword: string;
   };
   
   export type TouchedFields = {
@@ -17,6 +24,8 @@ export type AuthFormData = {
   };
   
   export type AuthContextType = {
+    user: User | null;
+    isAuthLoading: boolean;
     formData: AuthFormData;
     errors: AuthErrors;
     touched: TouchedFields;

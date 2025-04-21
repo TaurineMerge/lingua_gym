@@ -2,15 +2,11 @@ import 'reflect-metadata';
 import Database from '../../database/config/db-connection.js';
 import { SetTag } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 @injectable()
 class SetTagModel {
-    private db;
-
-    constructor(dbInstance: Database) {
-        this.db = dbInstance;
-    }
+    constructor(@inject('Database') private db: Database) {}
 
     async addTagToSet(setId: string, tagId: string): Promise<boolean> {
         const query = `INSERT INTO "SetTag" (set_id, tag_id) VALUES ($1, $2) ON CONFLICT DO NOTHING;`;

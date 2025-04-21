@@ -4,17 +4,26 @@ import {
   } from '@mui/material';
   import ArticleIcon from '@mui/icons-material/Article';
   import { MaterialsCardProps } from '../../types/NewMaterials';
+  import ViewModuleIcon from '@mui/icons-material/ViewModule';
   
-  const CardComponent = ({ title, description, username, tags, language }: MaterialsCardProps) => {
+  const CardComponent = ({ title, description, username, tags, language, type }: MaterialsCardProps) => {
     const theme = useTheme();
 
     return (
       <Card sx={{ minWidth: 280, height: 506, m: 0.5, backgroundColor: '#EEE', pb: 0, maxHeight: '100%', transition: 'all 0.3s ease', "&:hover": { backgroundColor: '#FFF', cursor: 'grab' } }}>
-        <Box
-          sx={{ backgroundColor: '#0A84FF', p: 2, color: '#000', display: 'flex', justifyContent: 'center', height: '15%' }}
-        >
-          <ArticleIcon sx={{ fontSize: 40 }} />
-        </Box>
+        {type === 'set' ? (
+          <Box
+            sx={{ backgroundColor: '#0A84FF', p: 2, color: '#000', display: 'flex', justifyContent: 'center', height: '15%' }}
+          >
+            <ArticleIcon sx={{ fontSize: 40 }} />
+          </Box>
+        ) : (
+          <Box
+            sx={{ backgroundColor: '#0A84FF', p: 2, color: '#000', display: 'flex', justifyContent: 'center', height: '15%' }}
+          >
+            <ViewModuleIcon sx={{ fontSize: 40 }} />
+          </Box>
+        )}
         <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', p: 2, height: '85%' }}>
           <Typography variant="h6" sx={{ color: theme.palette.text.secondary }} gutterBottom>{title}</Typography>
           <Typography variant="body2" sx={{ color: theme.palette.text.secondary, overflow: 'auto', height: '7rem', fontSize: '0.875rem' }}>{description}</Typography>

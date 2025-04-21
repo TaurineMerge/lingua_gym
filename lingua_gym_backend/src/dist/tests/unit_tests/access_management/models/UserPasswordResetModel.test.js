@@ -14,9 +14,9 @@ const mockDb = {
 };
 const userPasswordResetModel = new UserPasswordResetModel(mockDb);
 const mockResetEntry = {
-    user_id: '123',
-    password_reset_token: 'reset-token',
-    password_reset_token_expiration: new Date(Date.now() + 3600000),
+    userId: '123',
+    passwordResetToken: 'reset-token',
+    passwordResetTokenExpiration: new Date(Date.now() + 3600000),
 };
 describe('UserPasswordResetModel', () => {
     beforeEach(() => {
@@ -25,7 +25,7 @@ describe('UserPasswordResetModel', () => {
     test('createResetEntry() should insert a new reset entry', () => __awaiter(void 0, void 0, void 0, function* () {
         mockDb.query.mockResolvedValue({});
         yield userPasswordResetModel.createResetEntry(mockResetEntry);
-        expect(mockDb.query).toHaveBeenCalledWith('INSERT INTO "UserPasswordReset" (user_id, password_reset_token, password_reset_token_expiration) VALUES ($1, $2, $3)', [mockResetEntry.user_id, mockResetEntry.password_reset_token, mockResetEntry.password_reset_token_expiration]);
+        expect(mockDb.query).toHaveBeenCalledWith('INSERT INTO "UserPasswordReset" (user_id, password_reset_token, password_reset_token_expiration) VALUES ($1, $2, $3)', [mockResetEntry.userId, mockResetEntry.passwordResetToken, mockResetEntry.passwordResetTokenExpiration]);
     }));
     test('getByToken() should return a reset entry if found', () => __awaiter(void 0, void 0, void 0, function* () {
         mockDb.query.mockResolvedValue({
@@ -35,8 +35,8 @@ describe('UserPasswordResetModel', () => {
             oid: 0,
             fields: [],
         });
-        const result = yield userPasswordResetModel.getByToken(mockResetEntry.password_reset_token);
-        expect(mockDb.query).toHaveBeenCalledWith('SELECT * FROM "UserPasswordReset" WHERE password_reset_token = $1', [mockResetEntry.password_reset_token]);
+        const result = yield userPasswordResetModel.getByToken(mockResetEntry.passwordResetToken);
+        expect(mockDb.query).toHaveBeenCalledWith('SELECT * FROM "UserPasswordReset" WHERE password_reset_token = $1', [mockResetEntry.passwordResetToken]);
         expect(result).toEqual(mockResetEntry);
     }));
     test('getByToken() should return null if no entry found', () => __awaiter(void 0, void 0, void 0, function* () {
@@ -52,13 +52,13 @@ describe('UserPasswordResetModel', () => {
     }));
     test('invalidateToken() should delete the reset token', () => __awaiter(void 0, void 0, void 0, function* () {
         mockDb.query.mockResolvedValue({});
-        yield userPasswordResetModel.invalidateToken(mockResetEntry.password_reset_token);
-        expect(mockDb.query).toHaveBeenCalledWith('DELETE FROM "UserPasswordReset" WHERE password_reset_token = $1', [mockResetEntry.password_reset_token]);
+        yield userPasswordResetModel.invalidateToken(mockResetEntry.passwordResetToken);
+        expect(mockDb.query).toHaveBeenCalledWith('DELETE FROM "UserPasswordReset" WHERE password_reset_token = $1', [mockResetEntry.passwordResetToken]);
     }));
     test('deleteRequestByUserId() should delete requests by user_id', () => __awaiter(void 0, void 0, void 0, function* () {
         mockDb.query.mockResolvedValue({});
-        yield userPasswordResetModel.deleteRequestByUserId(mockResetEntry.user_id);
-        expect(mockDb.query).toHaveBeenCalledWith('DELETE FROM "UserPasswordReset" WHERE user_id = $1', [mockResetEntry.user_id]);
+        yield userPasswordResetModel.deleteRequestByUserId(mockResetEntry.userId);
+        expect(mockDb.query).toHaveBeenCalledWith('DELETE FROM "UserPasswordReset" WHERE user_id = $1', [mockResetEntry.userId]);
     }));
     test('deleteExpiredRequests() should delete expired requests', () => __awaiter(void 0, void 0, void 0, function* () {
         mockDb.query.mockResolvedValue({});

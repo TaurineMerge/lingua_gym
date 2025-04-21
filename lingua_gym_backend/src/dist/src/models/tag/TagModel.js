@@ -7,6 +7,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -16,17 +19,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import 'reflect-metadata';
 import Database from '../../database/config/db-connection.js';
 import logger from '../../utils/logger/Logger.js';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 let TagModel = class TagModel {
-    constructor(dbInstance) {
-        this.db = dbInstance;
+    constructor(db) {
+        this.db = db;
     }
     createTag(tagId, name) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
-            const query = `INSERT INTO "Tags" (tag_id, name) VALUES ($1, $2) RETURNING tag_id;`;
+            const query = `INSERT INTO "Tag" (tag_id, name) VALUES ($1, $2) RETURNING tag_id;`;
             try {
                 const result = yield this.db.query(query, [tagId, name || null]);
                 return ((_a = result.rows[0]) === null || _a === void 0 ? void 0 : _a.tag_id) || null;
@@ -39,7 +43,11 @@ let TagModel = class TagModel {
     }
     getTagById(tagId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const query = `SELECT * FROM "Tags" WHERE tag_id = $1;`;
+            const query = `
+        SELECT
+            tag_id AS "tagId",
+            name AS "name"
+        FROM "Tag" WHERE tag_id = $1;`;
             try {
                 const result = yield this.db.query(query, [tagId]);
                 return result.rows[0] || null;
@@ -52,7 +60,11 @@ let TagModel = class TagModel {
     }
     getAllTags() {
         return __awaiter(this, void 0, void 0, function* () {
-            const query = `SELECT * FROM "Tags" ORDER BY name;`;
+            const query = `
+        SELECT
+            tag_id AS "tagId",
+            name
+        FROM "Tag";`;
             try {
                 const result = yield this.db.query(query);
                 return result.rows;
@@ -65,9 +77,9 @@ let TagModel = class TagModel {
     }
     updateTag(tagId, name) {
         return __awaiter(this, void 0, void 0, function* () {
-            const query = `UPDATE "Tags" SET name = $1, description = $2 WHERE tag_id = $3;`;
+            const query = `UPDATE "Tag" SET name = $1 WHERE tag_id = $2 RETURNING tag_id AS "tagId", name;`;
             try {
-                const result = yield this.db.query(query, [tagId, name]);
+                const result = yield this.db.query(query, [name, tagId]);
                 return result.rowCount > 0;
             }
             catch (error) {
@@ -78,7 +90,7 @@ let TagModel = class TagModel {
     }
     deleteTag(tagId) {
         return __awaiter(this, void 0, void 0, function* () {
-            const query = `DELETE FROM "Tags" WHERE tag_id = $1;`;
+            const query = `DELETE FROM "Tag" WHERE tag_id = $1 RETURNING tag_id AS "tagId", name;`;
             try {
                 const result = yield this.db.query(query, [tagId]);
                 return result.rowCount > 0;
@@ -92,6 +104,7 @@ let TagModel = class TagModel {
 };
 TagModel = __decorate([
     injectable(),
+    __param(0, inject('Database')),
     __metadata("design:paramtypes", [Database])
 ], TagModel);
 export default TagModel;

@@ -10,6 +10,7 @@ export const SubmitButton = () => {
       variant="contained"
       onClick={handleSubmit}
       disabled={isSubmitting}
+      type="submit"
       sx={{
         bgcolor: '#00e676',
         color: '#000',

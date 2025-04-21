@@ -3,18 +3,16 @@ import { UserModel } from '../../models/access_management/access_management.js';
 import { User } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 import 'dotenv/config';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 
 @injectable()
 class TokenManagementService {
-  private userModel: UserModel;
   private jwtSecret: string;
   private jwtRefreshSecret: string;
   private accessTokenExpiry: string;
   private refreshTokenExpiry: string;
 
-  constructor(userModel: UserModel) {
-    this.userModel = userModel;
+  constructor(@inject('UserModel') private userModel: UserModel) {
     this.jwtSecret = process.env.JWT_SECRET || '';
     this.jwtRefreshSecret = process.env.JWT_REFRESH_TOKEN_SECRET || '';
     this.accessTokenExpiry = process.env.JWT_ACCESS_TOKEN_EXPIRY || '30m';

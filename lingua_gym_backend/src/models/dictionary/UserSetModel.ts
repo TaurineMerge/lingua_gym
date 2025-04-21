@@ -2,15 +2,11 @@ import 'reflect-metadata';
 import Database from '../../database/config/db-connection.js';
 import { Permission as UserSetPermission, UserSet } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 @injectable()
 class UserSetModel {
-    private db;
-
-    constructor(dbInstance: Database) {
-        this.db = dbInstance;
-    }
+    constructor(@inject('Database') private db: Database) {}
 
     async addUserToSet(userId: string, setId: string, permission: UserSetPermission): Promise<UserSet | null> {
         const query = `INSERT INTO "UserSet" (user_id, set_id, permission) VALUES ($1, $2, $3) RETURNING user_id AS "userId", set_id AS "setId", permission`;

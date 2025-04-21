@@ -1,32 +1,43 @@
-import { useCallback } from 'react';
+import { useMemo } from 'react';
 import { debounce } from 'lodash';
-import { useAuth } from './UseAuthForm';
-import { 
-  validateEmail, 
-  validatePassword, 
-  validateUsername,
+import {
+  validateEmail,
+  validatePassword,
   validateConfirmPassword,
-  validateDisplayName
+  validateDisplayName,
+  validateLocalUsername,
 } from '../../utils/auth/AuthValidators';
-import { checkUsernameAvailability } from '../../services/auth/AuthService';
+import { TouchedFields, AuthErrors } from '../../types/AuthTypes';
 
-export const useValidation = () => {
-  const { 
-    formData = { email: '', password: '', username: '', confirmPassword: '' }, 
-    touched = { email: false, password: false, username: false, confirmPassword: false }, 
-    setErrors,
-    setIsUsernameAvailable,
-    setIsCheckingUsername
-  } = useAuth();
+type FieldName = 'email' | 'password' | 'username' | 'confirmPassword' | 'displayName';
 
-  const debouncedValidate = useCallback(
-    debounce(async (name: string, value: string, password: string) => {
+interface UseValidationParams {
+  formData: {
+    email: string;
+    password: string;
+    username: string;
+    confirmPassword: string;
+    displayName: string;
+  };
+  touched: TouchedFields;
+  setErrors: React.Dispatch<React.SetStateAction<AuthErrors>>;
+}
+
+
+export const useValidation = ({
+  formData,
+  touched,
+  setErrors,
+}: UseValidationParams) => {
+  const validateField = useMemo(() => {
+    return (name: FieldName, value: string) => {
       let error = '';
 
       switch (name) {
         case 'email':
           error = validateEmail(value);
           break;
+
         case 'password':
           error = validatePassword(value);
           if (touched.confirmPassword) {
@@ -34,32 +45,25 @@ export const useValidation = () => {
             setErrors(prev => ({ ...prev, confirmPassword: confirmError }));
           }
           break;
+
         case 'username':
-          error = await validateUsername(
-            value,
-            setIsUsernameAvailable,
-            setIsCheckingUsername,
-            checkUsernameAvailability
-          );
+          error = validateLocalUsername(value);
           break;
+
         case 'displayName':
           error = validateDisplayName(value);
           break;
+
         case 'confirmPassword':
-          error = validateConfirmPassword(value, password);
+          error = validateConfirmPassword(value, formData.password);
           break;
       }
 
       setErrors(prev => ({ ...prev, [name]: error }));
-    }, 300),
-    [
-      formData?.confirmPassword, 
-      touched?.confirmPassword, 
-      setErrors, 
-      setIsUsernameAvailable, 
-      setIsCheckingUsername
-    ]
-  );
+    };
+  }, [formData, touched, setErrors]);
+
+  const debouncedValidate = useMemo(() => debounce(validateField, 300), [validateField]);
 
   return { debouncedValidate };
 };

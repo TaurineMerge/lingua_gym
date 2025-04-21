@@ -31,11 +31,7 @@ describe('Database', () => {
     const mockPool = new Pool();
     beforeEach(() => {
         jest.clearAllMocks();
-        db = Database.getInstance();
-    });
-    test('getInstance() should return the same instance', () => {
-        const db2 = Database.getInstance();
-        expect(db).toBe(db2);
+        db = new Database();
     });
     test('query() should call pool.query() with correct arguments', () => __awaiter(void 0, void 0, void 0, function* () {
         const mockResult = {

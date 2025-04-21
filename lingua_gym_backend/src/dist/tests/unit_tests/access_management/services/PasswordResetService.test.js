@@ -14,7 +14,7 @@ jest.mock('jsonwebtoken');
 jest.mock('nodemailer');
 const mockUserModel = {
     getUserByEmail: jest.fn(),
-    updateUser: jest.fn(),
+    updateUserById: jest.fn(),
 };
 const mockUserPasswordResetModel = {
     createResetEntry: jest.fn(),
@@ -38,7 +38,7 @@ describe('PasswordResetService', () => {
         passwordResetService = new PasswordResetService(mockUserModel, mockUserPasswordResetModel);
     });
     describe('requestPasswordReset', () => {
-        it('should generate a reset token and send an email', () => __awaiter(void 0, void 0, void 0, function* () {
+        test('should generate a reset token and send an email', () => __awaiter(void 0, void 0, void 0, function* () {
             mockUserModel.getUserByEmail.mockResolvedValue(mockUser);
             mockUserPasswordResetModel.createResetEntry.mockResolvedValue(true);
             jwt.sign.mockReturnValue('mockResetToken');
@@ -47,22 +47,22 @@ describe('PasswordResetService', () => {
             expect(mockUserPasswordResetModel.createResetEntry).toHaveBeenCalled();
             expect(mockTransporter.sendMail).toHaveBeenCalled();
         }));
-        it('should throw an error if the user is not found', () => __awaiter(void 0, void 0, void 0, function* () {
+        test('should throw an error if the user is not found', () => __awaiter(void 0, void 0, void 0, function* () {
             mockUserModel.getUserByEmail.mockResolvedValue(null);
             yield expect(passwordResetService.requestPasswordReset(mockUser.email)).rejects.toThrow('User not found');
         }));
     });
     describe('resetPassword', () => {
-        it('should reset the user password if token is valid', () => __awaiter(void 0, void 0, void 0, function* () {
+        test('should reset the user password if token is valid', () => __awaiter(void 0, void 0, void 0, function* () {
             jwt.verify.mockReturnValue({ userId: mockUser.user_id, tokenVersion: mockUser.token_version });
             mockUserPasswordResetModel.getByToken.mockResolvedValue({
                 password_reset_token_expiration: new Date(Date.now() + 10000),
             });
             yield passwordResetService.resetPassword('validToken', 'newPassword');
-            expect(mockUserModel.updateUser).toHaveBeenCalled();
+            expect(mockUserModel.updateUserById).toHaveBeenCalled();
             expect(mockUserPasswordResetModel.invalidateToken).toHaveBeenCalledWith('validToken');
         }));
-        it('should throw an error if token is expired or invalid', () => __awaiter(void 0, void 0, void 0, function* () {
+        test('should throw an error if token is expired or invalid', () => __awaiter(void 0, void 0, void 0, function* () {
             jwt.verify.mockImplementation(() => {
                 throw new Error('Invalid or expired reset token');
             });
@@ -70,13 +70,13 @@ describe('PasswordResetService', () => {
         }));
     });
     describe('verifyResetToken', () => {
-        it('should verify a valid reset token', () => {
+        test('should verify a valid reset token', () => {
             jwt.verify.mockReturnValue({ userId: mockUser.user_id, tokenVersion: mockUser.token_version });
             const payload = passwordResetService['verifyResetToken']('validToken');
             expect(jwt.verify).toHaveBeenCalledWith('validToken', process.env.RESET_TOKEN_SECRET);
             expect(payload).toEqual({ userId: mockUser.user_id, tokenVersion: mockUser.token_version });
         });
-        it('should throw an error for an invalid token', () => {
+        test('should throw an error for an invalid token', () => {
             jwt.verify.mockImplementation(() => {
                 throw new Error('Invalid token');
             });
@@ -84,13 +84,13 @@ describe('PasswordResetService', () => {
         });
     });
     describe('parseExpiry', () => {
-        it('should correctly parse expiry time in seconds, minutes, hours, and days', () => {
+        test('should correctly parse expiry time in seconds, minutes, hours, and days', () => {
             expect(passwordResetService['parseExpiry']('30s')).toBe(30000);
             expect(passwordResetService['parseExpiry']('10m')).toBe(600000);
             expect(passwordResetService['parseExpiry']('2h')).toBe(7200000);
             expect(passwordResetService['parseExpiry']('1d')).toBe(86400000);
         });
-        it('should throw an error for invalid format', () => {
+        test('should throw an error for invalid format', () => {
             expect(() => passwordResetService['parseExpiry']('invalid')).toThrow('Invalid token expiry format');
         });
     });

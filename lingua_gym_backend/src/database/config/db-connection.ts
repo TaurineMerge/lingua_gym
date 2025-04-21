@@ -3,7 +3,6 @@ import logger from '../../utils/logger/Logger.js';
 import 'dotenv/config';
 
 class Database {
-  private static instance: Database | null = null;
   private pool: pg.Pool;
 
   public constructor(pool?: pg.Pool) {
@@ -22,25 +21,6 @@ class Database {
       logger.fatal({ err }, 'Unexpected error on idle client');
       process.exit(-1);
     });
-
-    process.on('SIGINT', async () => {
-      logger.info('Received SIGINT, shutting down...');
-      await this.close();
-      process.exit(0);
-    });
-
-    process.on('SIGTERM', async () => {
-      logger.info('Received SIGTERM, shutting down...');
-      await this.close();
-      process.exit(0);
-    });
-  }
-
-  public static getInstance(): Database {
-    if (!Database.instance) {
-      Database.instance = new Database();
-    }
-    return Database.instance;
   }
 
   public async query<T extends pg.QueryResultRow>(

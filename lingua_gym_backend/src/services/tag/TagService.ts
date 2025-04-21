@@ -1,14 +1,10 @@
 import { TagModel } from '../../../src/models/tag/tag.js';
 import logger from '../../utils/logger/Logger.js';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 @injectable()
 class TagService {
-    private tagModel: TagModel;
-
-    constructor(model: TagModel) {
-        this.tagModel = model;
-    }
+    constructor(@inject('TagModel') private tagModel: TagModel) {}
 
     async createTag(tagId: string, name: string): Promise<string | null> {
         if (!tagId || !name) {

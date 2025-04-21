@@ -2,15 +2,11 @@ import 'reflect-metadata';
 import Database from '../../database/config/db-connection.js';
 import { DictionaryCard, CardTranslation, CardMeaning, CardExample } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 @injectable()
 class DictionaryCardModel {
-    private db;
-
-    constructor(dbInstance: Database) {
-        this.db = dbInstance;
-    }
+    constructor(@inject('Database') private db: Database) {}
 
     async createCard(cardGeneralData: DictionaryCard, cardTranslations: Array<CardTranslation>, cardMeanings: Array<CardMeaning>, cardExamples: Array<CardExample>): Promise<string> {
         try {

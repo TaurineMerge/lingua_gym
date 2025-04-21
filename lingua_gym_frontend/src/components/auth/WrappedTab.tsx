@@ -17,6 +17,7 @@ const WrappedTab = ({ labels, activeValue, onTabChange }: WrappedTabProps) => {
         <TabComponent 
         labels={labels} 
         onChange={onTabChange}
+        value={activeValue}
         />
     );
 };

@@ -1,15 +1,11 @@
 import { DictionarySetModel } from '../../models/dictionary/dictionary.js';
 import logger from '../../utils/logger/Logger.js';
 import { DictionarySet } from '../../database/interfaces/DbInterfaces.js';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 
 @injectable()
 class DictionarySetService {
-    private model: DictionarySetModel;
-
-    constructor(model: DictionarySetModel) {
-        this.model = model;
-    }
+    constructor(@inject('DictionarySetModel') private model: DictionarySetModel) {}
 
     async createSet(set: DictionarySet): Promise<DictionarySet | null> {
         if (!set.dictionarySetId || !set.name || !set.ownerId) {

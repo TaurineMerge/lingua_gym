@@ -11,8 +11,8 @@ import pg from 'pg';
 import logger from '../../utils/logger/Logger.js';
 import 'dotenv/config';
 class Database {
-    constructor() {
-        this.pool = new pg.Pool({
+    constructor(pool) {
+        this.pool = pool || new pg.Pool({
             host: process.env.DB_HOST || 'localhost',
             port: parseInt(process.env.DB_PORT || '5432', 10),
             user: process.env.DB_USER || 'user',
@@ -26,22 +26,6 @@ class Database {
             logger.fatal({ err }, 'Unexpected error on idle client');
             process.exit(-1);
         });
-        process.on('SIGINT', () => __awaiter(this, void 0, void 0, function* () {
-            logger.info('Received SIGINT, shutting down...');
-            yield this.close();
-            process.exit(0);
-        }));
-        process.on('SIGTERM', () => __awaiter(this, void 0, void 0, function* () {
-            logger.info('Received SIGTERM, shutting down...');
-            yield this.close();
-            process.exit(0);
-        }));
-    }
-    static getInstance() {
-        if (!Database.instance) {
-            Database.instance = new Database();
-        }
-        return Database.instance;
     }
     query(text, params) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -62,5 +46,4 @@ class Database {
         });
     }
 }
-Database.instance = null;
 export default Database;

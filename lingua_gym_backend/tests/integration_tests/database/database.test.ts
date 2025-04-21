@@ -1,6 +1,6 @@
 import Database from "../../../src/database/config/db-connection.js";
 
-const db = Database.getInstance();
+const db = new Database();
 
 describe("Database Connection Integration Test", () => {
   test("Should connect to the database and run a simple query", async () => {

@@ -1,15 +1,11 @@
 import { SetCardModel } from '../../../src/models/dictionary/dictionary.js';
 import { DictionaryCard, SetCard } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 @injectable()
 class SetCardService {
-    private model: SetCardModel;
-
-    constructor(model: SetCardModel) {
-        this.model = model;
-    }
+    constructor(@inject('SetCardModel') private model: SetCardModel) {}
 
     async addCardToSet(setId: string, cardId: string): Promise<SetCard | boolean> {
         if (!setId || !cardId) {

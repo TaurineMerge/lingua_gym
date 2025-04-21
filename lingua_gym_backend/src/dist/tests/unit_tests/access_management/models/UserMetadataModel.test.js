@@ -25,23 +25,23 @@ describe('UserModel', () => {
     });
     test('createUserMetadata() should call db.query() with correct arguments', () => __awaiter(void 0, void 0, void 0, function* () {
         const userMetadata = {
-            user_id: '123',
-            last_login: new Date(),
-            signup_date: new Date(),
+            userId: '123',
+            lastLogin: new Date(),
+            signupDate: new Date(),
         };
         yield userMetadataModel.createUserMetadata(userMetadata);
         expect(db.query).toHaveBeenCalledWith(`
       INSERT INTO "UserMetadata" (user_id, last_login, signup_date)
       VALUES ($1, $2, $3)
-    `, [userMetadata.user_id, userMetadata.last_login, userMetadata.signup_date]);
+    `, [userMetadata.userId, userMetadata.lastLogin, userMetadata.signupDate]);
         expect(logger.info).toHaveBeenCalledWith('Creating user metadata...');
         expect(logger.info).toHaveBeenCalledWith('User metadata created successfully');
     }));
     test('createUserMetadata() should log an error and throw if db.query() fails', () => __awaiter(void 0, void 0, void 0, function* () {
         const userMetadata = {
-            user_id: '123',
-            last_login: new Date(),
-            signup_date: new Date(),
+            userId: '123',
+            lastLogin: new Date(),
+            signupDate: new Date(),
         };
         const dbError = new Error('Database connection failed');
         db.query.mockRejectedValue(dbError);

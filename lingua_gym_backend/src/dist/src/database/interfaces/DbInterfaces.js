@@ -1,2 +1,2 @@
-import { Permission } from './dictionary/UserSets.js';
+import { Permission } from './dictionary/UserSet.js';
 export { Permission };

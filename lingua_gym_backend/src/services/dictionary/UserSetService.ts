@@ -1,15 +1,11 @@
 import { UserSetModel } from '../../../src/models/dictionary/dictionary.js';
 import logger from '../../utils/logger/Logger.js';
 import { Permission, UserSet } from '../../../src/database/interfaces/DbInterfaces.js';
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 @injectable()
 class UserSetService {
-    private userSetModel: UserSetModel;
-
-    constructor(model: UserSetModel) {
-        this.userSetModel = model;
-    }
+    constructor(@inject('UserSetModel') private userSetModel: UserSetModel) {}
 
     async addUserSet(userId: string, setId: string, permission: Permission): Promise<UserSet | boolean> {
         if (!userId || !setId || !permission) {

@@ -1,16 +1,40 @@
-import { Request, Response } from 'express';
+import { CookieOptions, Request, Response } from 'express';
 import container from '../di/Container.js';
 import logger from '../utils/logger/Logger.js';
-import { RegistrationService, AuthenticationService, JwtTokenManagementService, PasswordResetService } from '../services/access_management/access_management.js';
+import {
+  RegistrationService,
+  AuthenticationService,
+  JwtTokenManagementService,
+  PasswordResetService
+} from '../services/access_management/access_management.js';
 
 class AccessManagementController {
+  private static setTokenCookies(res: Response, refreshToken: string, accessToken: string): void {
+    const isProduction = process.env.NODE_ENV === 'production';
+    const cookieOptions: CookieOptions = {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'strict' : 'lax',
+    };
+
+    res.cookie('refreshToken', refreshToken, cookieOptions);
+    res.cookie('accessToken', accessToken, cookieOptions);
+  }
+
   static async register(req: Request, res: Response): Promise<void> {
     try {
       logger.info({ email: req.body.email }, 'User registration attempt');
-      const { username, email, password } = req.body;
+      const { username, email, password, displayName } = req.body;
+
       const registrationService = container.resolve<RegistrationService>('RegistrationService');
-      const user = await registrationService.register(username, email, password);
+      const user = await registrationService.register(username, email, password, displayName);
+
+      const authService = container.resolve<AuthenticationService>('AuthenticationService');
+      const { accessToken, refreshToken } = await authService.login(email, password);
+
+      AccessManagementController.setTokenCookies(res, refreshToken, accessToken);
       logger.info({ userId: user.userId }, 'User registered successfully');
+
       res.status(201).json({ message: 'User registered', user });
     } catch (error) {
       logger.error({ error }, 'User registration failed');
@@ -22,16 +46,13 @@ class AccessManagementController {
     try {
       const { email, password } = req.body;
       logger.info({ email }, 'User login attempt');
-      const authenticationService = container.resolve<AuthenticationService>('AuthenticationService');
-      const { accessToken, refreshToken } = await authenticationService.login(email, password);
 
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-      });
+      const authService = container.resolve<AuthenticationService>('AuthenticationService');
+      const { accessToken, refreshToken } = await authService.login(email, password);
 
+      AccessManagementController.setTokenCookies(res, refreshToken, accessToken);
       logger.info({ email }, 'User logged in successfully');
+
       res.json({ accessToken });
     } catch (error) {
       logger.warn({ email: req.body.email }, 'User login failed');
@@ -41,17 +62,17 @@ class AccessManagementController {
 
   static async logout(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.body.userId;
+      const { userId } = req.body;
       if (!userId) throw new Error('Unauthorized');
 
       logger.info({ userId }, 'User logout attempt');
-      const authenticationService = container.resolve<AuthenticationService>('AuthenticationService');
-      await authenticationService.logout(userId);
 
-      res.clearCookie('refreshToken', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-      });
+      const authService = container.resolve<AuthenticationService>('AuthenticationService');
+      await authService.logout(userId);
+
+      res.clearCookie('refreshToken');
+      res.clearCookie('accessToken');
+
       logger.info({ userId }, 'User logged out successfully');
       res.json({ message: 'Logged out' });
     } catch (error) {
@@ -62,31 +83,39 @@ class AccessManagementController {
 
   static async refreshToken(req: Request, res: Response): Promise<void> {
     try {
-      const refreshToken = req.cookies.refreshToken;
+      const { refreshToken } = req.cookies;
       if (!refreshToken) throw new Error('Refresh token missing');
 
-      logger.info({}, 'Refreshing access token');
       const jwtService = container.resolve<JwtTokenManagementService>('JwtTokenManagementService');
-      const newTokens = await jwtService.refreshToken(refreshToken);
+      const { accessToken, refreshToken: newRefresh } = await jwtService.refreshToken(refreshToken);
 
-      res.cookie('refreshToken', newTokens.refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict',
-      });
+      this.setTokenCookies(res, newRefresh, accessToken);
 
-      res.json({ accessToken: newTokens.accessToken });
+      logger.info({}, 'Access token refreshed');
+      res.json({ accessToken });
     } catch (error) {
       logger.warn({}, 'Refresh token failed');
-      res.status(403).json({ error: (error as Error).message || 'Invalid refresh token' });
+      res.status(403).json({ error: (error as Error).message });
     }
   }
 
   static async requestPasswordReset(req: Request, res: Response): Promise<void> {
     try {
-      logger.info({ email: req.body.email }, 'Password reset request');
-      const passwordResetService = container.resolve<PasswordResetService>('PasswordResetService');
-      await passwordResetService.requestPasswordReset(req.body.email);
+      const { email } = req.body;
+      logger.info({ email }, 'Password reset request');
+
+      if (!email) throw new Error('Email is required');
+
+      const registrationService = container.resolve<RegistrationService>('RegistrationService');
+      const isEmailExists = await registrationService.checkIfEmailExists(email);
+
+      if (!isEmailExists) {
+        throw new Error('Email does not exist');
+      }
+
+      const resetService = container.resolve<PasswordResetService>('PasswordResetService');
+      await resetService.requestPasswordReset(email);
+
       res.json({ message: 'Password reset email sent' });
     } catch (error) {
       logger.error({ error }, 'Password reset request failed');
@@ -96,9 +125,11 @@ class AccessManagementController {
 
   static async resetPassword(req: Request, res: Response): Promise<void> {
     try {
-      logger.info({}, 'Resetting password');
-      const passwordResetService = container.resolve<PasswordResetService>('PasswordResetService');
-      await passwordResetService.resetPassword(req.body.token, req.body.newPassword);
+      const { token, newPassword } = req.body;
+      const resetService = container.resolve<PasswordResetService>('PasswordResetService');
+      await resetService.resetPassword(token, newPassword);
+
+      logger.info({}, 'Password reset successful');
       res.json({ message: 'Password reset successful' });
     } catch (error) {
       logger.error({ error }, 'Password reset failed');
@@ -108,23 +139,43 @@ class AccessManagementController {
 
   static async checkIfEmailExists(req: Request, res: Response): Promise<void> {
     try {
-      const registrationService = container.resolve<RegistrationService>('AuthenticationService');
-      const exists = await registrationService.checkIfEmailExists(req.params.email);
-      res.json({ exists });
+      const { email } = req.body;
+      const registrationService = container.resolve<RegistrationService>('RegistrationService');
+      const exists = await registrationService.checkIfEmailExists(email);
+
+      res.json({ available: !exists });
     } catch (error) {
-      logger.error({ error }, 'Checking if email exists failed');
+      logger.error({ error }, 'Check if email exists failed');
       res.status(400).json({ error: (error as Error).message });
     }
   }
 
   static async checkIfUsernameExists(req: Request, res: Response): Promise<void> {
     try {
+      const { username } = req.body;
       const registrationService = container.resolve<RegistrationService>('RegistrationService');
-      const exists = await registrationService.checkIfUsernameExists(req.params.username);
-      res.json({ exists });
+      const exists = await registrationService.checkIfUsernameExists(username);
+
+      res.json({ available: !exists });
     } catch (error) {
-      logger.error({ error }, 'Checking if username exists failed');
+      logger.error({ error }, 'Check if username exists failed');
       res.status(400).json({ error: (error as Error).message });
+    }
+  }
+
+  static async checkIfAuthenticated(req: Request, res: Response): Promise<void> {
+    try {
+      const { accessToken } = req.cookies;
+      const authService = container.resolve<AuthenticationService>('AuthenticationService');
+
+      const authenticated = accessToken
+        ? await authService.isAuthenticated(accessToken)
+        : false;
+
+      res.json({ authenticated });
+    } catch (error) {
+      logger.error({ error }, 'Check if authenticated failed');
+      res.status(400).json({ error: (error as Error).message, authenticated: false });
     }
   }
 }

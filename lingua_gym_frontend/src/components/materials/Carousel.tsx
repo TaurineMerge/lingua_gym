@@ -5,13 +5,25 @@ import 'slick-carousel/slick/slick-theme.css';
 import Slider from 'react-slick';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CardType } from '../../types/NewMaterials';
 
-const dummyData = new Array(10).fill(null).map((_, idx) => ({
-  title: `Title ${idx + 1}`,
+const dummyDataSets = new Array(10).fill(null).map((_, idx) => ({
+  title: `Set Title ${idx + 1}`,
   description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. ',
   username: 'UserName',
   tags: ['tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6', 'tag7', 'tag8'],
   language: 'Eng',
+  type: CardType.SET,
+}));
+
+const dummyDataTexts = new Array(10).fill(null).map((_, idx) => ({
+  title: `Text Title ${idx + 1}`,
+  description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. ',
+  username: 'UserName',
+  tags: ['tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6', 'tag7', 'tag8'],
+  language: 'Eng',
+  type: CardType.TEXT,
 }));
 
 const SampleNextArrow = ({ onClick, currentSlide, slideCount }: SliderProps & { slideCount?: number, currentSlide?: number }) => {
@@ -19,6 +31,7 @@ const SampleNextArrow = ({ onClick, currentSlide, slideCount }: SliderProps & { 
     <IconButton
       onClick={onClick}
       disabled={currentSlide === (slideCount || 0) - 1}
+      title=' arrow'
       sx={{
         position: 'absolute',
         right: '-40px',
@@ -45,6 +58,7 @@ const SamplePrevArrow = ({ onClick, currentSlide }: SliderProps & { slideCount?:
     <IconButton
       onClick={onClick}
       disabled={currentSlide === 0}
+      title='prev arrow'
       sx={{
         position: 'absolute',
         left: '-40px',
@@ -96,22 +110,49 @@ const settings = {
   ],
 };
 
-const Carousel = () => {
+const Carousel = ({ tabValue }: { tabValue: number }) => {
+  const data = tabValue === 0 ? dummyDataSets : dummyDataTexts;
+
   return (
     <>
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography variant="h6" color="#E5E5E7">Recommended</Typography>
-        <Typography variant="body2" color="primary" sx={{ cursor: 'pointer', padding: '4px', transition: 'all 0.3s ease', "&:hover": { backgroundColor: 'rgba(255, 255, 255, 0.08)', borderRadius: '4px' } }}>
+        <Typography
+          variant="body2"
+          color="primary"
+          sx={{
+            cursor: 'pointer',
+            padding: '4px',
+            transition: 'all 0.3s ease',
+            "&:hover": {
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              borderRadius: '4px'
+            }
+          }}
+        >
           View all
         </Typography>
       </Box>
 
-      <Box position="relative">
-        <Slider {...settings}>
-          {dummyData.map((item, idx) => (
-            <CarouselCard key={idx} {...item} />
-          ))}
-        </Slider>
+      <Box position="relative" sx={{ mt: 2 }}>
+        <Box sx={{ overflow: 'visible', position: 'relative' }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={tabValue}
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -40 }}
+              transition={{ duration: 0.4 }}
+              style={{ position: 'relative', overflow: 'visible' }}
+            >
+              <Slider {...settings}>
+                {data.map((item, idx) => (
+                  <CarouselCard key={idx} {...item} />
+                ))}
+              </Slider>
+            </motion.div>
+          </AnimatePresence>
+        </Box>
       </Box>
     </>
   );

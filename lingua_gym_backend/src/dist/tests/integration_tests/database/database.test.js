@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import Database from "../../../src/database/config/db-connection.js";
-const db = Database.getInstance();
+const db = new Database();
 describe("Database Connection Integration Test", () => {
     test("Should connect to the database and run a simple query", () => __awaiter(void 0, void 0, void 0, function* () {
         const result = yield db.query("SELECT 1 + 1 AS sum");

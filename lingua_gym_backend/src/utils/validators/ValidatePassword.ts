@@ -1,4 +1,4 @@
-import logger from "../logger/Logger";
+import logger from "../logger/Logger.js";
 
 const validatePassword = (password: string): boolean => { // !NOT TESTED!
     if (password.length < 6) {

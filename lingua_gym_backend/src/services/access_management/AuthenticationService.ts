@@ -2,17 +2,11 @@ import bcrypt from 'bcrypt';
 import { UserModel } from '../../models/access_management/access_management.js';
 import logger from '../../utils/logger/Logger.js';
 import TokenManagementService from './JwtTokenManagementService.js';
-import { injectable } from 'tsyringe';
+import { injectable, inject } from 'tsyringe';
 
 @injectable()
 class AuthenticationService {
-  private userModel: UserModel;
-  private jwtTokenService: TokenManagementService;
-
-  constructor(userModel: UserModel, jwtTokenService: TokenManagementService) {
-    this.userModel = userModel;
-    this.jwtTokenService = jwtTokenService;
-  }
+  constructor(@inject('UserModel') private userModel: UserModel, @inject('JwtTokenManagementService') private jwtTokenService: TokenManagementService) {}
 
   async login(email: string, password: string): Promise<{ accessToken: string; refreshToken: string }> {
     logger.info({ email }, 'User login attempt');
@@ -47,6 +41,15 @@ class AuthenticationService {
     } catch (err) {
       logger.error({ error: err }, 'Password verification failed');
       throw new Error('Password verification failed');
+    }
+  }
+
+  async isAuthenticated(token: string): Promise<boolean> {
+    try {
+      return !!this.jwtTokenService.verifyAccessToken(token);
+    } catch (err) {
+      logger.error({ error: err }, 'Access token verification failed');
+      throw new Error('Access token verification failed');
     }
   }
 }
