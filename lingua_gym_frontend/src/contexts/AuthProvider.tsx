@@ -74,7 +74,7 @@ export const AuthProvider = ({
   
         const data = await response.json();
         setIsAuthenticated(data.authenticated);
-      } catch (err) {
+      } catch {
         try {
           const refreshResponse = await fetch('http://localhost:3000/api/access_management/refresh-token', {
             method: 'GET',

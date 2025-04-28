@@ -1,9 +1,11 @@
 import { Navigate, createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import App from '../App';
 import { AuthPage } from '../pages/AuthPage';
-import NewMaterialsPage from '../pages/NewMaterialsPage';
+import HomePage from '../pages/HomePage';
 import { useAuth } from '../hooks/auth/UseAuthForm';
 import PasswordResetPage from '../components/auth/PasswordResetForm';
+import AdvancedSearchView from '../pages/AdvancedSearchPage';
+import LetterOverlay from '../components/main/LetterOverlay';
 
 export function ProtectedRoute() {
   const { isAuthenticated, isAuthLoading } = useAuth();
@@ -28,8 +30,8 @@ const router = createBrowserRouter([
         path: '',
         element: <App />,
         children: [
-          { index: true, element: <div>Home Page</div> },
-          { path: 'materials', element: <NewMaterialsPage /> },
+          { index: true, element: <HomePage /> },
+          { path: 'materials', element: <AdvancedSearchView /> },
         ],
       },
     ],

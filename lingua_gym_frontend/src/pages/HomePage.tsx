@@ -3,13 +3,15 @@ import { SearchBar, Tab, Carousel } from '../components/components';
 import { useTheme } from '@mui/material/styles';
 
 import { useState } from 'react';
+import LetterOverlay from '../components/main/LetterOverlay';
 
-const MaterialsPage = () => {
+const HomePage = () => {
   const [tabValue, setTabValue] = useState(0);
   const theme = useTheme();
 
   return (
     <Container>
+      <LetterOverlay />
       <Box mt={4}>
         <Typography variant="h3" sx={{ 
           color: theme.palette.secondary.main, 
@@ -38,4 +40,4 @@ const MaterialsPage = () => {
 };
 
 
-export default MaterialsPage;
+export default HomePage;

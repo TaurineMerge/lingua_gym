@@ -12,6 +12,7 @@ const TopBar = () => {
         backgroundColor: 'transparent',
         boxShadow: 'none',
         padding: '1rem 2rem',
+        minHeight: '10vh'
       }}
     >
       <Toolbar disableGutters sx={{ justifyContent: 'space-between', alignItems: 'center' }}>

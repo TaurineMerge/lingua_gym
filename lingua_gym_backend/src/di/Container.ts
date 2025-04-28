@@ -16,6 +16,7 @@ import {
   RegistrationService,
   PasswordResetService,
 } from '../services/access_management/access_management.js';
+import { AdvancedSearchModel, AdvancedSearchParameters } from '../models/advanced_search/AdvancedSearchModel.js';
 
 const db = new Database();
 
@@ -43,6 +44,10 @@ container.register<AuthenticationService>('AuthenticationService', {
 });
 container.register<PasswordResetService>('PasswordResetService', {
   useClass: PasswordResetService,
+});
+
+container.register("AdvancedSearchModel", {
+  useFactory: (c) => (params: AdvancedSearchParameters) => new AdvancedSearchModel(c.resolve<Database>("Database"), params)
 });
 
 export default container;

@@ -6,8 +6,7 @@ import { JwtTokenManagementService } from "../../services/access_management/acce
 const jwtService = container.resolve<JwtTokenManagementService>("JwtTokenManagementService");
 
 const validateAccessToken = (req: Request, res: Response, next: NextFunction): Response | void => {
-  const authHeader = req.headers.authorization;
-  const token = authHeader?.split(' ')[1]; // "Bearer <access_token>"
+  const token = req.cookies.accessToken;
 
   if (!token) {
     logger.warn({ path: req.path }, "Unauthorized access attempt: No token provided");
