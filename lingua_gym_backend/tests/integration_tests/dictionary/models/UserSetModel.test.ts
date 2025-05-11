@@ -1,5 +1,5 @@
-import { UserSetModel, DictionarySetModel } from '../../../../src/models/dictionary/dictionary.js';
-import { UserModel } from '../../../../src/models/access_management/access_management.js';
+import { UserSetModel, DictionarySetModel } from '../../../../src/repositories/dictionary/dictionary.js';
+import { UserModel } from '../../../../src/repositories/access_management/access_management.js';
 import { Permission, User, DictionarySet, UserSet } from '../../../../src/database/interfaces/DbInterfaces.js';
 import { v4 as uuidv4 } from 'uuid';
 import hashPassword from '../../../../src/utils/hash/HashPassword.js';

@@ -1,5 +1,5 @@
 import { setupTestServiceContainer, clearDatabase, closeDatabase } from '../../../utils/di/TestContainer.js';
-import { DictionarySetModel, DictionaryCardModel } from '../../../../src/models/dictionary/dictionary.js';
+import { DictionarySetModel, DictionaryCardModel } from '../../../../src/repositories/dictionary/dictionary.js';
 import { SetCardService } from '../../../../src/services/dictionary/dictionary.js';
 import { DictionarySet, DictionaryCard, User } from '../../../../src/database/interfaces/DbInterfaces.js';
 import { v4 as uuidv4 } from 'uuid';

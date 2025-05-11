@@ -1,4 +1,4 @@
-import { UserModel } from '../../../../src/models/access_management/access_management.js';
+import { UserModel } from '../../../../src/repositories/access_management/access_management.js';
 import Database from '../../../../src/database/config/db-connection.js';
 import { User } from '../../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../../../src/utils/logger/Logger.js';

@@ -1,4 +1,4 @@
-import { UserSetModel } from '../../../src/models/dictionary/dictionary.js';
+import { UserSetModel } from '../../repositories/dictionary/dictionary.js';
 import logger from '../../utils/logger/Logger.js';
 import { Permission, UserSet } from '../../../src/database/interfaces/DbInterfaces.js';
 import { inject, injectable } from 'tsyringe';

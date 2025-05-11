@@ -1,4 +1,4 @@
-import { DictionaryCardModel } from '../../../src/models/dictionary/dictionary.js';
+import { DictionaryCardModel } from '../../repositories/dictionary/dictionary.js';
 import logger from '../../utils/logger/Logger.js';
 import { DictionaryCard, CardTranslation, CardMeaning, CardExample } from '../../database/interfaces/DbInterfaces.js';
 import { injectable, inject } from 'tsyringe';

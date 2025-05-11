@@ -5,7 +5,7 @@ import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';
 
 @injectable()
-class DictionarySetModel {
+class DictionarySetRepository {
     constructor(@inject('Database') private db: Database) {}
 
     async createSet(dictionarySet: DictionarySet): Promise<DictionarySet> {
@@ -89,4 +89,4 @@ class DictionarySetModel {
     }
 }
 
-export default DictionarySetModel;
+export default DictionarySetRepository;

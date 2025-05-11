@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import AuthenticationService from '../../../../src/services/access_management/AuthenticationService.js';
-import { UserModel } from '../../../../src/models/access_management/access_management.js';
+import { UserModel } from '../../../../src/repositories/access_management/access_management.js';
 import TokenManagementService from '../../../../src/services/access_management/JwtTokenManagementService.js';
 import Database from '../../../../src/database/config/db-connection.js';
 

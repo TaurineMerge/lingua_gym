@@ -1,4 +1,4 @@
-import { UserSetModel } from '../../../../src/models/dictionary/dictionary.js';
+import { UserSetModel } from '../../../../src/repositories/dictionary/dictionary.js';
 import Database from '../../../../src/database/config/db-connection.js';
 import { Permission, UserSet } from '../../../../src/database/interfaces/DbInterfaces.js';
 

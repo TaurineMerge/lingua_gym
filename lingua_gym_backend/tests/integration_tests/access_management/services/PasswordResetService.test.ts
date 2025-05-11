@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import RegistrationService from '../../../../src/services/access_management/RegistrationService.js';
-import { UserModel } from '../../../../src/models/access_management/access_management.js';
+import { UserModel } from '../../../../src/repositories/access_management/access_management.js';
 import { User } from '../../../../src/database/interfaces/DbInterfaces.js';
 import { clearDatabase, closeDatabase, setupTestModelContainer, setupTestServiceContainer } from '../../../utils/di/TestContainer.js';
 

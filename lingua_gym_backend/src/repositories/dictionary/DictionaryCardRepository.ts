@@ -5,7 +5,7 @@ import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';
 
 @injectable()
-class DictionaryCardModel {
+class DictionaryCardRepository {
     constructor(@inject('Database') private db: Database) {}
 
     async createCard(cardGeneralData: DictionaryCard, cardTranslations: Array<CardTranslation>, cardMeanings: Array<CardMeaning>, cardExamples: Array<CardExample>): Promise<string> {
@@ -160,4 +160,4 @@ class DictionaryCardModel {
     }
 }
 
-export default DictionaryCardModel;
+export default DictionaryCardRepository;

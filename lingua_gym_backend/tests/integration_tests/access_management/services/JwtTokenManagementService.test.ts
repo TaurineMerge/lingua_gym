@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import TokenManagementService from '../../../../src/services/access_management/JwtTokenManagementService.js';
-import { UserModel } from '../../../../src/models/access_management/access_management.js';
+import { UserModel } from '../../../../src/repositories/access_management/access_management.js';
 import 'dotenv/config';
 import { User } from '../../../../src/database/interfaces/DbInterfaces.js';
 import RegistrationService from '../../../../src/services/access_management/RegistrationService.js';

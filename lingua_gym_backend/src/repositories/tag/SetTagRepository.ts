@@ -5,7 +5,7 @@ import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';
 
 @injectable()
-class SetTagModel {
+class SetTagRepository {
     constructor(@inject('Database') private db: Database) {}
 
     async addTagToSet(setId: string, tagId: string): Promise<boolean> {
@@ -42,4 +42,4 @@ class SetTagModel {
     }
 }
 
-export default SetTagModel;
+export default SetTagRepository;

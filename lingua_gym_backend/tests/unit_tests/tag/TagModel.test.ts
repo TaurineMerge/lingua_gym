@@ -1,4 +1,4 @@
-import { TagModel } from '../../../src/models/tag/tag.js';
+import { TagModel } from '../../../src/repositories/tag/tag.js';
 import Database from '../../../src/database/config/db-connection.js';
 import Tag from '../../../src/database/interfaces/tag/Tag.js';
 

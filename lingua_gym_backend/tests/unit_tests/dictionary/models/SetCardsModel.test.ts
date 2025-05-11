@@ -1,4 +1,4 @@
-import { SetCardModel } from '../../../../src/models/dictionary/dictionary.js';
+import { SetCardModel } from '../../../../src/repositories/dictionary/dictionary.js';
 import Database from '../../../../src/database/config/db-connection.js';
 import { DictionaryCard } from '../../../../src/database/interfaces/DbInterfaces.js';
 

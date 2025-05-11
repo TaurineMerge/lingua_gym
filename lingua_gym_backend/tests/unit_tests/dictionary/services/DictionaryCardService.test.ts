@@ -1,5 +1,5 @@
 import DictionaryCardService from '../../../../src/services/dictionary/DictionaryCardService.js';
-import { DictionaryCardModel } from '../../../../src/models/dictionary/dictionary.js';
+import { DictionaryCardModel } from '../../../../src/repositories/dictionary/dictionary.js';
 import { DictionaryCard, CardTranslation, CardMeaning, CardExample } from '../../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../../../src/utils/logger/Logger.js';
 

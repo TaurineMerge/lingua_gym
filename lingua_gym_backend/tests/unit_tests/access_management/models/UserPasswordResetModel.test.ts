@@ -1,4 +1,4 @@
-import { UserPasswordResetModel } from '../../../../src/models/access_management/access_management.js';
+import { UserPasswordResetModel } from '../../../../src/repositories/access_management/access_management.js';
 import Database from '../../../../src/database/config/db-connection.js';
 import { UserPasswordReset } from '../../../../src/database/interfaces/DbInterfaces.js';
 

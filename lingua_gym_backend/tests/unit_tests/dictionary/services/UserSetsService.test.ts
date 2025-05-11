@@ -1,5 +1,5 @@
 import { UserSetService } from '../../../../src/services/dictionary/dictionary.js';
-import { UserSetModel } from '../../../../src/models/dictionary/dictionary.js';
+import { UserSetModel } from '../../../../src/repositories/dictionary/dictionary.js';
 import { Permission, UserSet } from '../../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../../../src/utils/logger/Logger.js';
 

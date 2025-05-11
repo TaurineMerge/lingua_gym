@@ -1,5 +1,5 @@
 import { User, UserPasswordReset } from '../../../../src/database/interfaces/DbInterfaces.js';
-import { UserModel, UserPasswordResetModel } from '../../../../src/models/access_management/access_management.js';
+import { UserModel, UserPasswordResetModel } from '../../../../src/repositories/access_management/access_management.js';
 import { v4 as uuidv4 } from 'uuid';
 import { clearDatabase, closeDatabase, setupTestModelContainer } from '../../../utils/di/TestContainer.js';
 

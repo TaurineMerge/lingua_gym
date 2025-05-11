@@ -5,7 +5,7 @@ import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';
 
 @injectable()
-class UserSetModel {
+class UserSetRepository {
     constructor(@inject('Database') private db: Database) {}
 
     async addUserToSet(userId: string, setId: string, permission: UserSetPermission): Promise<UserSet | null> {
@@ -69,4 +69,4 @@ class UserSetModel {
     }
 }
 
-export default UserSetModel;
+export default UserSetRepository;

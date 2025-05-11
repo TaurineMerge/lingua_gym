@@ -1,4 +1,4 @@
-import { TagModel } from '../../../src/models/tag/tag.js';
+import { TagModel } from '../../repositories/tag/tag.js';
 import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';
 

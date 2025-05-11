@@ -1,5 +1,5 @@
 import { AuthenticationService, RegistrationService } from '../../../../src/services/access_management/access_management.js';
-import { UserModel } from '../../../../src/models/access_management/access_management.js';
+import { UserModel } from '../../../../src/repositories/access_management/access_management.js';
 import bcrypt from 'bcrypt';
 import { clearDatabase, closeDatabase, setupTestModelContainer, setupTestServiceContainer } from '../../../utils/di/TestContainer.js';
 

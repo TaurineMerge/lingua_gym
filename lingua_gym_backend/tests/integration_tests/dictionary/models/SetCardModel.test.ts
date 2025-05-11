@@ -1,9 +1,9 @@
-import { SetCardModel, DictionarySetModel, DictionaryCardModel } from '../../../../src/models/dictionary/dictionary.js';
+import { SetCardModel, DictionarySetModel, DictionaryCardModel } from '../../../../src/repositories/dictionary/dictionary.js';
 import { DictionaryCard, DictionarySet, SetCard, CardTranslation, CardMeaning, CardExample, User } from '../../../../src/database/interfaces/DbInterfaces.js';
 import { v4 as uuidv4 } from 'uuid';
 import { clearDatabase, closeDatabase, setupTestModelContainer } from '../../../utils/di/TestContainer.js';
 import hash_password from '../../../../src/utils/hash/HashPassword.js';
-import { UserModel } from '../../../../src/models/access_management/access_management.js';
+import { UserModel } from '../../../../src/repositories/access_management/access_management.js';
 
 let setCardModel: SetCardModel;
 let setModel: DictionarySetModel;

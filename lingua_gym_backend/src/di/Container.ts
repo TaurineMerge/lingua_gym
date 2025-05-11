@@ -8,7 +8,7 @@ import {
   UserModel,
   UserMetadataModel,
   UserPasswordResetModel,
-} from '../models/access_management/access_management.js';
+} from '../repositories/access_management/access_management.js';
 
 import {
   AuthenticationService,
@@ -16,7 +16,7 @@ import {
   RegistrationService,
   PasswordResetService,
 } from '../services/access_management/access_management.js';
-import { AdvancedSearchModel, AdvancedSearchParameters } from '../models/advanced_search/AdvancedSearchModel.js';
+import { AdvancedSearchModel, AdvancedSearchParameters } from '../repositories/advanced_search/AdvancedSearchModel.js';
 
 const db = new Database();
 

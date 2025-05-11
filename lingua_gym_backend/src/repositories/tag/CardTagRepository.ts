@@ -5,7 +5,7 @@ import { inject, injectable } from 'tsyringe';
 import { CardTag } from '../../database/interfaces/DbInterfaces.js';
 
 @injectable()
-class CardTagModel {
+class CardTagRepository {
     constructor(@inject('Database') private db: Database) {}
 
     async addTagToCard(cardId: string, tagId: string): Promise<boolean> {
@@ -42,4 +42,4 @@ class CardTagModel {
     }
 }
 
-export default CardTagModel;
+export default CardTagRepository;

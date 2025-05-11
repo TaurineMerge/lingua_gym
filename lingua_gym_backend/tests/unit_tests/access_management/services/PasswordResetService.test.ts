@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer';
 import PasswordResetService from '../../../../src/services/access_management/PasswordResetService.js';
-import { UserModel } from '../../../../src/models/access_management/access_management.js';
-import UserPasswordResetModel from '../../../../src/models/access_management/UserPasswordResetModel.js';
+import { UserRepository } from '../../../../src/repositories/access_management/access_management.js';
+import UserPasswordResetModel from '../../../../src/repositories/access_management/UserPasswordResetRepository.js';
 
 jest.mock('jsonwebtoken');
 jest.mock('nodemailer');
@@ -38,7 +38,7 @@ describe('PasswordResetService', () => {
     jest.clearAllMocks();
 
     passwordResetService = new PasswordResetService(
-      mockUserModel as unknown as UserModel,
+      mockUserModel as unknown as UserRepository,
       mockUserPasswordResetModel as unknown as UserPasswordResetModel
     );
   });

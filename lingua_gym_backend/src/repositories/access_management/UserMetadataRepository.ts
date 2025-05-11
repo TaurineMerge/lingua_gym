@@ -5,7 +5,7 @@ import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';
 
 @injectable()
-class UserMetadataModel {
+class UserMetadataRepository {
   constructor(@inject('Database') private db: Database) {}
 
   async createUserMetadata(userMetadata: UserMetadata): Promise<void> {
@@ -85,4 +85,4 @@ class UserMetadataModel {
   }
 }
 
-export default UserMetadataModel;
+export default UserMetadataRepository;

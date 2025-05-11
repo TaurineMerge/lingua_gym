@@ -1,4 +1,4 @@
-import { CardTagModel } from '../../../src/models/tag/tag.js';
+import { CardTagModel } from '../../repositories/tag/tag.js';
 import { CardTag } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';

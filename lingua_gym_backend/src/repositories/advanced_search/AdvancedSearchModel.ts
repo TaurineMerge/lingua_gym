@@ -12,11 +12,11 @@ interface AdvancedSearchParameters {
     tags?: string[];
 }
 
+// !NOT TESTED!
 @injectable()
-class AdvancedSearchModel {
+class AdvancedSearchRepository {
     constructor(@inject('Database') private db: Database, private filters: AdvancedSearchParameters) {}
 
-    // !NOT TESTED!
     async search(limit: number, offset: number) {
         const { value, type, language, users, tags } = this.filters;
     
@@ -148,4 +148,4 @@ class AdvancedSearchModel {
     }
 }
 
-export { AdvancedSearchModel, AdvancedSearchParameters };
+export { AdvancedSearchRepository, AdvancedSearchParameters };

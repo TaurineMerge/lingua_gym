@@ -5,7 +5,7 @@ import HomePage from '../pages/HomePage';
 import { useAuth } from '../hooks/auth/UseAuthForm';
 import PasswordResetPage from '../components/auth/PasswordResetForm';
 import AdvancedSearchView from '../pages/AdvancedSearchPage';
-import LetterOverlay from '../components/main/LetterOverlay';
+import TextReader from '../pages/TextReader';
 
 export function ProtectedRoute() {
   const { isAuthenticated, isAuthLoading } = useAuth();
@@ -32,6 +32,7 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <HomePage /> },
           { path: 'materials', element: <AdvancedSearchView /> },
+          { path: 'text', element: <TextReader /> },
         ],
       },
     ],

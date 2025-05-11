@@ -1,5 +1,5 @@
 import DictionarySetService from '../../../../src/services/dictionary/DictionarySetService';
-import { DictionarySetModel } from '../../../../src/models/dictionary/dictionary.js';
+import { DictionarySetModel } from '../../../../src/repositories/dictionary/dictionary.js';
 import { DictionarySet } from '../../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../../../src/utils/logger/Logger.js';
 

@@ -1,7 +1,7 @@
-import { DictionaryCardModel } from '../../../../src/models/dictionary/dictionary.js';
+import { DictionaryCardModel } from '../../../../src/repositories/dictionary/dictionary.js';
 import { v4 as uuidv4 } from 'uuid';
 import { DictionaryCard, CardTranslation, CardMeaning, CardExample } from '../../../../src/database/interfaces/DbInterfaces.js';
-import { TagModel, CardTagModel } from '../../../../src/models/tag/tag.js';
+import { TagModel, CardTagModel } from '../../../../src/repositories/tag/tag.js';
 import { clearDatabase, closeDatabase, setupTestModelContainer } from '../../../utils/di/TestContainer.js';
 
 describe('DictionaryCardModel integration', () => {

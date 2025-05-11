@@ -5,7 +5,7 @@ import Tag from '../../database/interfaces/tag/Tag.js';
 import { inject, injectable } from 'tsyringe';
 
 @injectable()
-class TagModel {
+class TagRepository {
     constructor(@inject('Database') private db: Database) {}
 
     async createTag(tagId: string, name: string): Promise<string | null> {
@@ -72,4 +72,4 @@ class TagModel {
     }
 }
 
-export default TagModel;
+export default TagRepository;

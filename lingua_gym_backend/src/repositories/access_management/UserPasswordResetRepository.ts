@@ -5,7 +5,7 @@ import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';
 
 @injectable()
-class UserPasswordResetModel {
+class UserPasswordResetRepository {
   constructor(@inject('Database') private db: Database) {}
 
   async createResetEntry(reset: UserPasswordReset): Promise<void> {
@@ -86,4 +86,4 @@ class UserPasswordResetModel {
   }
 }
 
-export default UserPasswordResetModel;
+export default UserPasswordResetRepository;

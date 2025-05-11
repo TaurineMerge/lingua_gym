@@ -1,11 +1,11 @@
 import { setupTestServiceContainer, setupTestModelContainer, clearDatabase, closeDatabase } from '../../utils/di/TestContainer.js';
 import SetTagService from '../../../src/services/tag/SetTagService.js';
-import { TagModel } from '../../../src/models/tag/tag.js';
-import { DictionarySetModel } from '../../../src/models/dictionary/dictionary.js';
+import { TagModel } from '../../../src/repositories/tag/tag.js';
+import { DictionarySetModel } from '../../../src/repositories/dictionary/dictionary.js';
 import { v4 as uuidv4 } from 'uuid';
 import { DictionarySet, User } from '../../../src/database/interfaces/DbInterfaces.js';
 import password_hash from '../../../src/utils/hash/HashPassword.js';
-import { UserModel } from '../../../src/models/access_management/access_management.js';
+import { UserModel } from '../../../src/repositories/access_management/access_management.js';
 
 let setTagService: SetTagService;
 let tagModel: TagModel;

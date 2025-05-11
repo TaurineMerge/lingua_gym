@@ -1,4 +1,4 @@
-import { SetTagModel } from '../../../src/models/tag/tag.js';
+import { SetTagModel } from '../../repositories/tag/tag.js';
 import { SetTag } from '../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import RegistrationService from '../../../../src/services/access_management/RegistrationService.js';
-import { UserModel, UserMetadataModel } from '../../../../src/models/access_management/access_management.js';
+import { UserModel, UserMetadataModel } from '../../../../src/repositories/access_management/access_management.js';
 import Database from '../../../../src/database/config/db-connection.js';
 import bcrypt from 'bcrypt';
 

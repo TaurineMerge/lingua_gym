@@ -1,4 +1,4 @@
-import { SetTagModel } from '../../../src/models/tag/tag.js';
+import { SetTagModel } from '../../../src/repositories/tag/tag.js';
 import Database from '../../../src/database/config/db-connection.js';
 import { DictionarySet, Tag } from '../../../src/database/interfaces/DbInterfaces.js';
 
