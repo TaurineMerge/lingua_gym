@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import Database from '../../database/config/db-connection.js';
-import { UserPasswordReset } from '../../database/interfaces/DbInterfaces.js';
+import { IPasswordResetManager } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';
 
@@ -8,7 +8,7 @@ import { inject, injectable } from 'tsyringe';
 class UserPasswordResetRepository {
   constructor(@inject('Database') private db: Database) {}
 
-  async createResetEntry(reset: UserPasswordReset): Promise<void> {
+  async createResetEntry(reset: IPasswordResetManager): Promise<void> {
     const query = 'INSERT INTO "UserPasswordReset" (user_id, password_reset_token, password_reset_token_expiration) VALUES ($1, $2, $3)';
     const values = [
       reset.userId,
@@ -25,7 +25,7 @@ class UserPasswordResetRepository {
     }
   }
 
-  async getByToken(password_reset_token: string): Promise<UserPasswordReset | null> {
+  async getByToken(password_reset_token: string): Promise<IPasswordResetManager | null> {
     const query = `
     SELECT 
       user_id as "userId",
@@ -35,7 +35,7 @@ class UserPasswordResetRepository {
     FROM "UserPasswordReset" WHERE password_reset_token = $1`;
     try {
       logger.info('Fetching password reset entry by token...');
-      const result = await this.db.query<UserPasswordReset>(query, [password_reset_token]);
+      const result = await this.db.query<IPasswordResetManager>(query, [password_reset_token]);
 
       if (result.rows.length > 0) {
         logger.info('Password reset entry found');

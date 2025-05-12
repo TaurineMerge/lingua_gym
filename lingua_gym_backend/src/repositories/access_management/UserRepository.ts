@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import Database from '../../database/config/db-connection.js';
-import { User } from '../../database/interfaces/DbInterfaces.js';
+import { IUser } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 import { injectable, inject } from 'tsyringe';
 
@@ -8,7 +8,7 @@ import { injectable, inject } from 'tsyringe';
 class UserRepository {
   constructor(@inject('Database') private db: Database) {}
 
-  async createUser(user: User): Promise<void> {
+  async createUser(user: IUser): Promise<boolean> {
     const query = 'INSERT INTO "User" (user_id, username, display_name, password_hash, email, token_version, profile_picture, email_verified) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)';
     const values = [
       user.userId,
@@ -24,13 +24,14 @@ class UserRepository {
       logger.info('Creating user...');
       await this.db.query(query, values);
       logger.info('User created successfully');
+      return true;
     } catch (err) {
       logger.error('Error creating user:', err);
       throw err;
     }
   }
 
-  async getUserById(user_id: string): Promise<User | null> {
+  async getUserById(user_id: string): Promise<IUser | null> {
     const query = `
       SELECT 
         user_id as "userId",
@@ -45,7 +46,7 @@ class UserRepository {
         updated_at as "updatedAt"
       FROM "User" WHERE user_id = $1`;
     try {
-      const result = await this.db.query<User>(query, [user_id]);
+      const result = await this.db.query<IUser>(query, [user_id]);
       return result.rows[0] || null;
     } catch (err) {
       console.error('Error fetching user by ID:', err);
@@ -53,7 +54,7 @@ class UserRepository {
     }
   }
 
-  async getUserByEmail(email: string): Promise<User | null> {
+  async getUserByEmail(email: string): Promise<IUser | null> {
     const query = `
       SELECT 
         user_id as "userId",
@@ -68,7 +69,7 @@ class UserRepository {
         updated_at as "updatedAt"
       FROM "User" WHERE email = $1`;
     try {
-      const result = await this.db.query<User>(query, [email]);
+      const result = await this.db.query<IUser>(query, [email]);
       return result.rows[0] || null;
     } catch (err) {
       console.error('Error fetching user by Email:', err);
@@ -76,7 +77,7 @@ class UserRepository {
     }
   }
 
-  async getUserByUsername(username: string): Promise<User | null> {
+  async getUserByUsername(username: string): Promise<IUser | null> {
     const query = `
       SELECT 
         user_id as "userId",
@@ -91,7 +92,7 @@ class UserRepository {
         updated_at as "updatedAt"
       FROM "User" WHERE username = $1`;
     try {
-      const result = await this.db.query<User>(query, [username]);
+      const result = await this.db.query<IUser>(query, [username]);
       return result.rows[0] || null;
     } catch (err) {
       console.error('Error fetching user by username:', err);
@@ -99,7 +100,7 @@ class UserRepository {
     }
   }
 
-  async updateUserById(user_id: string, updates: Partial<User>): Promise<void> {
+  async updateUserById(user_id: string, updates: Partial<IUser>): Promise<boolean> {
     const fields = Object.keys(updates)
       .map((key, index) => {
         const keyMapping: Record<string, string> = {
@@ -119,16 +120,18 @@ class UserRepository {
     const query = `UPDATE "User" SET ${fields} WHERE user_id = $1`;
     try {
       await this.db.query(query, values);
+      return true;
     } catch (err) {
       console.error('Error updating user:', err);
       throw err;
     }
   }
 
-  async deleteUserById(user_id: string): Promise<void> {
+  async deleteUserById(user_id: string): Promise<boolean> {
     const query = `DELETE FROM "User" WHERE user_id = $1`;
     try {
       await this.db.query(query, [user_id]);
+      return true;
     } catch (err) {
       console.error('Error deleting user:', err);
       throw err;

@@ -1,54 +1,50 @@
-import bcrypt from 'bcrypt';
-import { UserModel } from '../../repositories/access_management/access_management.js';
+import { JwtTokenManager, User } from '../../models/access_management/access_management.js';
+import { UserRepository } from '../../repositories/access_management/access_management.js';
 import logger from '../../utils/logger/Logger.js';
 import TokenManagementService from './JwtTokenManagementService.js';
 import { injectable, inject } from 'tsyringe';
 
 @injectable()
 class AuthenticationService {
-  constructor(@inject('UserModel') private userModel: UserModel, @inject('JwtTokenManagementService') private jwtTokenService: TokenManagementService) {}
+  private jwtTokenManager: JwtTokenManager;
+  constructor(@inject('UserRepository') private userRepository: UserRepository, @inject('JwtTokenManagementService') private jwtTokenService: TokenManagementService) {
+    this.jwtTokenManager = new JwtTokenManager();
+  }
 
   async login(email: string, password: string): Promise<{ accessToken: string; refreshToken: string }> {
-    logger.info({ email }, 'User login attempt');
-
-    const user = await this.userModel.getUserByEmail(email);
-    if (!user) {
-      logger.warn({ email }, 'Login failed: User not found');
-      throw new Error('User not found');
-    }
-    
-    const isPasswordValid = this.verifyPassword(password, user.passwordHash);
-    if (!isPasswordValid) {
-      logger.warn({ email }, 'Login failed: Invalid password');
-      throw new Error('Invalid password');
-    }
-
-    const accessToken = this.jwtTokenService.generateAccessToken(user);
-    const refreshToken = this.jwtTokenService.generateRefreshToken(user);
-
-    logger.info({ userId: user.userId }, 'User successfully logged in');
-    return { accessToken, refreshToken };
-  }
-
-  async logout(userId: string): Promise<void> {
-    await this.jwtTokenService.incrementTokenVersion(userId);
-    logger.info({ userId }, 'User logged out, refresh token invalidated');
-  }
-
-  private verifyPassword(password: string, hashedPassword: string): boolean {
     try {
-      return bcrypt.compareSync(password, hashedPassword);
+      logger.info({ email }, 'User login attempt');
+
+      const user = new User(await this.userRepository.getUserByEmail(email));
+      
+      user.verifyPasswordHash(password);
+
+      const accessToken = this.jwtTokenManager.generateAccessToken(user);
+      const refreshToken = this.jwtTokenManager.generateRefreshToken(user);
+
+      logger.info({ userId: user.userId }, 'User successfully logged in');
+      return { accessToken, refreshToken };
     } catch (err) {
-      logger.error({ error: err }, 'Password verification failed');
-      throw new Error('Password verification failed');
+      logger.error('User login failed: ', { error: err });
+      throw new Error('User login failed');
     }
+  }
+
+  async logout(user: User): Promise<void> {
+    try {
+      await this.jwtTokenService.incrementTokenVersion(user);
+      logger.info( user.userId, 'User logged out, refresh token invalidated');
+    } catch (err) {
+      logger.error('User logout failed: ', { error: err });
+      throw new Error('User logout failed');
+    } 
   }
 
   async isAuthenticated(token: string): Promise<boolean> {
     try {
-      return !!this.jwtTokenService.verifyAccessToken(token);
+      return !!this.jwtTokenManager.verifyAccessToken(token);
     } catch (err) {
-      logger.error({ error: err }, 'Access token verification failed');
+      logger.error('Access token verification failed: ', { error: err });
       throw new Error('Access token verification failed');
     }
   }

@@ -1,7 +1,7 @@
-interface UserMetadata {
+interface IUserMetadata {
   userId: string;
   lastLogin?: Date;
   signupDate: Date;
 }
 
-export default UserMetadata;
+export default IUserMetadata;

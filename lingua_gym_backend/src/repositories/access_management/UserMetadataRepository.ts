@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import Database from '../../database/config/db-connection.js';
-import { UserMetadata } from '../../database/interfaces/DbInterfaces.js';
+import { IUserMetadata } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';
 
@@ -8,7 +8,7 @@ import { inject, injectable } from 'tsyringe';
 class UserMetadataRepository {
   constructor(@inject('Database') private db: Database) {}
 
-  async createUserMetadata(userMetadata: UserMetadata): Promise<void> {
+  async createUserMetadata(userMetadata: IUserMetadata): Promise<void> {
     const query = `
       INSERT INTO "UserMetadata" (user_id, last_login, signup_date)
       VALUES ($1, $2, $3)
@@ -28,7 +28,7 @@ class UserMetadataRepository {
     }
   }
 
-  async getUserMetadataById(user_id: string): Promise<UserMetadata | null> {
+  async getUserMetadataById(user_id: string): Promise<IUserMetadata | null> {
     const query = `
     SELECT 
       user_id as "userId", 
@@ -37,7 +37,7 @@ class UserMetadataRepository {
     FROM "UserMetadata" 
     WHERE user_id = $1`;
     try {
-      const result = await this.db.query<UserMetadata>(query, [user_id]);
+      const result = await this.db.query<IUserMetadata>(query, [user_id]);
       return result.rows[0] || null;
     } catch (err) {
       logger.error('Error fetching user metadata by ID:', err);
@@ -45,7 +45,7 @@ class UserMetadataRepository {
     }
   }
 
-  async updateUserMetadataById(user_id: string, updates: Partial<UserMetadata>): Promise<void> {
+  async updateUserMetadataById(user_id: string, updates: Partial<IUserMetadata>): Promise<void> {
     const fields = Object.keys(updates)
       .map((key, index) => { 
         const keyMapping: Record<string, string> = {
