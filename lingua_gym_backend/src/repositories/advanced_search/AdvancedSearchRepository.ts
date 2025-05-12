@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import Database from "../../database/config/db-connection.js";
-import { DictionarySet } from "../../database/interfaces/DbInterfaces.js";
+import { IDictionarySet } from "../../database/interfaces/DbInterfaces.js";
 import logger from "../../utils/logger/Logger.js";
 import { inject, injectable } from "tsyringe";
 
@@ -35,7 +35,7 @@ class AdvancedSearchRepository {
         const perTypeLimit = fetchSets ? limit : limit;
         const perTypeOffset = offset;
     
-        const results: Array<DictionarySet & { tags: string[], ownerName: string }> = [];
+        const results: Array<IDictionarySet & { tags: string[], ownerName: string }> = [];
         let totalCount = 0;
     
         if (fetchSets) {

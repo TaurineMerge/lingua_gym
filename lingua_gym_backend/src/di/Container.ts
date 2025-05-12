@@ -5,9 +5,9 @@ import Database from '../database/config/db-connection.js';
 import Logger from '../utils/logger/Logger.js';
 
 import {
-  UserModel,
-  UserMetadataModel,
-  UserPasswordResetModel,
+  UserRepository,
+  UserMetadataRepository,
+  UserPasswordResetRepository,
 } from '../repositories/access_management/access_management.js';
 
 import {
@@ -16,21 +16,21 @@ import {
   RegistrationService,
   PasswordResetService,
 } from '../services/access_management/access_management.js';
-import { AdvancedSearchModel, AdvancedSearchParameters } from '../repositories/advanced_search/AdvancedSearchModel.js';
+import { AdvancedSearchRepository, AdvancedSearchParameters } from '../repositories/advanced_search/AdvancedSearchRepository.js';
 
 const db = new Database();
 
 container.registerInstance('Logger', Logger);
 container.registerInstance('Database', db);
 
-container.register<UserModel>('UserModel', {
-  useValue: new UserModel(db),
+container.register<UserRepository>('UserRepository', {
+  useValue: new UserRepository(db),
 });
-container.register<UserMetadataModel>('UserMetadataModel', {
-  useValue: new UserMetadataModel(db),
+container.register<UserMetadataRepository>('UserMetadataRepository', {
+  useValue: new UserMetadataRepository(db),
 });
-container.register<UserPasswordResetModel>('UserPasswordResetModel', {
-  useValue: new UserPasswordResetModel(db),
+container.register<UserPasswordResetRepository>('UserPasswordResetRepository', {
+  useValue: new UserPasswordResetRepository(db),
 });
 
 container.register<RegistrationService>('RegistrationService', {
@@ -47,7 +47,7 @@ container.register<PasswordResetService>('PasswordResetService', {
 });
 
 container.register("AdvancedSearchModel", {
-  useFactory: (c) => (params: AdvancedSearchParameters) => new AdvancedSearchModel(c.resolve<Database>("Database"), params)
+  useFactory: (c) => (params: AdvancedSearchParameters) => new AdvancedSearchRepository(c.resolve<Database>("Database"), params)
 });
 
 export default container;

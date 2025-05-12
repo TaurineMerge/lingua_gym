@@ -5,7 +5,7 @@ import { inject, injectable } from 'tsyringe';
 
 @injectable()
 class RegistrationService {
-    constructor(@inject('UserRepository') private userRepository: UserRepository, @inject('UserMetadataModel') private userMetadataRepository: UserMetadataRepository) {}
+    constructor(@inject('UserRepository') private userRepository: UserRepository, @inject('UserMetadataRepository') private userMetadataRepository: UserMetadataRepository) {}
     
     async register(username: string, email: string, password: string, displayName?: string): Promise<User> {
       logger.info({ username, email }, 'User registration started');

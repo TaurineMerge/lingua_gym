@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 import { inject, injectable } from "tsyringe";
 import { DictionarySet } from "../../database/interfaces/DbInterfaces.js";
-import { AdvancedSearchModel } from "../../repositories/advanced_search/AdvancedSearchModel.js";
+import { AdvancedSearchModel } from "../../repositories/advanced_search/AdvancedSearchRepository.js";
 import logger from "../../utils/logger/Logger.js";
-import { AdvancedSearchParameters } from "../../repositories/advanced_search/AdvancedSearchModel.js";
+import { AdvancedSearchParameters } from "../../repositories/advanced_search/AdvancedSearchRepository.js";
 
 interface AdvancedSearchResult {
     items: Array<DictionarySet & { tags: string[], ownerName: string }>;
