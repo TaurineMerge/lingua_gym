@@ -1,16 +1,16 @@
-import { setupTestModelContainer, setupTestServiceContainer, clearDatabase, closeDatabase } from '../../../utils/di/TestContainer.js';
-import { DictionarySetModel } from '../../../../src/models/dictionary/dictionary.js';
+import { setupTestRepositoryContainer, setupTestServiceContainer, clearDatabase, closeDatabase } from '../../../utils/di/TestContainer.js';
+import { DictionarySetRepository } from '../../../../src/repositories/dictionary/dictionary.js';
 import UserSetService from '../../../../src/services/dictionary/UserSetService.js';
-import { DictionarySet, Permission } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { IDictionarySet, LanguageCode, Permission } from '../../../../src/database/interfaces/DbInterfaces.js';
 import { v4 as uuidv4 } from 'uuid';
 
 let userSetService: UserSetService;
-let setModel: DictionarySetModel;
+let setModel: DictionarySetRepository;
 
 beforeAll(async () => {
   await clearDatabase();
-  const modelContainer = await setupTestModelContainer();
-  setModel = modelContainer.resolve(DictionarySetModel);
+  const modelContainer = await setupTestRepositoryContainer();
+  setModel = modelContainer.resolve(DictionarySetRepository);
   
   const serviceContainer = await setupTestServiceContainer();
   userSetService = serviceContainer.resolve(UserSetService);
@@ -26,13 +26,13 @@ afterAll(async () => {
 });
 
 describe('UserSetService', () => {
-  const testSet: DictionarySet = {
+  const testSet: IDictionarySet = {
     dictionarySetId: uuidv4(),
     name: 'Test Set',
     description: 'Shared set',
     ownerId: uuidv4(),
     isPublic: false,
-    languageCode: 'en',
+    languageCode: LanguageCode.ENGLISH,
   };
 
   test('should add user to set with permission', async () => {

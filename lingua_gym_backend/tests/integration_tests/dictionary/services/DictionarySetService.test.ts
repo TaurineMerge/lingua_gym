@@ -1,6 +1,6 @@
 import DictionarySetService from '../../../../src/services/dictionary/DictionarySetService.js';
 import { setupTestServiceContainer, clearDatabase, closeDatabase } from '../../../utils/di/TestContainer.js';
-import { DictionarySet, User } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { IDictionarySet, IUser, LanguageCode } from '../../../../src/database/interfaces/DbInterfaces.js';
 import { v4 as uuidv4 } from 'uuid';
 import { RegistrationService } from '../../../../src/services/access_management/access_management.js';
 
@@ -25,8 +25,8 @@ afterAll(async () => {
 });
 
 describe('DictionarySetService', () => {
-  let testSet: DictionarySet;
-  let testUser: Partial<User>;
+  let testSet: IDictionarySet;
+  let testUser: Partial<IUser>;
 
   beforeEach(async () => {
     testUser = {
@@ -36,7 +36,7 @@ describe('DictionarySetService', () => {
       email: 'test@example.com',
     }
 
-    testUser.userId = (await registrationService.register(testUser.username as string, testUser.email as string, 'password123', testUser.displayName)).userId;
+    testUser.userId = (await registrationService.register(testUser.username as string, testUser.email as string, 'password123', testUser.displayName as string)).userId;
 
     testSet = {
       dictionarySetId: uuidv4(),
@@ -44,7 +44,7 @@ describe('DictionarySetService', () => {
       description: 'Common verbs in English',
       ownerId: testUser.userId as string,
       isPublic: true,
-      languageCode: 'en',
+      languageCode: LanguageCode.ENGLISH,
     };
   });
 
@@ -66,7 +66,7 @@ describe('DictionarySetService', () => {
     const deleted = await dictionarySetService.deleteSet(testSet.dictionarySetId);
     expect(deleted).not.toBe(false);
     if (deleted !== false) {
-      expect((deleted as DictionarySet).dictionarySetId).toBe(testSet.dictionarySetId);
+      expect((deleted as IDictionarySet).dictionarySetId).toBe(testSet.dictionarySetId);
     }
 
     const afterDelete = await dictionarySetService.getSetById(testSet.dictionarySetId);

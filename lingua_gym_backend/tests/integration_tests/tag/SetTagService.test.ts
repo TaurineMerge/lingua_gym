@@ -1,23 +1,23 @@
-import { setupTestServiceContainer, setupTestModelContainer, clearDatabase, closeDatabase } from '../../utils/di/TestContainer.js';
+import { setupTestServiceContainer, setupTestRepositoryContainer, clearDatabase, closeDatabase } from '../../utils/di/TestContainer.js';
 import SetTagService from '../../../src/services/tag/SetTagService.js';
-import { TagModel } from '../../../src/models/tag/tag.js';
-import { DictionarySetModel } from '../../../src/models/dictionary/dictionary.js';
+import { TagRepository } from '../../../src/repositories/tag/tag.js';
+import { DictionarySetRepository } from '../../../src/repositories/dictionary/dictionary.js';
 import { v4 as uuidv4 } from 'uuid';
-import { DictionarySet, User } from '../../../src/database/interfaces/DbInterfaces.js';
-import password_hash from '../../../src/utils/hash/HashPassword.js';
-import { UserModel } from '../../../src/models/access_management/access_management.js';
+import { IDictionarySet, LanguageCode } from '../../../src/database/interfaces/DbInterfaces.js';
+import { UserRepository } from '../../../src/repositories/access_management/access_management.js';
+import User from '../../../src/models/access_management/User.js';
 
 let setTagService: SetTagService;
-let tagModel: TagModel;
-let setModel: DictionarySetModel;
-let userModel: UserModel;
+let tagModel: TagRepository;
+let setModel: DictionarySetRepository;
+let userModel: UserRepository;
 
 beforeAll(async () => {
   await clearDatabase();
-  const modelContainer = await setupTestModelContainer();
-  tagModel = modelContainer.resolve(TagModel);
-  setModel = modelContainer.resolve(DictionarySetModel);
-  userModel = modelContainer.resolve(UserModel);
+  const modelContainer = await setupTestRepositoryContainer();
+  tagModel = modelContainer.resolve(TagRepository);
+  setModel = modelContainer.resolve(DictionarySetRepository);
+  userModel = modelContainer.resolve(UserRepository);
 
   const serviceContainer = await setupTestServiceContainer();
   setTagService = serviceContainer.resolve(SetTagService);
@@ -33,15 +33,11 @@ afterAll(async () => {
 });
 
 const createUser = async () => {
-  const user: User = {
-    userId: uuidv4(),
+  const user = new User({
     username: 'test',
-    passwordHash: password_hash('test'),
+    password: 'test',
     email: 'test',
-    displayName: 'Test User',
-    tokenVersion: 0,
-    emailVerified: false
-  };
+  });
 
   await userModel.createUser(user);
 
@@ -53,15 +49,15 @@ const createTagData = async (): Promise<string> => {
   return tagId;
 }
 
-const createSetData = async (): Promise<DictionarySet> => {
+const createSetData = async (): Promise<IDictionarySet> => {
   const setId = uuidv4();
-  const set: DictionarySet = {
+  const set: IDictionarySet = {
     dictionarySetId: setId,
     name: 'Test Set',
     ownerId: await createUser(),
     description: 'Set for testing',
     isPublic: false,
-    languageCode: 'en',
+    languageCode: LanguageCode.ENGLISH,
   }
 
   return set;

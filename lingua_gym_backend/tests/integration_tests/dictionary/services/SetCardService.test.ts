@@ -1,21 +1,21 @@
 import { setupTestServiceContainer, clearDatabase, closeDatabase } from '../../../utils/di/TestContainer.js';
-import { DictionarySetModel, DictionaryCardModel } from '../../../../src/models/dictionary/dictionary.js';
+import { DictionarySetRepository, DictionaryCardRepository } from '../../../../src/repositories/dictionary/dictionary.js';
 import { SetCardService } from '../../../../src/services/dictionary/dictionary.js';
-import { DictionarySet, DictionaryCard, User } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { IDictionarySet, IDictionaryCard, IUser, LanguageCode } from '../../../../src/database/interfaces/DbInterfaces.js';
 import { v4 as uuidv4 } from 'uuid';
 import { RegistrationService } from '../../../../src/services/access_management/access_management.js';
 
 let setCardService: SetCardService;
-let setModel: DictionarySetModel;
-let cardModel: DictionaryCardModel;
+let setModel: DictionarySetRepository;
+let cardModel: DictionaryCardRepository;
 let registrationService: RegistrationService;
 
 beforeAll(async () => {
   await clearDatabase();
 
   const serviceContainer = await setupTestServiceContainer();
-  setModel = serviceContainer.resolve(DictionarySetModel);
-  cardModel = serviceContainer.resolve(DictionaryCardModel);
+  setModel = serviceContainer.resolve(DictionarySetRepository);
+  cardModel = serviceContainer.resolve(DictionaryCardRepository);
   setCardService = serviceContainer.resolve(SetCardService);
 
   registrationService = serviceContainer.resolve(RegistrationService);
@@ -31,9 +31,9 @@ afterAll(async () => {
 });
 
 describe('SetCardService', () => {
-  let testSet: DictionarySet;
-  let testCard: DictionaryCard;
-  let testUser: Partial<User>;
+  let testSet: IDictionarySet;
+  let testCard: IDictionaryCard;
+  let testUser: Partial<IUser>;
 
   beforeEach(async () => {
     const testSetId = uuidv4();
@@ -52,7 +52,7 @@ describe('SetCardService', () => {
       description: 'A test set of cards',
       ownerId: '',
       isPublic: true,
-      languageCode: 'en',
+      languageCode: LanguageCode.ENGLISH,
     };
   
     testCard = {
@@ -62,14 +62,14 @@ describe('SetCardService', () => {
       pronunciation: 'https://example.com/pronunciation.mp3',
     };
 
-    const userId = (await registrationService.register(testUser.username as string, testUser.email as string, 'password123', testUser.displayName)).userId;
+    const userId = (await registrationService.register(testUser.username as string, testUser.email as string, 'password123', testUser.displayName as string)).userId;
     testSet.ownerId = userId as string;
     testUser.userId = userId;
   })
 
   test('should add card to set', async () => {
     await setModel.createSet(testSet);
-    await cardModel.createCard(testCard, [], [], []);
+    await cardModel.createCard({ ...testCard, translations: [], meanings: [], examples: [] });
 
     const added = await setCardService.addCardToSet(testSet.dictionarySetId, testCard.cardId);
     expect(added).not.toBe(false);
@@ -81,7 +81,7 @@ describe('SetCardService', () => {
 
   test('should return cards in set', async () => {
     await setModel.createSet(testSet);
-    await cardModel.createCard(testCard, [], [], []);
+    await cardModel.createCard({ ...testCard, translations: [], meanings: [], examples: [] });
     await setCardService.addCardToSet(testSet.dictionarySetId, testCard.cardId);
 
     const cards = await setCardService.getCardsForSet(testSet.dictionarySetId);
@@ -91,7 +91,7 @@ describe('SetCardService', () => {
 
   test('should remove card from set', async () => {
     await setModel.createSet(testSet);
-    await cardModel.createCard(testCard, [], [], []);
+    await cardModel.createCard({ ...testCard, translations: [], meanings: [], examples: [] });
     await setCardService.addCardToSet(testSet.dictionarySetId, testCard.cardId);
 
     const removed = await setCardService.removeCardFromSet(testSet.dictionarySetId, testCard.cardId);

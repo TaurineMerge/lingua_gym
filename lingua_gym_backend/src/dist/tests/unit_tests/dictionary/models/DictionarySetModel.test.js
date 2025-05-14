@@ -7,8 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { DictionarySetModel } from '../../../../src/models/dictionary/dictionary.js';
-import { SetTagModel } from '../../../../src/models/tag/tag.js';
+import { DictionarySetModel } from '../../../../src/repositories/dictionary/dictionary.js';
+import { SetTagModel } from '../../../../src/repositories/tag/tag.js';
 describe('DictionarySetModel', () => {
     let dbMock;
     let setModel;

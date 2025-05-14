@@ -7,9 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { DictionaryCardModel } from '../../../../src/models/dictionary/dictionary.js';
+import { DictionaryCardModel } from '../../../../src/repositories/dictionary/dictionary.js';
 import { v4 as uuidv4 } from 'uuid';
-import { TagModel, CardTagModel } from '../../../../src/models/tag/tag.js';
+import { TagModel, CardTagModel } from '../../../../src/repositories/tag/tag.js';
 import { clearDatabase, closeDatabase, setupTestModelContainer } from '../../../utils/di/TestContainer.js';
 describe('DictionaryCardModel integration', () => {
     let cardModel;

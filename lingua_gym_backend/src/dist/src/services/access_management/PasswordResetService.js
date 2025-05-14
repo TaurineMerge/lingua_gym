@@ -19,21 +19,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { UserPasswordResetModel, UserModel } from '../../models/access_management/access_management.js';
-import jwt from 'jsonwebtoken';
+import { UserPasswordResetRepository, UserRepository } from '../../repositories/access_management/access_management.js';
 import nodemailer from 'nodemailer';
-import hashPassword from '../../utils/hash/HashPassword.js';
 import logger from '../../utils/logger/Logger.js';
 import 'dotenv/config';
 import { inject, injectable } from 'tsyringe';
+import { PasswordResetManager, User } from '../../models/access_management/access_management.js';
 let PasswordResetService = class PasswordResetService {
-    constructor(userModel, userPasswordResetModel) {
-        this.userModel = userModel;
-        this.userPasswordResetModel = userPasswordResetModel;
-        this.userModel = userModel;
-        this.userPasswordResetModel = userPasswordResetModel;
-        this.resetSecret = process.env.RESET_TOKEN_SECRET || '';
-        this.tokenExpiry = process.env.RESET_TOKEN_EXPIRY || '';
+    constructor(userRepository, userPasswordResetRepository) {
+        this.userRepository = userRepository;
+        this.userPasswordResetRepository = userPasswordResetRepository;
+        this.passwordResetManager = new PasswordResetManager();
     }
     sendResetEmail(email, resetToken) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -58,17 +54,17 @@ let PasswordResetService = class PasswordResetService {
     requestPasswordReset(email) {
         return __awaiter(this, void 0, void 0, function* () {
             logger.info(`Password reset requested for email: ${email}`);
-            const user = yield this.userModel.getUserByEmail(email);
+            const user = new User(yield this.userRepository.getUserByEmail(email));
             if (!user) {
                 logger.warn(`Password reset requested for non-existent email: ${email}`);
                 throw new Error('User not found');
             }
-            this.userPasswordResetModel.deleteRequestByUserId(user.userId);
-            const resetToken = this.generateResetToken(user);
-            yield this.userPasswordResetModel.createResetEntry({
+            this.userPasswordResetRepository.deleteRequestByUserId(user.userId);
+            const resetToken = this.passwordResetManager.generateResetToken(user);
+            yield this.userPasswordResetRepository.createResetEntry({
                 userId: user.userId,
                 passwordResetToken: resetToken,
-                passwordResetTokenExpiration: new Date(Date.now() + this.parseExpiry(this.tokenExpiry)),
+                passwordResetTokenExpiration: new Date(Date.now() + this.passwordResetManager.parseExpiry()),
             });
             yield this.sendResetEmail(email, resetToken);
             logger.info(`Password reset token generated for user: ${user.userId}`);
@@ -78,50 +74,28 @@ let PasswordResetService = class PasswordResetService {
     resetPassword(resetToken, newPassword) {
         return __awaiter(this, void 0, void 0, function* () {
             logger.info(`Resetting password using token: ${resetToken}`);
-            const payload = this.verifyResetToken(resetToken);
-            const resetEntry = yield this.userPasswordResetModel.getByToken(resetToken);
+            const payload = this.passwordResetManager.verifyResetToken(resetToken);
+            const resetEntry = yield this.userPasswordResetRepository.getByToken(resetToken);
             if (!resetEntry || resetEntry.passwordResetTokenExpiration < new Date()) {
                 logger.warn(`Invalid or expired reset token: ${resetToken}`);
                 throw new Error('Invalid or expired reset token');
             }
-            yield this.userModel.updateUserById(payload.userId, {
-                passwordHash: hashPassword(newPassword),
-                tokenVersion: (payload.tokenVersion || 0) + 1,
+            const user = new User(yield this.userRepository.getUserById(payload.userId));
+            user.password = newPassword;
+            user.tokenVersion = (payload.tokenVersion || 0) + 1;
+            yield this.userRepository.updateUserById(user.userId, {
+                passwordHash: user.passwordHash,
+                tokenVersion: user.tokenVersion,
             });
-            yield this.userPasswordResetModel.invalidateToken(resetToken);
+            yield this.userPasswordResetRepository.invalidateToken(resetToken);
             logger.info(`Password successfully reset for user: ${payload.userId}`);
         });
-    }
-    generateResetToken(user) {
-        logger.info(`Generating password reset token for user: ${user.userId}`);
-        return jwt.sign({ userId: user.userId, tokenVersion: user.tokenVersion }, this.resetSecret, { expiresIn: this.tokenExpiry });
-    }
-    verifyResetToken(token) {
-        try {
-            logger.info(`Verifying password reset token`);
-            return jwt.verify(token, this.resetSecret);
-        }
-        catch (err) {
-            logger.error(`Invalid or expired reset token: ${err}`);
-            throw new Error(`Invalid or expired reset token: ${err}`);
-        }
-    }
-    parseExpiry(expiry) {
-        logger.info(`Parsing expiry format: ${expiry}`);
-        const match = expiry.match(/^(\d+)([smhd])$/);
-        if (!match) {
-            logger.error(`Invalid token expiry format: ${expiry}`);
-            throw new Error('Invalid token expiry format');
-        }
-        const [, value, unit] = match;
-        const multipliers = { s: 1000, m: 60 * 1000, h: 60 * 60 * 1000, d: 24 * 60 * 60 * 1000 };
-        return parseInt(value, 10) * (multipliers[unit] || 0);
     }
 };
 PasswordResetService = __decorate([
     injectable(),
-    __param(0, inject('UserModel')),
-    __param(1, inject('UserPasswordResetModel')),
-    __metadata("design:paramtypes", [UserModel, UserPasswordResetModel])
+    __param(0, inject('UserRepository')),
+    __param(1, inject('UserPasswordResetRepository')),
+    __metadata("design:paramtypes", [UserRepository, UserPasswordResetRepository])
 ], PasswordResetService);
 export default PasswordResetService;

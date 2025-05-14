@@ -19,7 +19,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { CardTagModel } from '../../../src/models/tag/tag.js';
+var _a;
+import { CardTagModel } from '../../repositories/tag/tag.js';
 import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';
 let CardTagService = class CardTagService {
@@ -75,6 +76,6 @@ let CardTagService = class CardTagService {
 CardTagService = __decorate([
     injectable(),
     __param(0, inject('CardTagModel')),
-    __metadata("design:paramtypes", [CardTagModel])
+    __metadata("design:paramtypes", [typeof (_a = typeof CardTagModel !== "undefined" && CardTagModel) === "function" ? _a : Object])
 ], CardTagService);
 export default CardTagService;

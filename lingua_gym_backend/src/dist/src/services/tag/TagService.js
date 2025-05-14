@@ -19,12 +19,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { TagModel } from '../../../src/models/tag/tag.js';
+import { TagRepository } from '../../repositories/tag/tag.js';
 import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';
 let TagService = class TagService {
-    constructor(tagModel) {
-        this.tagModel = tagModel;
+    constructor(tagRepository) {
+        this.tagRepository = tagRepository;
     }
     createTag(tagId, name) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -33,7 +33,7 @@ let TagService = class TagService {
                 return null;
             }
             try {
-                return yield this.tagModel.createTag(tagId, name);
+                return yield this.tagRepository.createTag(tagId, name);
             }
             catch (error) {
                 logger.error({ error, tagId, name }, 'Failed to create tag');
@@ -48,7 +48,7 @@ let TagService = class TagService {
                 return null;
             }
             try {
-                return yield this.tagModel.getTagById(tagId);
+                return yield this.tagRepository.getTagById(tagId);
             }
             catch (error) {
                 logger.error({ error, tagId }, 'Failed to get tag by ID');
@@ -59,7 +59,7 @@ let TagService = class TagService {
     getAllTags() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield this.tagModel.getAllTags();
+                return yield this.tagRepository.getAllTags();
             }
             catch (error) {
                 logger.error({ error }, 'Failed to get all tags');
@@ -74,7 +74,7 @@ let TagService = class TagService {
                 return false;
             }
             try {
-                return yield this.tagModel.updateTag(tagId, name);
+                return yield this.tagRepository.updateTag(tagId, name);
             }
             catch (error) {
                 logger.error({ error, tagId, name }, 'Failed to update tag');
@@ -89,7 +89,7 @@ let TagService = class TagService {
                 return false;
             }
             try {
-                return yield this.tagModel.deleteTag(tagId);
+                return yield this.tagRepository.deleteTag(tagId);
             }
             catch (error) {
                 logger.error({ error, tagId }, 'Failed to delete tag');
@@ -100,7 +100,7 @@ let TagService = class TagService {
 };
 TagService = __decorate([
     injectable(),
-    __param(0, inject('TagModel')),
-    __metadata("design:paramtypes", [TagModel])
+    __param(0, inject('TagRepository')),
+    __metadata("design:paramtypes", [TagRepository])
 ], TagService);
 export default TagService;

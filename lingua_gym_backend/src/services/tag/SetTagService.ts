@@ -1,11 +1,11 @@
-import { SetTagModel } from '../../../src/models/tag/tag.js';
-import { SetTag } from '../../../src/database/interfaces/DbInterfaces.js';
+import { SetTagRepository } from '../../repositories/tag/tag.js';
+import { ISetTag } from '../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';
 
 @injectable()
 class SetTagService {
-    constructor(@inject('SetTagModel') private setTagModel: SetTagModel) {}
+    constructor(@inject('SetTagModel') private setTagModel: SetTagRepository) {}
 
     async addTagToSet(setId: string, tagId: string): Promise<boolean> {
         if (!setId || !tagId) {
@@ -35,7 +35,7 @@ class SetTagService {
         }
     }
 
-    async getTagsForSet(setId: string): Promise<SetTag[]> {
+    async getTagsForSet(setId: string): Promise<ISetTag[]> {
         if (!setId) {
             logger.warn('Set ID is required to get tags');
             return [];

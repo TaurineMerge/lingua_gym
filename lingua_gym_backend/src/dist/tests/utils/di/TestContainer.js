@@ -12,12 +12,12 @@ import dotenv from 'dotenv';
 import { container } from 'tsyringe';
 import { Pool } from 'pg';
 import Database from '../../../src/database/config/db-connection.js';
-import { UserModel, UserMetadataModel, UserPasswordResetModel } from '../../../src/models/access_management/access_management.js';
-import { DictionaryCardModel, DictionarySetModel, SetCardModel, UserSetModel } from '../../../src/models/dictionary/dictionary.js';
-import { TagModel, CardTagModel, SetTagModel } from '../../../src/models/tag/tag.js';
+import { UserRepository, UserMetadataRepository, UserPasswordResetRepository } from '../../../src/repositories/access_management/access_management.js';
+import { DictionaryCardRepository, DictionarySetRepository, SetCardRepository, UserSetRepository } from '../../../src/repositories/dictionary/dictionary.js';
+import { TagRepository, SetTagRepository } from '../../../src/repositories/tag/tag.js';
 import { AuthenticationService, JwtTokenManagementService, RegistrationService, PasswordResetService } from '../../../src/services/access_management/access_management.js';
 import { DictionaryCardService, DictionarySetService, SetCardService, UserSetService } from '../../../src/services/dictionary/dictionary.js';
-import { TagService, CardTagService, SetTagService } from '../../../src/services/tag/tag.js';
+import { TagService, SetTagService } from '../../../src/services/tag/tag.js';
 dotenv.config({ path: '.env.test' });
 const pool = new Pool({
     host: process.env.DB_HOST || 'localhost',
@@ -30,20 +30,19 @@ const pool = new Pool({
     connectionTimeoutMillis: 2000,
 });
 export const testDb = new Database(pool);
-export function setupTestModelContainer() {
+export function setupTestRepositoryContainer() {
     return __awaiter(this, void 0, void 0, function* () {
         const testContainer = container.createChildContainer();
         testContainer.registerInstance(Database, testDb);
-        testContainer.register(DictionaryCardModel, { useClass: DictionaryCardModel });
-        testContainer.register(UserModel, { useClass: UserModel });
-        testContainer.register(UserMetadataModel, { useClass: UserMetadataModel });
-        testContainer.register(UserPasswordResetModel, { useClass: UserPasswordResetModel });
-        testContainer.register(DictionarySetModel, { useClass: DictionarySetModel });
-        testContainer.register(SetCardModel, { useClass: SetCardModel });
-        testContainer.register(UserSetModel, { useClass: UserSetModel });
-        testContainer.register(TagModel, { useClass: TagModel });
-        testContainer.register(CardTagModel, { useClass: CardTagModel });
-        testContainer.register(SetTagModel, { useClass: SetTagModel });
+        testContainer.register(DictionaryCardRepository, { useClass: DictionaryCardRepository });
+        testContainer.register(UserRepository, { useClass: UserRepository });
+        testContainer.register(UserMetadataRepository, { useClass: UserMetadataRepository });
+        testContainer.register(UserPasswordResetRepository, { useClass: UserPasswordResetRepository });
+        testContainer.register(DictionarySetRepository, { useClass: DictionarySetRepository });
+        testContainer.register(SetCardRepository, { useClass: SetCardRepository });
+        testContainer.register(UserSetRepository, { useClass: UserSetRepository });
+        testContainer.register(TagRepository, { useClass: TagRepository });
+        testContainer.register(SetTagRepository, { useClass: SetTagRepository });
         return testContainer;
     });
 }
@@ -60,7 +59,6 @@ export function setupTestServiceContainer() {
         testContainer.register(SetCardService, { useClass: SetCardService });
         testContainer.register(UserSetService, { useClass: UserSetService });
         testContainer.register(TagService, { useClass: TagService });
-        testContainer.register(CardTagService, { useClass: CardTagService });
         testContainer.register(SetTagService, { useClass: SetTagService });
         return testContainer;
     });

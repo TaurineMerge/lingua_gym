@@ -14,7 +14,7 @@ const validateAccessToken = (req: Request, res: Response, next: NextFunction): R
   }
 
   try {
-    const user = jwtService.verifyAccessToken(token);
+    const user = jwtService.checkAccessToken(token);
     req.body.userId = user.userId;
     logger.info({ userId: user.userId }, "User authenticated successfully");
     next();
@@ -34,7 +34,7 @@ const validateRefreshToken = (req: Request, res: Response, next: NextFunction): 
   }
 
   try {
-    const user = jwtService.verifyRefreshToken(refreshToken);
+    const user = jwtService.checkRefreshToken(refreshToken);
     logger.info({ userId: user.userId }, "Refresh token validated successfully");
     next();
   } catch (error) {

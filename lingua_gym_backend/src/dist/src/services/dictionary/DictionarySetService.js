@@ -19,7 +19,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { DictionarySetModel } from '../../models/dictionary/dictionary.js';
+import { DictionarySetRepository } from '../../repositories/dictionary/dictionary.js';
 import logger from '../../utils/logger/Logger.js';
 import { injectable, inject } from 'tsyringe';
 let DictionarySetService = class DictionarySetService {
@@ -33,6 +33,7 @@ let DictionarySetService = class DictionarySetService {
                 return null;
             }
             try {
+                logger.info('Creating dictionary set');
                 return yield this.model.createSet(set);
             }
             catch (error) {
@@ -74,7 +75,7 @@ let DictionarySetService = class DictionarySetService {
 };
 DictionarySetService = __decorate([
     injectable(),
-    __param(0, inject('DictionarySetModel')),
-    __metadata("design:paramtypes", [DictionarySetModel])
+    __param(0, inject('DictionarySetRepository')),
+    __metadata("design:paramtypes", [DictionarySetRepository])
 ], DictionarySetService);
 export default DictionarySetService;

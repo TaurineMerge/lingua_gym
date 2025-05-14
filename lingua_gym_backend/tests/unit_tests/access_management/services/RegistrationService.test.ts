@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import RegistrationService from '../../../../src/services/access_management/RegistrationService.js';
-import { UserModel, UserMetadataModel } from '../../../../src/models/access_management/access_management.js';
+import { UserRepository, UserMetadataRepository } from '../../../../src/repositories/access_management/access_management.js';
 import Database from '../../../../src/database/config/db-connection.js';
 import bcrypt from 'bcrypt';
 
@@ -8,10 +8,10 @@ jest.mock('../../../../src/models/access_management/access_management.js');
 jest.mock('../../../../src/models/access_management/access_management.js');
 
 const mockDbInstance = {} as Database;
-const mockUserModel = new UserModel(mockDbInstance) as jest.Mocked<UserModel>;
-const mockUserMetadataModel = new UserMetadataModel(mockDbInstance) as jest.Mocked<UserMetadataModel>;
+const mockUserRepository = new UserRepository(mockDbInstance) as jest.Mocked<UserRepository>;
+const mockUserMetadataRepository = new UserMetadataRepository(mockDbInstance) as jest.Mocked<UserMetadataRepository>;
 
-const registrationService = new RegistrationService(mockUserModel, mockUserMetadataModel);
+const registrationService = new RegistrationService(mockUserRepository, mockUserMetadataRepository);
 
 describe('RegistrationService', () => {
   const user = {
@@ -30,16 +30,16 @@ describe('RegistrationService', () => {
   });
 
   test('should successfully register a new user', async () => {
-    mockUserModel.getUserByEmail.mockResolvedValue(null);
-    mockUserModel.getUserByUsername.mockResolvedValue(null);
-    mockUserModel.createUser.mockResolvedValue(undefined);
-    mockUserMetadataModel.createUserMetadata.mockResolvedValue(undefined);
+    mockUserRepository.getUserByEmail.mockResolvedValue(null);
+    mockUserRepository.getUserByUsername.mockResolvedValue(null);
+    mockUserRepository.createUser.mockResolvedValue(true);
+    mockUserMetadataRepository.createUserMetadata.mockResolvedValue(true);
 
     await expect(registrationService.register(user.username, user.email, user.passwordHash)).resolves.not.toBeUndefined();
 
-    expect(mockUserModel.getUserByEmail).toHaveBeenCalledWith(user.email);
-    expect(mockUserModel.getUserByUsername).toHaveBeenCalledWith(user.username);
-    expect(mockUserModel.createUser).toHaveBeenCalledWith(
+    expect(mockUserRepository.getUserByEmail).toHaveBeenCalledWith(user.email);
+    expect(mockUserRepository.getUserByUsername).toHaveBeenCalledWith(user.username);
+    expect(mockUserRepository.createUser).toHaveBeenCalledWith(
       expect.objectContaining({
         userId: expect.any(String),
         username: expect.any(String),
@@ -49,7 +49,7 @@ describe('RegistrationService', () => {
         emailVerified: false,
       })
     );
-    expect(mockUserMetadataModel.createUserMetadata).toHaveBeenCalledWith(
+    expect(mockUserMetadataRepository.createUserMetadata).toHaveBeenCalledWith(
       expect.objectContaining({
         userId: expect.any(String),
         signupDate: expect.any(Date),
@@ -58,24 +58,24 @@ describe('RegistrationService', () => {
   });
 
   test('should throw an error if email already exists', async () => {
-    mockUserModel.getUserByEmail.mockResolvedValue(user);
+    mockUserRepository.getUserByEmail.mockResolvedValue(user);
 
     await expect(registrationService.register(user.username, user.email, user.passwordHash)).rejects.toThrow('Email already exists');
-    expect(mockUserModel.getUserByUsername).not.toHaveBeenCalled();
-    expect(mockUserModel.createUser).not.toHaveBeenCalled();
+    expect(mockUserRepository.getUserByUsername).not.toHaveBeenCalled();
+    expect(mockUserRepository.createUser).not.toHaveBeenCalled();
   });
 
   test('should throw an error if username already exists', async () => {
-    mockUserModel.getUserByEmail.mockResolvedValue(null);
-    mockUserModel.getUserByUsername.mockResolvedValue(user);
+    mockUserRepository.getUserByEmail.mockResolvedValue(null);
+    mockUserRepository.getUserByUsername.mockResolvedValue(user);
 
     await expect(registrationService.register(user.username, user.email, user.passwordHash)).rejects.toThrow('Username already exists');
-    expect(mockUserModel.createUser).not.toHaveBeenCalled();
+    expect(mockUserRepository.createUser).not.toHaveBeenCalled();
   });
 
   test('should handle password hashing errors', async () => {
-    mockUserModel.getUserByEmail.mockResolvedValue(null);
-    mockUserModel.getUserByUsername.mockResolvedValue(null);
+    mockUserRepository.getUserByEmail.mockResolvedValue(null);
+    mockUserRepository.getUserByUsername.mockResolvedValue(null);
 
     jest.spyOn(bcrypt, 'hashSync').mockImplementation(() => {
       throw new Error('Hashing failed');

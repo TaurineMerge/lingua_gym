@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { SetTagModel } from '../../../src/models/tag/tag.js';
+import { SetTagModel } from '../../../src/repositories/tag/tag.js';
 describe('CardsTagsModel', () => {
     let mockDb;
     let setTagModel;

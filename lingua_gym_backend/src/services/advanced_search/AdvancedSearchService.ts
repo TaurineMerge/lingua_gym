@@ -1,25 +1,25 @@
 import 'reflect-metadata';
 import { inject, injectable } from "tsyringe";
-import { DictionarySet } from "../../database/interfaces/DbInterfaces.js";
-import { AdvancedSearchModel } from "../../models/advanced_search/AdvancedSearchModel.js";
+import { IDictionarySet } from "../../database/interfaces/DbInterfaces.js";
+import { AdvancedSearchRepository } from "../../repositories/advanced_search/AdvancedSearchRepository.js";
 import logger from "../../utils/logger/Logger.js";
-import { AdvancedSearchParameters } from "../../models/advanced_search/AdvancedSearchModel.js";
+import { AdvancedSearchParameters } from "../../repositories/advanced_search/AdvancedSearchRepository.js";
 
 interface AdvancedSearchResult {
-    items: Array<DictionarySet & { tags: string[], ownerName: string }>;
+    items: Array<IDictionarySet & { tags: string[], ownerName: string }>;
     totalCount: number;
 }
 
 // !NOT TESTED!
 @injectable()
 class AdvancedSearchService {
-    constructor(@inject("AdvancedSearchModel") private advancedSearchModel: (params: AdvancedSearchParameters) => AdvancedSearchModel) {}
+    constructor(@inject("AdvancedSearchRepository") private advancedSearchRepository: (params: AdvancedSearchParameters) => AdvancedSearchRepository) {}
 
     async performSearch(params: AdvancedSearchParameters, limit: number = 20, offset: number = 0): (Promise<AdvancedSearchResult> /*| Promise<Text>*/) {
         try {
             logger.info("Performing advanced search in service with params:", { ...params, limit, offset });
 
-            const filterInstance = this.advancedSearchModel(params);
+            const filterInstance = this.advancedSearchRepository(params);
             const results = await filterInstance.search(limit, offset);
 
             logger.info(`Search completed successfully with ${results.items.length} results.`);

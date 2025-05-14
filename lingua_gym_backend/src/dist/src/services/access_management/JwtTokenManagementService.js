@@ -19,80 +19,54 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import jwt from 'jsonwebtoken';
-import { UserModel } from '../../models/access_management/access_management.js';
+import { UserRepository } from '../../repositories/access_management/access_management.js';
 import logger from '../../utils/logger/Logger.js';
 import 'dotenv/config';
 import { injectable, inject } from 'tsyringe';
+import { JwtTokenManager, User } from '../../models/access_management/access_management.js';
 let TokenManagementService = class TokenManagementService {
-    constructor(userModel) {
-        this.userModel = userModel;
-        this.jwtSecret = process.env.JWT_SECRET || '';
-        this.jwtRefreshSecret = process.env.JWT_REFRESH_TOKEN_SECRET || '';
-        this.accessTokenExpiry = process.env.JWT_ACCESS_TOKEN_EXPIRY || '30m';
-        this.refreshTokenExpiry = process.env.JWT_REFRESH_TOKEN_EXPIRY || '7d';
+    constructor(userRepository) {
+        this.userRepository = userRepository;
+        this.jwtTokenManager = new JwtTokenManager();
     }
     refreshToken(refreshToken) {
         return __awaiter(this, void 0, void 0, function* () {
             logger.info('Refresh token request received');
-            const payload = this.verifyRefreshToken(refreshToken);
-            const user = yield this.userModel.getUserById(payload.userId);
+            const payload = this.jwtTokenManager.verifyRefreshToken(refreshToken);
+            const user = new User(yield this.userRepository.getUserById(payload.userId));
             if (!user || user.tokenVersion !== payload.tokenVersion) {
                 logger.warn({ userId: payload.userId }, 'Invalid refresh token');
                 throw new Error('Invalid refresh token');
             }
-            yield this.incrementTokenVersion(user.userId);
-            const updatedUser = yield this.userModel.getUserById(user.userId);
-            const newAccessToken = this.generateAccessToken(updatedUser);
-            const newRefreshToken = this.generateRefreshToken(updatedUser);
+            yield this.incrementTokenVersion(user);
+            const newAccessToken = this.jwtTokenManager.generateAccessToken(user);
+            const newRefreshToken = this.jwtTokenManager.generateRefreshToken(user);
             logger.info({ userId: user.userId }, 'Tokens refreshed');
             return { accessToken: newAccessToken, refreshToken: newRefreshToken };
         });
     }
-    generateAccessToken(user) {
-        return jwt.sign({ userId: user.userId }, this.jwtSecret, { expiresIn: this.accessTokenExpiry });
-    }
-    generateRefreshToken(user) {
-        return jwt.sign({ userId: user.userId, tokenVersion: user.tokenVersion }, this.jwtRefreshSecret, { expiresIn: this.refreshTokenExpiry });
-    }
-    incrementTokenVersion(userId) {
+    incrementTokenVersion(user) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const user = yield this.userModel.getUserById(userId);
-                if (!user) {
-                    throw new Error('User not found');
-                }
-                yield this.userModel.updateUserById(userId, { tokenVersion: user.tokenVersion + 1 });
-                logger.info({ userId }, 'Token version incremented');
+                logger.info(user.userId, 'Incrementing token version');
+                return yield this.userRepository.updateUserById(user.userId, { tokenVersion: user.tokenVersion + 1 });
             }
             catch (error) {
-                logger.error({ userId, error }, 'Failed to increment token version');
+                logger.error(user.userId, { error }, 'Failed to increment token version');
                 throw new Error('Could not update token version');
             }
         });
     }
-    verifyRefreshToken(token) {
-        try {
-            return jwt.verify(token, this.jwtRefreshSecret);
-        }
-        catch (err) {
-            logger.error({ error: err }, 'Invalid refresh token');
-            throw new Error('Invalid refresh token');
-        }
+    checkAccessToken(token) {
+        return this.jwtTokenManager.verifyAccessToken(token);
     }
-    verifyAccessToken(token) {
-        try {
-            return jwt.verify(token, this.jwtSecret);
-        }
-        catch (err) {
-            logger.error({ error: err }, 'Invalid access token');
-            throw new Error('Invalid access token');
-        }
+    checkRefreshToken(token) {
+        return this.jwtTokenManager.verifyRefreshToken(token);
     }
 };
 TokenManagementService = __decorate([
     injectable(),
-    __param(0, inject('UserModel')),
-    __metadata("design:paramtypes", [UserModel])
+    __param(0, inject('UserRepository')),
+    __metadata("design:paramtypes", [UserRepository])
 ], TokenManagementService);
 export default TokenManagementService;

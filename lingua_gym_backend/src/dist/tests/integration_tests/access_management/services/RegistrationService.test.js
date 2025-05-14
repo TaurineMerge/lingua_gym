@@ -8,18 +8,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import RegistrationService from '../../../../src/services/access_management/RegistrationService.js';
-import { UserModel, UserMetadataModel } from '../../../../src/models/access_management/access_management.js';
+import { UserRepository, UserMetadataRepository } from '../../../../src/repositories/access_management/access_management.js';
 import bcrypt from 'bcrypt';
-import { clearDatabase, closeDatabase, setupTestModelContainer, setupTestServiceContainer } from '../../../utils/di/TestContainer.js';
+import { clearDatabase, closeDatabase, setupTestRepositoryContainer, setupTestServiceContainer } from '../../../utils/di/TestContainer.js';
 let userModel;
 let userMetadataModel;
 let registrationService;
 beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     yield clearDatabase();
-    const modelContainer = yield setupTestModelContainer();
-    userModel = modelContainer.resolve(UserModel);
+    const modelContainer = yield setupTestRepositoryContainer();
+    userModel = modelContainer.resolve(UserRepository);
     const serviceContainer = yield setupTestServiceContainer();
-    userMetadataModel = serviceContainer.resolve(UserMetadataModel);
+    userMetadataModel = serviceContainer.resolve(UserMetadataRepository);
     registrationService = serviceContainer.resolve(RegistrationService);
 }));
 beforeEach(() => __awaiter(void 0, void 0, void 0, function* () {

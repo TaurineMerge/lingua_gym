@@ -19,16 +19,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { v4 as uuidv4 } from 'uuid';
-import { UserModel, UserMetadataModel } from '../../models/access_management/access_management.js';
-import hashPassword from '../../utils/hash/HashPassword.js';
+import { UserRepository, UserMetadataRepository } from '../../repositories/access_management/access_management.js';
 import logger from '../../utils/logger/Logger.js';
+import { User } from '../../models/access_management/access_management.js';
 import { inject, injectable } from 'tsyringe';
-import { validateEmail, validateUsername, validatePassword } from '../../utils/validators/validators.js';
 let RegistrationService = class RegistrationService {
-    constructor(userModel, userMetadataModel) {
-        this.userModel = userModel;
-        this.userMetadataModel = userMetadataModel;
+    constructor(userRepository, userMetadataRepository) {
+        this.userRepository = userRepository;
+        this.userMetadataRepository = userMetadataRepository;
     }
     register(username, email, password, displayName) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -41,39 +39,21 @@ let RegistrationService = class RegistrationService {
                 logger.error({ error }, 'Registration failed: Email or username already exists');
                 throw error;
             }
-            if (!validatePassword(password)) {
-                logger.warn({ password }, 'Registration failed: Password does not meet requirements');
-                throw new Error('Password does not meet requirements');
-            }
-            const hashedPassword = hashPassword(password);
-            const userId = uuidv4();
-            const user = {
-                userId: userId,
-                username,
-                displayName,
-                email,
-                passwordHash: hashedPassword,
-                tokenVersion: 0,
-                emailVerified: false
-            };
-            yield this.userModel.createUser(user);
+            const user = new User({ username, password, email, displayName });
+            yield this.userRepository.createUser(user);
             const signupDate = new Date();
-            yield this.userMetadataModel.createUserMetadata({
-                userId: userId,
+            yield this.userMetadataRepository.createUserMetadata({
+                userId: user.userId,
                 signupDate: signupDate,
             });
-            logger.info({ userId, username, email }, 'User successfully registered');
+            logger.info(user.userId, user.username, user.email, 'User successfully registered');
             return user;
         });
     }
     checkIfEmailExists(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!validateEmail(email)) {
-                logger.warn({ email }, 'Registration failed: Invalid email');
-                throw new Error('Invalid email');
-            }
             logger.info({ email }, 'Checking if email exists');
-            const existingEmail = yield this.userModel.getUserByEmail(email);
+            const existingEmail = yield this.userRepository.getUserByEmail(email);
             if (existingEmail) {
                 logger.warn({ email }, 'Registration failed: Email already exists');
             }
@@ -85,12 +65,8 @@ let RegistrationService = class RegistrationService {
     }
     checkIfUsernameExists(username) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!validateUsername(username)) {
-                logger.warn({ username }, 'Registration failed: Invalid username');
-                throw new Error('Invalid username');
-            }
             logger.info({ username }, 'Checking if username exists');
-            const existingUsername = yield this.userModel.getUserByUsername(username);
+            const existingUsername = yield this.userRepository.getUserByUsername(username);
             if (existingUsername) {
                 logger.warn({ username }, 'Registration failed: Username already exists');
             }
@@ -103,8 +79,8 @@ let RegistrationService = class RegistrationService {
 };
 RegistrationService = __decorate([
     injectable(),
-    __param(0, inject('UserModel')),
-    __param(1, inject('UserMetadataModel')),
-    __metadata("design:paramtypes", [UserModel, UserMetadataModel])
+    __param(0, inject('UserRepository')),
+    __param(1, inject('UserMetadataRepository')),
+    __metadata("design:paramtypes", [UserRepository, UserMetadataRepository])
 ], RegistrationService);
 export default RegistrationService;

@@ -1,9 +1,5 @@
-import UserMetadataModel from "./UserMetadataModel.js";
-import UserModel from "./UserModel.js";
-import UserPasswordResetModel from "./UserPasswordResetModel.js";
+import PasswordResetManager from './PasswordResetManager.js';
+import User from './User.js';
+import JwtTokenManager from './JwtTokenManager.js';
 
-export {
-    UserMetadataModel,
-    UserModel,
-    UserPasswordResetModel
-}
+export { PasswordResetManager, User, JwtTokenManager };

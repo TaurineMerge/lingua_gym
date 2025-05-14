@@ -3,12 +3,12 @@ import dotenv from 'dotenv';
 import { container, DependencyContainer } from 'tsyringe';
 import { Pool } from 'pg';
 import Database from '../../../src/database/config/db-connection.js';
-import { UserModel, UserMetadataModel, UserPasswordResetModel } from '../../../src/models/access_management/access_management.js';
-import { DictionaryCardModel, DictionarySetModel, SetCardModel, UserSetModel } from '../../../src/models/dictionary/dictionary.js';
-import { TagModel, CardTagModel, SetTagModel } from '../../../src/models/tag/tag.js';
+import { UserRepository, UserMetadataRepository, UserPasswordResetRepository } from '../../../src/repositories/access_management/access_management.js';
+import { DictionaryCardRepository, DictionarySetRepository, SetCardRepository, UserSetRepository } from '../../../src/repositories/dictionary/dictionary.js';
+import { TagRepository, SetTagRepository } from '../../../src/repositories/tag/tag.js';
 import { AuthenticationService, JwtTokenManagementService, RegistrationService, PasswordResetService } from '../../../src/services/access_management/access_management.js';
 import { DictionaryCardService, DictionarySetService, SetCardService, UserSetService } from '../../../src/services/dictionary/dictionary.js';
-import { TagService, CardTagService, SetTagService } from '../../../src/services/tag/tag.js';
+import { TagService, SetTagService } from '../../../src/services/tag/tag.js';
 
 dotenv.config({ path: '.env.test' });
 
@@ -25,20 +25,19 @@ const pool: Pool = new Pool({
 
 export const testDb: Database = new Database(pool);
 
-export async function setupTestModelContainer(): Promise<DependencyContainer> {
+export async function setupTestRepositoryContainer(): Promise<DependencyContainer> {
   const testContainer = container.createChildContainer();
 
   testContainer.registerInstance(Database, testDb);
-  testContainer.register<DictionaryCardModel>(DictionaryCardModel,{ useClass: DictionaryCardModel });
-  testContainer.register<UserModel>(UserModel, { useClass: UserModel });
-  testContainer.register<UserMetadataModel>(UserMetadataModel, { useClass: UserMetadataModel });
-  testContainer.register<UserPasswordResetModel>(UserPasswordResetModel, { useClass: UserPasswordResetModel });
-  testContainer.register<DictionarySetModel>(DictionarySetModel, { useClass: DictionarySetModel });
-  testContainer.register<SetCardModel>(SetCardModel, { useClass: SetCardModel });
-  testContainer.register<UserSetModel>(UserSetModel, { useClass: UserSetModel });
-  testContainer.register<TagModel>(TagModel, { useClass: TagModel });
-  testContainer.register<CardTagModel>(CardTagModel, { useClass: CardTagModel });
-  testContainer.register<SetTagModel>(SetTagModel, { useClass: SetTagModel });
+  testContainer.register<DictionaryCardRepository>(DictionaryCardRepository,{ useClass: DictionaryCardRepository });
+  testContainer.register<UserRepository>(UserRepository, { useClass: UserRepository });
+  testContainer.register<UserMetadataRepository>(UserMetadataRepository, { useClass: UserMetadataRepository });
+  testContainer.register<UserPasswordResetRepository>(UserPasswordResetRepository, { useClass: UserPasswordResetRepository });
+  testContainer.register<DictionarySetRepository>(DictionarySetRepository, { useClass: DictionarySetRepository });
+  testContainer.register<SetCardRepository>(SetCardRepository, { useClass: SetCardRepository });
+  testContainer.register<UserSetRepository>(UserSetRepository, { useClass: UserSetRepository });
+  testContainer.register<TagRepository>(TagRepository, { useClass: TagRepository });
+  testContainer.register<SetTagRepository>(SetTagRepository, { useClass: SetTagRepository });
 
   return testContainer;
 }
@@ -56,7 +55,6 @@ export async function setupTestServiceContainer(): Promise<DependencyContainer> 
   testContainer.register<SetCardService>(SetCardService, { useClass: SetCardService });
   testContainer.register<UserSetService>(UserSetService, { useClass: UserSetService });
   testContainer.register<TagService>(TagService, { useClass: TagService });
-  testContainer.register<CardTagService>(CardTagService, { useClass: CardTagService });
   testContainer.register<SetTagService>(SetTagService, { useClass: SetTagService });
 
   return testContainer;

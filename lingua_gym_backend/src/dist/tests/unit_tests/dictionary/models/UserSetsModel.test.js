@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { UserSetModel } from '../../../../src/models/dictionary/dictionary.js';
+import { UserSetModel } from '../../../../src/repositories/dictionary/dictionary.js';
 import { Permission } from '../../../../src/database/interfaces/DbInterfaces.js';
 describe('UserSetsModel', () => {
     let mockDb;

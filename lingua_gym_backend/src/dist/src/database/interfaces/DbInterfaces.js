@@ -1,2 +1,3 @@
-import { Permission } from './dictionary/UserSet.js';
-export { Permission };
+import { LanguageCode } from './dictionary/IDictionarySet.js';
+import { Permission } from './dictionary/IUserSet.js';
+export { Permission, LanguageCode };

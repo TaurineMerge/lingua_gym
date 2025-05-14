@@ -7,11 +7,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { DictionarySetModel } from '../../../../src/models/dictionary/dictionary.js';
+import { DictionarySetModel } from '../../../../src/repositories/dictionary/dictionary.js';
 import { v4 as uuidv4 } from 'uuid';
-import { TagModel, SetTagModel } from '../../../../src/models/tag/tag.js';
+import { TagModel, SetTagModel } from '../../../../src/repositories/tag/tag.js';
 import { clearDatabase, closeDatabase, setupTestModelContainer } from '../../../utils/di/TestContainer.js';
-import { UserModel } from '../../../../src/models/access_management/access_management.js';
+import { UserModel } from '../../../../src/repositories/access_management/access_management.js';
 import hash_password from '../../../../src/utils/hash/HashPassword.js';
 describe('DictionarySetModel integration', () => {
     let setModel;

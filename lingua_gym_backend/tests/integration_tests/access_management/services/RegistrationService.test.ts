@@ -1,20 +1,20 @@
 import RegistrationService from '../../../../src/services/access_management/RegistrationService.js';
-import { UserModel, UserMetadataModel } from '../../../../src/models/access_management/access_management.js';
+import { UserRepository, UserMetadataRepository } from '../../../../src/repositories/access_management/access_management.js';
 import bcrypt from 'bcrypt';
-import { clearDatabase, closeDatabase, setupTestModelContainer, setupTestServiceContainer } from '../../../utils/di/TestContainer.js';
+import { clearDatabase, closeDatabase, setupTestRepositoryContainer, setupTestServiceContainer } from '../../../utils/di/TestContainer.js';
 
-let userModel: UserModel;
-let userMetadataModel: UserMetadataModel;
+let userModel: UserRepository;
+let userMetadataModel: UserMetadataRepository;
 let registrationService: RegistrationService;
 
 beforeAll(async () => {
   await clearDatabase();
 
-  const modelContainer = await setupTestModelContainer();
-  userModel = modelContainer.resolve(UserModel);
+  const modelContainer = await setupTestRepositoryContainer();
+  userModel = modelContainer.resolve(UserRepository);
 
   const serviceContainer = await setupTestServiceContainer(); 
-  userMetadataModel = serviceContainer.resolve(UserMetadataModel);
+  userMetadataModel = serviceContainer.resolve(UserMetadataRepository);
   registrationService = serviceContainer.resolve(RegistrationService);
 });
 

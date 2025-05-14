@@ -19,7 +19,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { UserSetModel } from '../../../src/models/dictionary/dictionary.js';
+import { UserSetRepository } from '../../repositories/dictionary/dictionary.js';
 import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';
 let UserSetService = class UserSetService {
@@ -90,6 +90,6 @@ let UserSetService = class UserSetService {
 UserSetService = __decorate([
     injectable(),
     __param(0, inject('UserSetModel')),
-    __metadata("design:paramtypes", [UserSetModel])
+    __metadata("design:paramtypes", [UserSetRepository])
 ], UserSetService);
 export default UserSetService;

@@ -19,57 +19,53 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import bcrypt from 'bcrypt';
-import { UserModel } from '../../models/access_management/access_management.js';
+import { JwtTokenManager, User } from '../../models/access_management/access_management.js';
+import { UserRepository } from '../../repositories/access_management/access_management.js';
 import logger from '../../utils/logger/Logger.js';
 import TokenManagementService from './JwtTokenManagementService.js';
 import { injectable, inject } from 'tsyringe';
 let AuthenticationService = class AuthenticationService {
-    constructor(userModel, jwtTokenService) {
-        this.userModel = userModel;
+    constructor(userRepository, jwtTokenService) {
+        this.userRepository = userRepository;
         this.jwtTokenService = jwtTokenService;
+        this.jwtTokenManager = new JwtTokenManager();
     }
     login(email, password) {
         return __awaiter(this, void 0, void 0, function* () {
-            logger.info({ email }, 'User login attempt');
-            const user = yield this.userModel.getUserByEmail(email);
-            if (!user) {
-                logger.warn({ email }, 'Login failed: User not found');
-                throw new Error('User not found');
+            try {
+                logger.info({ email }, 'User login attempt');
+                const user = new User(yield this.userRepository.getUserByEmail(email));
+                user.verifyPasswordHash(password);
+                const accessToken = this.jwtTokenManager.generateAccessToken(user);
+                const refreshToken = this.jwtTokenManager.generateRefreshToken(user);
+                logger.info({ userId: user.userId }, 'User successfully logged in');
+                return { accessToken, refreshToken };
             }
-            const isPasswordValid = this.verifyPassword(password, user.passwordHash);
-            if (!isPasswordValid) {
-                logger.warn({ email }, 'Login failed: Invalid password');
-                throw new Error('Invalid password');
+            catch (err) {
+                logger.error('User login failed: ', { error: err });
+                throw new Error('User login failed');
             }
-            const accessToken = this.jwtTokenService.generateAccessToken(user);
-            const refreshToken = this.jwtTokenService.generateRefreshToken(user);
-            logger.info({ userId: user.userId }, 'User successfully logged in');
-            return { accessToken, refreshToken };
         });
     }
-    logout(userId) {
+    logout(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield this.jwtTokenService.incrementTokenVersion(userId);
-            logger.info({ userId }, 'User logged out, refresh token invalidated');
+            try {
+                yield this.jwtTokenService.incrementTokenVersion(user);
+                logger.info(user.userId, 'User logged out, refresh token invalidated');
+            }
+            catch (err) {
+                logger.error('User logout failed: ', { error: err });
+                throw new Error('User logout failed');
+            }
         });
-    }
-    verifyPassword(password, hashedPassword) {
-        try {
-            return bcrypt.compareSync(password, hashedPassword);
-        }
-        catch (err) {
-            logger.error({ error: err }, 'Password verification failed');
-            throw new Error('Password verification failed');
-        }
     }
     isAuthenticated(token) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return !!this.jwtTokenService.verifyAccessToken(token);
+                return !!this.jwtTokenManager.verifyAccessToken(token);
             }
             catch (err) {
-                logger.error({ error: err }, 'Access token verification failed');
+                logger.error('Access token verification failed: ', { error: err });
                 throw new Error('Access token verification failed');
             }
         });
@@ -77,8 +73,8 @@ let AuthenticationService = class AuthenticationService {
 };
 AuthenticationService = __decorate([
     injectable(),
-    __param(0, inject('UserModel')),
+    __param(0, inject('UserRepository')),
     __param(1, inject('JwtTokenManagementService')),
-    __metadata("design:paramtypes", [UserModel, TokenManagementService])
+    __metadata("design:paramtypes", [UserRepository, TokenManagementService])
 ], AuthenticationService);
 export default AuthenticationService;

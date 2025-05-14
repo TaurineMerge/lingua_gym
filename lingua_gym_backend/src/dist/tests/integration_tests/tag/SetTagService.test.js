@@ -7,23 +7,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { setupTestServiceContainer, setupTestModelContainer, clearDatabase, closeDatabase } from '../../utils/di/TestContainer.js';
+import { setupTestServiceContainer, setupTestRepositoryContainer, clearDatabase, closeDatabase } from '../../utils/di/TestContainer.js';
 import SetTagService from '../../../src/services/tag/SetTagService.js';
-import { TagModel } from '../../../src/models/tag/tag.js';
-import { DictionarySetModel } from '../../../src/models/dictionary/dictionary.js';
+import { TagRepository } from '../../../src/repositories/tag/tag.js';
+import { DictionarySetRepository } from '../../../src/repositories/dictionary/dictionary.js';
 import { v4 as uuidv4 } from 'uuid';
-import password_hash from '../../../src/utils/hash/HashPassword.js';
-import { UserModel } from '../../../src/models/access_management/access_management.js';
+import { LanguageCode } from '../../../src/database/interfaces/DbInterfaces.js';
+import { UserRepository } from '../../../src/repositories/access_management/access_management.js';
+import User from '../../../src/models/access_management/User.js';
 let setTagService;
 let tagModel;
 let setModel;
 let userModel;
 beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     yield clearDatabase();
-    const modelContainer = yield setupTestModelContainer();
-    tagModel = modelContainer.resolve(TagModel);
-    setModel = modelContainer.resolve(DictionarySetModel);
-    userModel = modelContainer.resolve(UserModel);
+    const modelContainer = yield setupTestRepositoryContainer();
+    tagModel = modelContainer.resolve(TagRepository);
+    setModel = modelContainer.resolve(DictionarySetRepository);
+    userModel = modelContainer.resolve(UserRepository);
     const serviceContainer = yield setupTestServiceContainer();
     setTagService = serviceContainer.resolve(SetTagService);
 }));
@@ -35,15 +36,11 @@ afterAll(() => __awaiter(void 0, void 0, void 0, function* () {
     yield closeDatabase();
 }));
 const createUser = () => __awaiter(void 0, void 0, void 0, function* () {
-    const user = {
-        userId: uuidv4(),
+    const user = new User({
         username: 'test',
-        passwordHash: password_hash('test'),
+        password: 'test',
         email: 'test',
-        displayName: 'Test User',
-        tokenVersion: 0,
-        emailVerified: false
-    };
+    });
     yield userModel.createUser(user);
     return user.userId;
 });
@@ -59,7 +56,7 @@ const createSetData = () => __awaiter(void 0, void 0, void 0, function* () {
         ownerId: yield createUser(),
         description: 'Set for testing',
         isPublic: false,
-        languageCode: 'en',
+        languageCode: LanguageCode.ENGLISH,
     };
     return set;
 });

@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { SetCardModel } from '../../../../src/models/dictionary/dictionary.js';
+import { SetCardModel } from '../../../../src/repositories/dictionary/dictionary.js';
 describe('SetCardsModel', () => {
     let mockDb;
     let setCardModel;
