@@ -1,12 +1,12 @@
-import { SetCardModel } from '../../../../src/repositories/dictionary/dictionary.js';
+import { SetCardRepository } from '../../../../src/repositories/dictionary/dictionary.js';
 import Database from '../../../../src/database/config/db-connection.js';
-import { DictionaryCard } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { IDictionaryCard } from '../../../../src/database/interfaces/DbInterfaces.js';
 
 describe('SetCardsModel', () => {
     let mockDb: jest.Mocked<Database>;
-    let setCardModel: SetCardModel;
+    let setCardModel: SetCardRepository;
 
-    let mockCards: Array<DictionaryCard>;
+    let mockCards: Array<IDictionaryCard>;
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -15,7 +15,7 @@ describe('SetCardsModel', () => {
             query: jest.fn(),
         } as unknown as jest.Mocked<Database>;
 
-        setCardModel = new SetCardModel(mockDb as unknown as Database);
+        setCardModel = new SetCardRepository(mockDb as unknown as Database);
 
         mockCards = [
             { cardId: 'card1', original: 'test1', transcription: 'tɛst1', pronunciation: 'protocol://some/url.com' },

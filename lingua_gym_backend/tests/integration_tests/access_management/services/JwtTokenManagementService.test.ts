@@ -1,14 +1,15 @@
 import jwt from 'jsonwebtoken';
 import TokenManagementService from '../../../../src/services/access_management/JwtTokenManagementService.js';
-import { UserModel } from '../../../../src/repositories/access_management/access_management.js';
+import { UserRepository } from '../../../../src/repositories/access_management/access_management.js';
 import 'dotenv/config';
-import { User } from '../../../../src/database/interfaces/DbInterfaces.js';
 import RegistrationService from '../../../../src/services/access_management/RegistrationService.js';
-import { clearDatabase, closeDatabase, setupTestModelContainer, setupTestServiceContainer } from '../../../utils/di/TestContainer.js';
+import { clearDatabase, closeDatabase, setupTestRepositoryContainer, setupTestServiceContainer } from '../../../utils/di/TestContainer.js';
+import { JwtTokenManager, User } from '../../../../src/models/access_management/access_management.js';
 
-let userModel: UserModel;
+let userRepository: UserRepository;
 let tokenService: TokenManagementService;
 let registrationService: RegistrationService;
+let jwtTokenManager: JwtTokenManager;
 
 describe('TokenManagementService - Integration Tests', () => {
   let testUser: User;
@@ -17,20 +18,22 @@ describe('TokenManagementService - Integration Tests', () => {
   beforeAll(async () => {
     await clearDatabase();
     
-    const modelContainer = await setupTestModelContainer();
-    userModel = modelContainer.resolve(UserModel);
+    const modelContainer = await setupTestRepositoryContainer();
+    userRepository = modelContainer.resolve(UserRepository);
 
     const serviceContainer = await setupTestServiceContainer();
     tokenService = serviceContainer.resolve(TokenManagementService);
     registrationService = serviceContainer.resolve(RegistrationService);
 
+    jwtTokenManager = new JwtTokenManager();
+
     await registrationService.register('testuser', 'test@example.com', 'password123');
 
-    const user = await userModel.getUserByEmail('test@example.com');
+    const user = await userRepository.getUserByEmail('test@example.com');
     if (!user) {
       throw new Error('User not found');
     }
-    testUser = user;
+    testUser = new User(user);
   });
 
   afterAll(async () => {
@@ -39,7 +42,7 @@ describe('TokenManagementService - Integration Tests', () => {
   });
 
   it('should generate and verify an access token', () => {
-    const token = tokenService.generateAccessToken(testUser);
+    const token = jwtTokenManager.generateAccessToken(testUser);
     expect(typeof token).toBe('string');
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!);
@@ -48,7 +51,7 @@ describe('TokenManagementService - Integration Tests', () => {
   });
 
   it('should generate and verify a refresh token', () => {
-    refreshToken = tokenService.generateRefreshToken(testUser);
+    refreshToken = jwtTokenManager.generateRefreshToken(testUser);
     expect(typeof refreshToken).toBe('string');
 
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_TOKEN_SECRET!);
@@ -57,17 +60,15 @@ describe('TokenManagementService - Integration Tests', () => {
   });
 
   it('should refresh tokens using a valid refresh token', async () => {
-    refreshToken = tokenService.generateRefreshToken(testUser);
+    refreshToken = jwtTokenManager.generateRefreshToken(testUser);
     const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await tokenService.refreshToken(refreshToken);
 
     expect(refreshToken).not.toBe(newRefreshToken);
     expect(typeof newAccessToken).toBe('string');
     expect(typeof newRefreshToken).toBe('string');
 
-    const updatedUser = await userModel.getUserById(testUser.userId);
+    const updatedUser = await userRepository.getUserById(testUser.userId);
     expect(updatedUser!.tokenVersion).toBe(testUser.tokenVersion + 1);
-
-    testUser = updatedUser!;
 });
 
 
@@ -76,9 +77,10 @@ describe('TokenManagementService - Integration Tests', () => {
   });
 
   it('should increment token version on logout', async () => {
-    await tokenService.incrementTokenVersion(testUser.userId);
+    const user = new User(testUser);
+    await tokenService.incrementTokenVersion(user);
 
-    const updatedUser = await userModel.getUserById(testUser.userId);
+    const updatedUser = await userRepository.getUserById(testUser.userId);
     expect(updatedUser!.tokenVersion).toBe(testUser.tokenVersion + 1);
   });
 });

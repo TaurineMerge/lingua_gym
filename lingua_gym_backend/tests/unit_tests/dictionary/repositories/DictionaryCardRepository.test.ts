@@ -1,31 +1,25 @@
-import { DictionaryCardModel } from '../../../../src/repositories/dictionary/dictionary.js';
+import { DictionaryCardRepository } from '../../../../src/repositories/dictionary/dictionary.js';
 import Database from '../../../../src/database/config/db-connection.js';
-import {  DictionaryCard, CardTranslation, CardMeaning, CardExample, Tag } from '../../../../src/database/interfaces/DbInterfaces.js';
-import { CardTagModel } from '../../../../src/repositories/tag/tag.js';
+import { IDictionaryCard, ICardTranslation, ICardMeaning, ICardExample } from '../../../../src/database/interfaces/DbInterfaces.js';
 
 describe('DictionaryCardModel', () => {
     let dbMock: jest.Mocked<Database>;
-    let cardModel: DictionaryCardModel;
-    let cardTagModel: CardTagModel;
+    let cardModel: DictionaryCardRepository;
 
-    let card: DictionaryCard;
+    let card: IDictionaryCard;
     let cardId: string;
     let cardName: string;
     let cardTranscription: string;
     let cardPronunciation: string;
-    let cardTranslations: Array<CardTranslation>;
-    let cardMeanings: Array<CardMeaning>;
-    let cardExamples: Array<CardExample>;
-
-    let tags: Array<Tag>;
+    let cardTranslations: Array<ICardTranslation>;
+    let cardMeanings: Array<ICardMeaning>;
+    let cardExamples: Array<ICardExample>;
 
     beforeAll(() => {
         cardId = 'card-123';
         cardName = 'test';
         cardTranscription = 'tɛst';
         cardPronunciation = 'protocol://some/url.com';
-        
-        tags = [{ tagId: 'tag-123', name: 'tag1' }, { tagId: 'tag-456', name: 'tag2' }];
 
         card = {
             cardId: cardId,
@@ -47,9 +41,7 @@ describe('DictionaryCardModel', () => {
             query: jest.fn(),
         } as unknown as jest.Mocked<Database>;
 
-        cardModel = new DictionaryCardModel(dbMock);
-
-        cardTagModel = new CardTagModel(dbMock);
+        cardModel = new DictionaryCardRepository(dbMock);
     });
 
     test('createCard should insert card and return ID', async () => {
@@ -58,12 +50,12 @@ describe('DictionaryCardModel', () => {
             .mockResolvedValueOnce({ rows: [{ cardId: cardId }], rowCount: 1, command: 'INSERT', oid: 0, fields: [] })
             .mockResolvedValue({ rows: [], rowCount: 0, command: 'INSERT', oid: 0, fields: [] });
 
-        const result = await cardModel.createCard(
-            card,
-            cardTranslations,
-            cardMeanings,
-            cardExamples
-        );
+        const result = await cardModel.createCard({
+            ...card,
+            translations: cardTranslations,
+            meanings: cardMeanings,
+            examples: cardExamples
+        });
 
         expect(result).toBe(cardId);
     });
@@ -119,29 +111,5 @@ describe('DictionaryCardModel', () => {
         );
 
         expect(result).toBe(true);
-    });
-
-    test('addTagToCard should return true if tag added', async () => {
-        dbMock.query.mockResolvedValueOnce({ rowCount: 1, command: 'INSERT', oid: 0, fields: [], rows: [] });
-
-        const result = await cardTagModel.addTagToCard('card-123', 'tag-456');
-
-        expect(result).toBe(true);
-    });
-
-    test('removeTagFromCard should return true if tag removed', async () => {
-        dbMock.query.mockResolvedValueOnce({ rowCount: 1, command: 'DELETE', oid: 0, fields: [], rows: [] });
-
-        const result = await cardTagModel.removeTagFromCard('card-123', 'tag-456');
-
-        expect(result).toBe(true);
-    });
-
-    test('getTagsForCard should return an array of tag names', async () => {
-        dbMock.query.mockResolvedValueOnce({ rows: [{ name: tags[0].name }, { name: tags[1].name }], rowCount: 2, command: 'INSERT', oid: 0, fields: [] });
-
-        const result = await cardTagModel.getTagsForCard(cardId);
-
-        expect(result).toEqual([tags[0].name, tags[1].name]);
     });
 });

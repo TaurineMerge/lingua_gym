@@ -1,6 +1,6 @@
 import { UserSetService } from '../../../../src/services/dictionary/dictionary.js';
-import { UserSetModel } from '../../../../src/repositories/dictionary/dictionary.js';
-import { Permission, UserSet } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { UserSetRepository } from '../../../../src/repositories/dictionary/dictionary.js';
+import { Permission, IUserSet } from '../../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../../../src/utils/logger/Logger.js';
 
 jest.mock('../../../../src/utils/logger/Logger.js', () => ({
@@ -9,20 +9,20 @@ jest.mock('../../../../src/utils/logger/Logger.js', () => ({
 }));
 
 describe('UserSetsService', () => {
-  let mockUserSetsModel: jest.Mocked<UserSetModel>;
+  let mockUserSetsModel: jest.Mocked<UserSetRepository>;
   let service: UserSetService;
   
   const mockUserId = 'test-user-id-123';
   const mockSetId = 'test-set-id-456';
   const mockPermission: Permission = Permission.READ;
   
-  const mockUserSet: UserSet = {
+  const mockUserSet: IUserSet = {
     userId: mockUserId,
     setId: mockSetId,
     permission: mockPermission
   };
   
-  const mockUserSetsArray: UserSet[] = [
+  const mockUserSetsArray: IUserSet[] = [
     mockUserSet,
     {
       userId: 'another-user-id',
@@ -37,7 +37,7 @@ describe('UserSetsService', () => {
       removeUserFromSet: jest.fn(),
       getUserSets: jest.fn(),
       getUsersBySet: jest.fn(),
-    } as unknown as jest.Mocked<UserSetModel>;
+    } as unknown as jest.Mocked<UserSetRepository>;
     
     service = new UserSetService(mockUserSetsModel);
     

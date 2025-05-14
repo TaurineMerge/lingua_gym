@@ -1,14 +1,14 @@
-import { TagModel } from '../../../src/repositories/tag/tag.js';
+import { TagRepository } from '../../../src/repositories/tag/tag.js';
 import Database from '../../../src/database/config/db-connection.js';
-import Tag from '../../../src/database/interfaces/tag/Tag.js';
+import { ITag } from '../../../src/database/interfaces/DbInterfaces.js';
 
 describe('TagModel', () => {
     let mockDb: jest.Mocked<Database>;
-    let tagModel: TagModel;
+    let tagModel: TagRepository;
     
-    let mockTag: Tag;
+    let mockTag: ITag;
 
-    let mockTags: Array<Tag>;
+    let mockTags: Array<ITag>;
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -17,7 +17,7 @@ describe('TagModel', () => {
             query: jest.fn(),
         } as unknown as jest.Mocked<Database>;
 
-        tagModel = new TagModel(mockDb as unknown as Database);
+        tagModel = new TagRepository(mockDb as unknown as Database);
 
         mockTag = { tagId: 'tag1', name: 'Test Tag' };
         mockTags = [mockTag, { tagId: 'tag2', name: 'Test Tag 2' }];

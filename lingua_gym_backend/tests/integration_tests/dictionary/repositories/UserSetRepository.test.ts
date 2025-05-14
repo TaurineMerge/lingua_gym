@@ -1,21 +1,21 @@
-import { UserSetModel, DictionarySetModel } from '../../../../src/repositories/dictionary/dictionary.js';
-import { UserModel } from '../../../../src/repositories/access_management/access_management.js';
-import { Permission, User, DictionarySet, UserSet } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { UserSetRepository, DictionarySetRepository } from '../../../../src/repositories/dictionary/dictionary.js';
+import { UserRepository } from '../../../../src/repositories/access_management/access_management.js';
+import { Permission, IUser, IDictionarySet, IUserSet, LanguageCode } from '../../../../src/database/interfaces/DbInterfaces.js';
 import { v4 as uuidv4 } from 'uuid';
-import hashPassword from '../../../../src/utils/hash/HashPassword.js';
-import { clearDatabase, closeDatabase, setupTestModelContainer } from '../../../utils/di/TestContainer.js';
+import { clearDatabase, closeDatabase, setupTestRepositoryContainer } from '../../../utils/di/TestContainer.js';
+import User from '../../../../src/models/access_management/User.js';
 
-let userSetModel: UserSetModel;
-let userModel: UserModel;
-let setModel: DictionarySetModel;
+let userSetModel: UserSetRepository;
+let userModel: UserRepository;
+let setModel: DictionarySetRepository;
 
 beforeAll(async () => {
     clearDatabase();
-    const modelContainer = await setupTestModelContainer();
+    const modelContainer = await setupTestRepositoryContainer();
     
-    userSetModel = modelContainer.resolve(UserSetModel);
-    userModel = modelContainer.resolve(UserModel);
-    setModel = modelContainer.resolve(DictionarySetModel);
+    userSetModel = modelContainer.resolve(UserSetRepository);
+    userModel = modelContainer.resolve(UserRepository);
+    setModel = modelContainer.resolve(DictionarySetRepository);
 });
 
 afterAll(async () => {
@@ -28,40 +28,32 @@ afterEach(async () => {
 });
 
 const createUser = async (): Promise<string> => {
-    const id = uuidv4();
-    const pwdHash = hashPassword('password123');
+    const pwd = 'password123';
     const username = Array(5).fill(null).map(() => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join('');
     const email = Array(5).fill(null).map(() => String.fromCharCode(97 + Math.floor(Math.random() * 26))).join('') + '@example.com';
-    const tokenVersion = 1;
-    const displayName = 'Test User';
-    const emailVerified = false;
 
-    const user: User = {
-        userId: id,
+    const user = new User({
         username: username,
         email: email,
-        passwordHash: pwdHash,
-        displayName: displayName,
-        emailVerified: emailVerified,
-        tokenVersion: tokenVersion
-    }
+        password: pwd,
+    });
 
     await userModel.createUser(user);
 
-    return id;
+    return user.userId;
 };
 
 const createSet = async (ownerId: string): Promise<string> => {
     const id = uuidv4();
     const name = 'Test set';
 
-    const set: DictionarySet = {
+    const set: IDictionarySet = {
         dictionarySetId: id,
         name: name,
         ownerId: ownerId,
         description: 'Set for testing',
         isPublic: false,
-        languageCode: 'en',
+        languageCode: LanguageCode.ENGLISH,
     }
 
     await setModel.createSet(set);
@@ -75,7 +67,7 @@ describe('UserSetsModel integration', () => {
         const setId = await createSet(userId);
         const permission: Permission = Permission.WRITE;
 
-        const result = await userSetModel.addUserToSet(userId, setId, permission) as UserSet;
+        const result = await userSetModel.addUserToSet(userId, setId, permission) as IUserSet;
 
         expect(result).not.toBeNull();
         expect(result!.userId).toBe(userId);
@@ -89,7 +81,7 @@ describe('UserSetsModel integration', () => {
         const permission: Permission = Permission.READ;
 
         await userSetModel.addUserToSet(userId, setId, permission);
-        const removed = await userSetModel.removeUserFromSet(userId, setId) as UserSet;
+        const removed = await userSetModel.removeUserFromSet(userId, setId) as IUserSet;
 
         expect(removed).not.toBeNull();
         expect(removed!.userId).toBe(userId);
@@ -101,7 +93,7 @@ describe('UserSetsModel integration', () => {
         const userId = await createUser();
         const setId = await createSet(userId);
 
-        const removed = await userSetModel.removeUserFromSet(userId, setId) as UserSet;
+        const removed = await userSetModel.removeUserFromSet(userId, setId) as IUserSet;
 
         expect(removed).toBeNull();
     });
@@ -117,7 +109,7 @@ describe('UserSetsModel integration', () => {
         await userSetModel.addUserToSet(user1, setId, user1Permission);
         await userSetModel.addUserToSet(user2, setId, user2Permission);
 
-        const users = await userSetModel.getUsersBySet(setId) as User[] | null;
+        const users = await userSetModel.getUsersBySet(setId) as IUser[] | null;
 
         expect(users).not.toBeNull();
         expect(users!.length).toBe(2);

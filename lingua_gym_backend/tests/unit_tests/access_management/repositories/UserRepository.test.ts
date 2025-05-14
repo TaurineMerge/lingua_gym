@@ -1,6 +1,6 @@
-import { UserModel } from '../../../../src/repositories/access_management/access_management.js';
+import { UserRepository } from '../../../../src/repositories/access_management/access_management.js';
 import Database from '../../../../src/database/config/db-connection.js';
-import { User } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { IUser } from '../../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../../../src/utils/logger/Logger.js';
 
 jest.mock('../../../../src/utils/logger/logger', () => ({
@@ -10,15 +10,15 @@ jest.mock('../../../../src/utils/logger/logger', () => ({
 
 describe('UserModel', () => {
   let db: jest.Mocked<Database>;
-  let userModel: UserModel;
+  let userModel: UserRepository;
 
   beforeEach(() => {
     db = { query: jest.fn() } as unknown as jest.Mocked<Database>;
-    userModel = new UserModel(db);
+    userModel = new UserRepository(db);
     jest.clearAllMocks();
   });
 
-  const mockUser: User = {
+  const mockUser: IUser = {
     userId: '123',
     username: 'testUser',
     displayName: 'Test User',

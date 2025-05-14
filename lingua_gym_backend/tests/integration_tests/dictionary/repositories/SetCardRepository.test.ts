@@ -1,23 +1,23 @@
-import { SetCardModel, DictionarySetModel, DictionaryCardModel } from '../../../../src/repositories/dictionary/dictionary.js';
-import { DictionaryCard, DictionarySet, SetCard, CardTranslation, CardMeaning, CardExample, User } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { SetCardRepository, DictionarySetRepository, DictionaryCardRepository } from '../../../../src/repositories/dictionary/dictionary.js';
+import { IDictionaryCard, IDictionarySet, ISetCard, ICardTranslation, ICardMeaning, ICardExample, LanguageCode } from '../../../../src/database/interfaces/DbInterfaces.js';
 import { v4 as uuidv4 } from 'uuid';
-import { clearDatabase, closeDatabase, setupTestModelContainer } from '../../../utils/di/TestContainer.js';
-import hash_password from '../../../../src/utils/hash/HashPassword.js';
-import { UserModel } from '../../../../src/repositories/access_management/access_management.js';
+import { clearDatabase, closeDatabase, setupTestRepositoryContainer } from '../../../utils/di/TestContainer.js';
+import { UserRepository } from '../../../../src/repositories/access_management/access_management.js';
+import User from '../../../../src/models/access_management/User.js';
 
-let setCardModel: SetCardModel;
-let setModel: DictionarySetModel;
-let cardModel: DictionaryCardModel;
-let userModel: UserModel;
+let setCardModel: SetCardRepository;
+let setModel: DictionarySetRepository;
+let cardModel: DictionaryCardRepository;
+let userModel: UserRepository;
 
 beforeAll(async () => {
     await clearDatabase();
-    const modelContainer = await setupTestModelContainer();
+    const modelContainer = await setupTestRepositoryContainer();
 
-    setCardModel = modelContainer.resolve(SetCardModel);
-    setModel = modelContainer.resolve(DictionarySetModel);
-    cardModel = modelContainer.resolve(DictionaryCardModel);
-    userModel = modelContainer.resolve(UserModel);
+    setCardModel = modelContainer.resolve(SetCardRepository);
+    setModel = modelContainer.resolve(DictionarySetRepository);
+    cardModel = modelContainer.resolve(DictionaryCardRepository);
+    userModel = modelContainer.resolve(UserRepository);
 });
 
 afterAll(async () => {
@@ -30,21 +30,16 @@ afterEach(async () => {
 });
 
 const createUser = async (): Promise<string> => {
-    const userId = uuidv4();
     const userName = `Test User ${Math.random().toString(36).substring(2, 8)}`;
     const passwrod = 'password123';
-    const user: User = {
-        userId: userId,
+    const user = new User({
         username: userName,
         displayName: userName,
-        passwordHash: hash_password(passwrod),
+        password: passwrod,
         email: `${userName}@example.com`,
-        tokenVersion: 0,
-        profilePicture: 'photo.png',
-        emailVerified: false
-    }
+    });
     await userModel.createUser(user);
-    return userId;
+    return user.userId;
 }
 
 const createSet = async (): Promise<string> => {
@@ -53,13 +48,13 @@ const createSet = async (): Promise<string> => {
     const setName = 'Test Set';
     const description = 'Set for testing';
 
-    const set: DictionarySet = {
+    const set: IDictionarySet = {
         dictionarySetId: setId,
         name: setName,
         ownerId: ownerId,
         description: description,
         isPublic: false,
-        languageCode: 'en',
+        languageCode: LanguageCode.ENGLISH,
     }
 
     await setModel.createSet(set);
@@ -76,14 +71,14 @@ const createCard = async (): Promise<string> => {
     const transcription = 'Test Card Transcription';
     const pronunciation = 'Test Card Pronunciation';
 
-    const card: DictionaryCard = {
+    const card: IDictionaryCard = {
         cardId: cardId,
         original: original,
         transcription: transcription,
         pronunciation: pronunciation
     }
 
-    const translations: Array<CardTranslation> = [
+    const translations: Array<ICardTranslation> = [
         {
             cardId: cardId,
             translation: translation,
@@ -91,7 +86,7 @@ const createCard = async (): Promise<string> => {
         }
     ]
 
-    const meanings: Array<CardMeaning> = [
+    const meanings: Array<ICardMeaning> = [
         {
             cardId: cardId,
             meaning: meaning,
@@ -99,7 +94,7 @@ const createCard = async (): Promise<string> => {
         }
     ]
 
-    const examples: Array<CardExample> = [
+    const examples: Array<ICardExample> = [
         {
             cardId: cardId,
             example: example,
@@ -108,7 +103,7 @@ const createCard = async (): Promise<string> => {
         }
     ]
 
-    await cardModel.createCard(card, translations, meanings, examples);
+    await cardModel.createCard({ ...card, translations, meanings, examples });
 
     return cardId;
 };
@@ -119,7 +114,7 @@ describe('SetCardsModel integration', () => {
         const setId = await createSet();
         const cardId = await createCard();
 
-        const result = (await setCardModel.addCardToSet(setId, cardId)) as SetCard;
+        const result = (await setCardModel.addCardToSet(setId, cardId)) as ISetCard;
         
         expect(result).not.toBeNull();
         expect(result!.cardId).toBe(cardId);
@@ -131,7 +126,7 @@ describe('SetCardsModel integration', () => {
         const cardId = await createCard();
 
         await setCardModel.addCardToSet(setId, cardId);
-        const removed= await setCardModel.removeCardFromSet(setId, cardId) as SetCard;
+        const removed= await setCardModel.removeCardFromSet(setId, cardId) as ISetCard;
 
         expect(removed).not.toBeNull();
         expect(removed!.cardId).toBe(cardId);
@@ -158,7 +153,7 @@ describe('SetCardsModel integration', () => {
         await setCardModel.addCardToSet(setId, cardId1);
         await setCardModel.addCardToSet(setId, cardId2);
 
-        const cards = await setCardModel.getCardsBySet(setId) as DictionaryCard[];
+        const cards = await setCardModel.getCardsBySet(setId) as IDictionaryCard[];
 
         expect(cards).not.toBeNull();
         expect(cards!.length).toBe(2);

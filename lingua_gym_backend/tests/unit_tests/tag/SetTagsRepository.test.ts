@@ -1,12 +1,12 @@
-import { SetTagModel } from '../../../src/repositories/tag/tag.js';
+import { SetTagRepository } from '../../../src/repositories/tag/tag.js';
 import Database from '../../../src/database/config/db-connection.js';
-import { DictionarySet, Tag } from '../../../src/database/interfaces/DbInterfaces.js';
+import { IDictionarySet, ITag, LanguageCode } from '../../../src/database/interfaces/DbInterfaces.js';
 
 describe('CardsTagsModel', () => {
     let mockDb: jest.Mocked<Database>;
-    let setTagModel: SetTagModel;
-    let mockSets: Array<DictionarySet>;
-    let mockTags: Array<Tag>;
+    let setTagModel: SetTagRepository;
+    let mockSets: Array<IDictionarySet>;
+    let mockTags: Array<ITag>;
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -15,11 +15,11 @@ describe('CardsTagsModel', () => {
             query: jest.fn(),
         } as unknown as jest.Mocked<Database>;
 
-        setTagModel = new SetTagModel(mockDb as unknown as Database);
+        setTagModel = new SetTagRepository(mockDb as unknown as Database);
 
         mockSets = [
-            { dictionarySetId: 'set1', name: 'Test Set', ownerId: 'user1', description: 'Test set', isPublic: false, languageCode: 'en' },
-            { dictionarySetId: 'set2', name: 'Test Set 2', ownerId: 'user2', description: 'Test set 2', isPublic: false, languageCode: 'en' }
+            { dictionarySetId: 'set1', name: 'Test Set', ownerId: 'user1', description: 'Test set', isPublic: false, languageCode: LanguageCode.ENGLISH },
+            { dictionarySetId: 'set2', name: 'Test Set 2', ownerId: 'user2', description: 'Test set 2', isPublic: false, languageCode: LanguageCode.ENGLISH }
         ];
 
         mockTags = [

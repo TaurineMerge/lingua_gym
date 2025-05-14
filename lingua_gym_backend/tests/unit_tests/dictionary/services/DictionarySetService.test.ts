@@ -1,6 +1,6 @@
 import DictionarySetService from '../../../../src/services/dictionary/DictionarySetService';
-import { DictionarySetModel } from '../../../../src/repositories/dictionary/dictionary.js';
-import { DictionarySet } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { DictionarySetRepository } from '../../../../src/repositories/dictionary/dictionary.js';
+import { IDictionarySet, LanguageCode } from '../../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../../../src/utils/logger/Logger.js';
 
 jest.mock('../../../../src/utils/logger/Logger.js', () => ({
@@ -9,18 +9,18 @@ jest.mock('../../../../src/utils/logger/Logger.js', () => ({
 }));
 
 describe('DictionarySetService', () => {
-  let mockDictionarySetModel: jest.Mocked<DictionarySetModel>;
+  let mockDictionarySetModel: jest.Mocked<DictionarySetRepository>;
   let service: DictionarySetService;
   
   const mockSetId = 'test-set-id-123';
   
-  const mockSet: DictionarySet = {
+  const mockSet: IDictionarySet = {
     dictionarySetId: mockSetId,
     name: 'Test Set',
     ownerId: 'owner-123',
     description: 'Test set description',
     isPublic: false,
-    languageCode: 'en',
+    languageCode: LanguageCode.ENGLISH,
   };
 
   beforeEach(() => {
@@ -28,7 +28,7 @@ describe('DictionarySetService', () => {
       createSet: jest.fn(),
       deleteSet: jest.fn(),
       getSetById: jest.fn(),
-    } as unknown as jest.Mocked<DictionarySetModel>;
+    } as unknown as jest.Mocked<DictionarySetRepository>;
     
     service = new DictionarySetService(mockDictionarySetModel);
     

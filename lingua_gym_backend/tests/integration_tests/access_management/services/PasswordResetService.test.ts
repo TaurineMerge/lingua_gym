@@ -4,19 +4,19 @@ import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import RegistrationService from '../../../../src/services/access_management/RegistrationService.js';
-import { UserModel } from '../../../../src/repositories/access_management/access_management.js';
-import { User } from '../../../../src/database/interfaces/DbInterfaces.js';
-import { clearDatabase, closeDatabase, setupTestModelContainer, setupTestServiceContainer } from '../../../utils/di/TestContainer.js';
+import { UserRepository } from '../../../../src/repositories/access_management/access_management.js';
+import { IUser } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { clearDatabase, closeDatabase, setupTestRepositoryContainer, setupTestServiceContainer } from '../../../utils/di/TestContainer.js';
 
-let userModel: UserModel;
+let userModel: UserRepository;
 let registrationService: RegistrationService;
 let passwordResetService: PasswordResetService;
 
 beforeAll(async () => {
   await clearDatabase();
   
-  const modelContainer = await setupTestModelContainer();
-  userModel = modelContainer.resolve(UserModel);
+  const modelContainer = await setupTestRepositoryContainer();
+  userModel = modelContainer.resolve(UserRepository);
 
   const serviceContainer = await setupTestServiceContainer();
   registrationService = serviceContainer.resolve(RegistrationService);
@@ -24,7 +24,7 @@ beforeAll(async () => {
 });
 
 describe('PasswordResetService Integration Tests', () => {
-  let testUser: User;
+  let testUser: IUser;
   let resetToken: string;
 
   beforeEach(async () => {

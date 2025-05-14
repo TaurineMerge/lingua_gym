@@ -1,6 +1,6 @@
 import DictionaryCardService from '../../../../src/services/dictionary/DictionaryCardService.js';
-import { DictionaryCardModel } from '../../../../src/repositories/dictionary/dictionary.js';
-import { DictionaryCard, CardTranslation, CardMeaning, CardExample } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { DictionaryCardRepository } from '../../../../src/repositories/dictionary/dictionary.js';
+import { IDictionaryCard, ICardTranslation, ICardMeaning, ICardExample } from '../../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../../../src/utils/logger/Logger.js';
 
 jest.mock('../../../../src/utils/logger/Logger.js', () => ({
@@ -9,19 +9,19 @@ jest.mock('../../../../src/utils/logger/Logger.js', () => ({
 }));
 
 describe('DictionaryCardService', () => {
-  let mockDictionaryCardModel: jest.Mocked<DictionaryCardModel>;
+  let mockDictionaryCardModel: jest.Mocked<DictionaryCardRepository>;
   let service: DictionaryCardService;
   
   const mockCardId = 'test-card-id-123';
   
-  const mockCard: DictionaryCard = {
+  const mockCard: IDictionaryCard = {
     cardId: mockCardId,
     original: 'test',
     transcription: 'tɛst',
     pronunciation: 'protocol://some/url.com'
   };
   
-  const mockTranslations: CardTranslation[] = [
+  const mockTranslations: ICardTranslation[] = [
     { 
       cardId: mockCardId,
       translationId: 'translation-123',
@@ -29,7 +29,7 @@ describe('DictionaryCardService', () => {
     }
   ];
   
-  const mockMeanings: CardMeaning[] = [
+  const mockMeanings: ICardMeaning[] = [
     {
       cardId: mockCardId,
       dictionaryMeaningId: 'meaning-123',
@@ -37,7 +37,7 @@ describe('DictionaryCardService', () => {
     }
   ];
   
-  const mockExamples: CardExample[] = [
+  const mockExamples: ICardExample[] = [
     {
       cardId: mockCardId,
       exampleId: 'example-123',
@@ -51,7 +51,7 @@ describe('DictionaryCardService', () => {
       createCard: jest.fn(),
       getCardById: jest.fn(),
       removeCardById: jest.fn(),
-    } as unknown as jest.Mocked<DictionaryCardModel>;
+    } as unknown as jest.Mocked<DictionaryCardRepository>;
     
     service = new DictionaryCardService(mockDictionaryCardModel);
     

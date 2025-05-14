@@ -1,20 +1,20 @@
 import Database from '../../../../src/database/config/db-connection.js';
-import { DictionarySetModel } from '../../../../src/repositories/dictionary/dictionary.js';
-import { DictionarySet, Tag } from '../../../../src/database/interfaces/DbInterfaces.js';
-import { SetTagModel } from '../../../../src/repositories/tag/tag.js';
+import { DictionarySetRepository } from '../../../../src/repositories/dictionary/dictionary.js';
+import { IDictionarySet, ITag, LanguageCode } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { SetTagRepository } from '../../../../src/repositories/tag/tag.js';
 
 describe('DictionarySetModel', () => {
     let dbMock: jest.Mocked<Database>;
-    let setModel: DictionarySetModel;
-    let setTagsModel: SetTagModel;
+    let setModel: DictionarySetRepository;
+    let setTagsModel: SetTagRepository;
 
-    let set: DictionarySet;
+    let set: IDictionarySet;
     let setId: string;
     let setName: string;
     let setOwnerId: string;
     let setDescription: string;
 
-    let tags: Array<Tag>;
+    let tags: Array<ITag>;
 
     beforeAll(() => {
         setId = 'set-uuid';
@@ -27,7 +27,7 @@ describe('DictionarySetModel', () => {
             ownerId: setOwnerId,
             description: setDescription,
             isPublic: false,
-            languageCode: 'en',
+            languageCode: LanguageCode.ENGLISH,
         };
 
         tags = [{ tagId: 'tag-123', name: 'tag1' }, { tagId: 'tag-456', name: 'tag2' }];
@@ -38,8 +38,8 @@ describe('DictionarySetModel', () => {
             query: jest.fn(),
         } as unknown as jest.Mocked<Database>;
 
-        setModel = new DictionarySetModel(dbMock);
-        setTagsModel = new SetTagModel(dbMock);
+        setModel = new DictionarySetRepository(dbMock);
+        setTagsModel = new SetTagRepository(dbMock);
     });
 
     test('createSet should insert a set and return it', async () => {

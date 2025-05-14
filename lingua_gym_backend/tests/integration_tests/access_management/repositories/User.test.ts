@@ -1,14 +1,14 @@
-import { UserModel } from '../../../../src/repositories/access_management/access_management.js';
-import { User } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { UserRepository } from '../../../../src/repositories/access_management/access_management.js';
+import { IUser } from '../../../../src/database/interfaces/DbInterfaces.js';
 import { v4 as uuidv4 } from 'uuid';
-import { clearDatabase, closeDatabase, setupTestModelContainer } from '../../../utils/di/TestContainer.js';
+import { clearDatabase, closeDatabase, setupTestRepositoryContainer } from '../../../utils/di/TestContainer.js';
 
-let userModel: UserModel;
+let userModel: UserRepository;
 
 beforeAll(async () => {
   await clearDatabase();
-  const modelContainer = await setupTestModelContainer();
-  userModel = modelContainer.resolve(UserModel);
+  const modelContainer = await setupTestRepositoryContainer();
+  userModel = modelContainer.resolve(UserRepository);
 });
 
 afterAll(async () => {
@@ -17,7 +17,7 @@ afterAll(async () => {
 });
 
 describe('UserModel Integration Tests', () => {
-  let testUser: User;
+  let testUser: IUser;
 
   beforeEach(() => {
     testUser = {

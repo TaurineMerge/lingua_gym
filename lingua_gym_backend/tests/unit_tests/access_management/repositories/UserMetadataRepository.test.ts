@@ -1,6 +1,6 @@
-import { UserMetadataModel } from '../../../../src/repositories/access_management/access_management.js';
+import { UserMetadataRepository } from '../../../../src/repositories/access_management/access_management.js';
 import Database from '../../../../src/database/config/db-connection.js';
-import { UserMetadata } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { IUserMetadata } from '../../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../../../src/utils/logger/Logger.js';
 
 jest.mock('../../../../src/utils/logger/logger', () => ({
@@ -10,20 +10,20 @@ jest.mock('../../../../src/utils/logger/logger', () => ({
 
 describe('UserModel', () => {
   let db: jest.Mocked<Database>;
-  let userMetadataModel: UserMetadataModel;
+  let userMetadataModel: UserMetadataRepository;
 
   beforeEach(() => {
     db = {
       query: jest.fn(),
     } as unknown as jest.Mocked<Database>;
 
-    userMetadataModel = new UserMetadataModel(db);
+    userMetadataModel = new UserMetadataRepository(db);
 
     jest.clearAllMocks();
   });
 
   test('createUserMetadata() should call db.query() with correct arguments', async () => {
-    const userMetadata: UserMetadata = {
+    const userMetadata: IUserMetadata = {
       userId: '123',
       lastLogin: new Date(),
       signupDate: new Date(),
@@ -44,7 +44,7 @@ describe('UserModel', () => {
   });
 
   test('createUserMetadata() should log an error and throw if db.query() fails', async () => {
-    const userMetadata: UserMetadata = {
+    const userMetadata: IUserMetadata = {
       userId: '123',
       lastLogin: new Date(),
       signupDate: new Date(),

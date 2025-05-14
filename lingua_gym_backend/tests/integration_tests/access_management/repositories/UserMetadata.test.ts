@@ -1,16 +1,16 @@
-import { User, UserMetadata } from '../../../../src/database/interfaces/DbInterfaces.js';
-import { UserModel, UserMetadataModel } from '../../../../src/repositories/access_management/access_management.js';
+import { IUser, IUserMetadata } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { UserRepository, UserMetadataRepository } from '../../../../src/repositories/access_management/access_management.js';
 import { v4 as uuidv4 } from 'uuid';
-import { clearDatabase, closeDatabase, setupTestModelContainer } from '../../../utils/di/TestContainer.js';
+import { clearDatabase, closeDatabase, setupTestRepositoryContainer } from '../../../utils/di/TestContainer.js';
 
-let userModel: UserModel;
-let userMetadataModel: UserMetadataModel;
+let userModel: UserRepository;
+let userMetadataModel: UserMetadataRepository;
 
 beforeAll(async () => {
   await clearDatabase();
-  const modelContainer = await setupTestModelContainer();
-  userModel = modelContainer.resolve(UserModel);
-  userMetadataModel = modelContainer.resolve(UserMetadataModel);
+  const modelContainer = await setupTestRepositoryContainer();
+  userModel = modelContainer.resolve(UserRepository);
+  userMetadataModel = modelContainer.resolve(UserMetadataRepository);
 });
 
 afterAll(async () => {
@@ -19,8 +19,8 @@ afterAll(async () => {
 });
 
 describe('UserMetadataModel Integration Tests', () => {
-  let testUser: User;
-  let testUserMetadata: UserMetadata;
+  let testUser: IUser;
+  let testUserMetadata: IUserMetadata;
 
   beforeEach(async () => {
     testUser = {

@@ -1,6 +1,6 @@
 import { SetCardService } from '../../../../src/services/dictionary/dictionary.js';
-import { SetCardModel } from '../../../../src/repositories/dictionary/dictionary.js';
-import { DictionaryCard, SetCard } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { SetCardRepository } from '../../../../src/repositories/dictionary/dictionary.js';
+import { IDictionaryCard, ISetCard } from '../../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../../../src/utils/logger/Logger.js';
 
 jest.mock('../../../../src/utils/logger/Logger.js', () => ({
@@ -9,18 +9,18 @@ jest.mock('../../../../src/utils/logger/Logger.js', () => ({
 }));
 
 describe('SetCardsService', () => {
-  let mockSetCardModel: jest.Mocked<SetCardModel>;
+  let mockSetCardModel: jest.Mocked<SetCardRepository>;
   let service: SetCardService;
   
   const mockSetId = 'test-set-id-123';
   const mockCardId = 'test-card-id-456';
   
-  const mockSetCards: SetCard = {
+  const mockSetCards: ISetCard = {
     setId: mockSetId,
     cardId: mockCardId
   };
   
-  const mockDictionaryCards: DictionaryCard[] = [
+  const mockDictionaryCards: IDictionaryCard[] = [
     {
       cardId: mockCardId,
       original: 'test',
@@ -34,7 +34,7 @@ describe('SetCardsService', () => {
       addCardToSet: jest.fn(),
       removeCardFromSet: jest.fn(),
       getCardsBySet: jest.fn(),
-    } as unknown as jest.Mocked<SetCardModel>;
+    } as unknown as jest.Mocked<SetCardRepository>;
     
     service = new SetCardService(mockSetCardModel);
     

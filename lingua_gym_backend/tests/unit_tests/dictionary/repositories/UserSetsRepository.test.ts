@@ -1,13 +1,13 @@
-import { UserSetModel } from '../../../../src/repositories/dictionary/dictionary.js';
+import { UserSetRepository } from '../../../../src/repositories/dictionary/dictionary.js';
 import Database from '../../../../src/database/config/db-connection.js';
-import { Permission, UserSet } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { Permission, IUserSet } from '../../../../src/database/interfaces/DbInterfaces.js';
 
 describe('UserSetsModel', () => {
     let mockDb: jest.Mocked<Database>;
-    let userSetModel: UserSetModel;
+    let userSetModel: UserSetRepository;
 
-    let mockUser: UserSet;
-    let mockUsers: Array<UserSet>;
+    let mockUser: IUserSet;
+    let mockUsers: Array<IUserSet>;
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -16,7 +16,7 @@ describe('UserSetsModel', () => {
             query: jest.fn(),
         } as unknown as jest.Mocked<Database>;
 
-        userSetModel = new UserSetModel(mockDb as unknown as Database);
+        userSetModel = new UserSetRepository(mockDb as unknown as Database);
 
         mockUser = { userId: 'user1', setId: 'set1', permission: Permission.WRITE };
         mockUsers = [mockUser, { userId: 'user2', setId: 'set1', permission: Permission.READ }];

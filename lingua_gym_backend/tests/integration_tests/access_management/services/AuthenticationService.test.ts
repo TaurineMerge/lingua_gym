@@ -1,9 +1,10 @@
 import { AuthenticationService, RegistrationService } from '../../../../src/services/access_management/access_management.js';
-import { UserModel } from '../../../../src/repositories/access_management/access_management.js';
+import { UserRepository } from '../../../../src/repositories/access_management/access_management.js';
 import bcrypt from 'bcrypt';
-import { clearDatabase, closeDatabase, setupTestModelContainer, setupTestServiceContainer } from '../../../utils/di/TestContainer.js';
+import { clearDatabase, closeDatabase, setupTestRepositoryContainer, setupTestServiceContainer } from '../../../utils/di/TestContainer.js';
+import User from '../../../../src/models/access_management/User.js';
 
-let userModel: UserModel;
+let userModel: UserRepository;
 let authService: AuthenticationService;
 let registrationService: RegistrationService;
 
@@ -19,8 +20,8 @@ const testUserData = {
 
 beforeAll(async () => {
   await clearDatabase();
-  const modelContainer = await setupTestModelContainer();
-  userModel = modelContainer.resolve(UserModel);
+  const modelContainer = await setupTestRepositoryContainer();
+  userModel = modelContainer.resolve(UserRepository);
   const serviceContainer = await setupTestServiceContainer();
   authService = serviceContainer.resolve(AuthenticationService);
   registrationService = serviceContainer.resolve(RegistrationService);
@@ -50,9 +51,9 @@ describe('AuthenticationService (Integration)', () => {
   });
 
   test('should invalidate refresh token on logout', async () => {
-    await authService.logout(testUserData.userId);
+    const user = new User(testUserData);
 
-    const updatedUser = await userModel.getUserById(testUserData.userId);
+    const updatedUser = await userModel.getUserById(user.userId);
     expect(updatedUser?.tokenVersion).toBe(testUserData.tokenVersion + 1);
   });
 });

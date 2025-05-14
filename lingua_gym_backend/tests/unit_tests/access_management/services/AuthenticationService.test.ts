@@ -1,30 +1,31 @@
 import bcrypt from 'bcrypt';
 import AuthenticationService from '../../../../src/services/access_management/AuthenticationService.js';
-import { UserModel } from '../../../../src/repositories/access_management/access_management.js';
+import { UserRepository } from '../../../../src/repositories/access_management/access_management.js';
 import TokenManagementService from '../../../../src/services/access_management/JwtTokenManagementService.js';
 import Database from '../../../../src/database/config/db-connection.js';
-
-jest.mock('../../../../src/models/access_management/access_management.js');
-jest.mock('../../../../src/services/access_management/JwtTokenManagementService.js');
+import User from '../../../../src/models/access_management/User.js';
+import JwtTokenManager from '../../../../src/models/access_management/JwtTokenManager.js';
 
 const mockDbInstance = {} as Database;
 
 describe('AuthenticationService', () => {
   let authenticationService: AuthenticationService;
-  let mockUserModel: jest.Mocked<UserModel>;
+  let mockUserModel: jest.Mocked<UserRepository>;
   let mockJwtTokenService: jest.Mocked<TokenManagementService>;
+  let mockJwtTokenManager: jest.Mocked<JwtTokenManager>;
 
   beforeEach(() => {
-    mockUserModel = new UserModel(mockDbInstance) as jest.Mocked<UserModel>
+    mockUserModel = new UserRepository(mockDbInstance) as jest.Mocked<UserRepository>
     mockJwtTokenService = new TokenManagementService(mockUserModel) as jest.Mocked<TokenManagementService>;
     authenticationService = new AuthenticationService(mockUserModel, mockJwtTokenService);
+    mockJwtTokenManager = new JwtTokenManager() as jest.Mocked<JwtTokenManager>;
   });
 
   describe('login', () => {
     it('should return access and refresh tokens on successful login', async () => {
       const password = 'password';
       const passwordHashSalt = 10;
-      const user = {
+      const user = new User({
         userId: '123',
         username: 'testUser',
         displayName: 'Test User',
@@ -33,17 +34,17 @@ describe('AuthenticationService', () => {
         profilePicture: 'avatar.png',
         emailVerified: true,
         tokenVersion: 1,
-      };
+      });
     
       mockUserModel.getUserByEmail.mockResolvedValue(user);
-      mockJwtTokenService.generateAccessToken.mockReturnValue('access');
-      mockJwtTokenService.generateRefreshToken.mockReturnValue('refresh');
+      mockJwtTokenManager.generateAccessToken.mockReturnValue('access');
+      mockJwtTokenManager.generateRefreshToken.mockReturnValue('refresh');
     
       const result = await authenticationService.login(user.email, password);
     
       expect(mockUserModel.getUserByEmail).toHaveBeenCalledWith(user.email);
-      expect(mockJwtTokenService.generateAccessToken).toHaveBeenCalledWith(user);
-      expect(mockJwtTokenService.generateRefreshToken).toHaveBeenCalledWith(user);
+      expect(mockJwtTokenManager.generateAccessToken).toHaveBeenCalledWith(user);
+      expect(mockJwtTokenManager.generateRefreshToken).toHaveBeenCalledWith(user);
       expect(result).toEqual({ accessToken: 'access', refreshToken: 'refresh' });
     });
     
@@ -85,11 +86,24 @@ describe('AuthenticationService', () => {
 
   describe('logout', () => {
     it('should call incrementTokenVersion when logging out', async () => {
-      mockJwtTokenService.incrementTokenVersion.mockResolvedValue();
+      const password = 'password';
+      const passwordHashSalt = 10;
+      const user = new User({
+        userId: '123',
+        username: 'testUser',
+        displayName: 'Test User',
+        passwordHash: bcrypt.hashSync(password, passwordHashSalt),
+        email: 'test@example.com',
+        profilePicture: 'avatar.png',
+        emailVerified: true,
+        tokenVersion: 1,
+      });
+      
+      mockJwtTokenService.incrementTokenVersion.mockResolvedValue(true);
 
-      await authenticationService.logout('123');
+      await authenticationService.logout(user);
 
-      expect(mockJwtTokenService.incrementTokenVersion).toHaveBeenCalledWith('123');
+      expect(mockJwtTokenService.incrementTokenVersion).toHaveBeenCalledWith(user);
     });
   });
 });

@@ -1,6 +1,6 @@
 import { DictionaryCardService } from '../../../../src/services/dictionary/dictionary.js';
 import { setupTestServiceContainer, clearDatabase, closeDatabase } from '../../../utils/di/TestContainer.js';
-import { DictionaryCard, CardTranslation, CardMeaning, CardExample } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { IDictionaryCard, ICardTranslation, ICardMeaning, ICardExample } from '../../../../src/database/interfaces/DbInterfaces.js';
 import { v4 as uuidv4 } from 'uuid';
 
 let service: DictionaryCardService;
@@ -20,22 +20,22 @@ afterAll(async () => {
 });
 
 describe('DictionaryCardService', () => {
-  const card: DictionaryCard = {
+  const card: IDictionaryCard = {
     cardId: uuidv4(),
     original: 'run',
     transcription: '/rʌn/',
     pronunciation: 'https://example.com/pronunciation/run.mp3',
   };
 
-  const translations: CardTranslation[] = [
+  const translations: ICardTranslation[] = [
     { cardId: 'test-card-1', translation: 'run', translationId: uuidv4() },
   ];
 
-  const meanings: CardMeaning[] = [
+  const meanings: ICardMeaning[] = [
     { cardId: 'test-card-1', meaning: 'to run', dictionaryMeaningId: uuidv4() },
   ];
 
-  const examples: CardExample[] = [
+  const examples: ICardExample[] = [
     { cardId: 'test-card-1', example: 'I run.', exampleId: uuidv4(), translation: 'я бегаю' },
   ];
 

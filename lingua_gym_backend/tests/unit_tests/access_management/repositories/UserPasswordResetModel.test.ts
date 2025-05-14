@@ -1,6 +1,6 @@
-import { UserPasswordResetModel } from '../../../../src/repositories/access_management/access_management.js';
+import { UserPasswordResetRepository } from '../../../../src/repositories/access_management/access_management.js';
 import Database from '../../../../src/database/config/db-connection.js';
-import { UserPasswordReset } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { IPasswordResetManager } from '../../../../src/database/interfaces/DbInterfaces.js';
 
 jest.mock('../../../../src/database/config/db-connection');
 
@@ -8,9 +8,9 @@ const mockDb = {
   query: jest.fn(),
 } as unknown as Database;
 
-const userPasswordResetModel = new UserPasswordResetModel(mockDb);
+const userPasswordResetModel = new UserPasswordResetRepository(mockDb);
 
-const mockResetEntry: UserPasswordReset = {
+const mockResetEntry: IPasswordResetManager = {
   userId: '123',
   passwordResetToken: 'reset-token',
   passwordResetTokenExpiration: new Date(Date.now() + 3600000),

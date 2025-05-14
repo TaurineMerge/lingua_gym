@@ -1,26 +1,26 @@
-import { DictionarySetModel } from '../../../../src/repositories/dictionary/dictionary.js';
+import { DictionarySetRepository } from '../../../../src/repositories/dictionary/dictionary.js';
 import { v4 as uuidv4 } from 'uuid';
-import { DictionarySet, User } from '../../../../src/database/interfaces/DbInterfaces.js';
-import { TagModel, SetTagModel } from '../../../../src/repositories/tag/tag.js';
-import { clearDatabase, closeDatabase, setupTestModelContainer } from '../../../utils/di/TestContainer.js';
-import { UserModel } from '../../../../src/repositories/access_management/access_management.js';
-import hash_password from '../../../../src/utils/hash/HashPassword.js';
+import { IDictionarySet, LanguageCode } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { TagRepository, SetTagRepository } from '../../../../src/repositories/tag/tag.js';
+import { clearDatabase, closeDatabase, setupTestRepositoryContainer } from '../../../utils/di/TestContainer.js';
+import { UserRepository } from '../../../../src/repositories/access_management/access_management.js';
+import User from '../../../../src/models/access_management/User.js';
 
 describe('DictionarySetModel integration', () => {
-    let setModel: DictionarySetModel;
-    let tagModel: TagModel;
-    let setTagModel: SetTagModel;
-    let userModel: UserModel;
+    let setModel: DictionarySetRepository;
+    let tagModel: TagRepository;
+    let setTagModel: SetTagRepository;
+    let userModel: UserRepository;
 
     let userId: string;
 
-    const sampleSet = (ownerId?: string): DictionarySet => ({
+    const sampleSet = (ownerId?: string): IDictionarySet => ({
         dictionarySetId: uuidv4(),
         name: `Test Set ${Math.random().toString(36).substring(2, 8)}`,
         ownerId: ownerId || uuidv4(),
         description: 'Sample dictionary set',
         isPublic: false,
-        languageCode: 'en',
+        languageCode: LanguageCode.ENGLISH,
     });
 
     const createTestTag = async (prefix = 'tag'): Promise<string> => {
@@ -31,30 +31,25 @@ describe('DictionarySetModel integration', () => {
 
     const createTestUser = async (): Promise<string> => {
         const userName = `Test User ${Math.random().toString(36).substring(2, 8)}`;
-        const userId = uuidv4();
         const passwrod = 'password123';
-        const user: User = {
-            userId: userId,
+        const user = new User({
             username: userName,
             displayName: userName,
-            passwordHash: await hash_password(passwrod),
+            password: passwrod,
             email: `${userName}@example.com`,
-            tokenVersion: 0,
-            profilePicture: 'photo.png',
-            emailVerified: false
-        }
+        });
         await userModel.createUser(user);
         return userId;
     }
 
     beforeAll(async () => {
         await clearDatabase();
-        const modelContainer = await setupTestModelContainer();
+        const modelContainer = await setupTestRepositoryContainer();
 
-        setModel = modelContainer.resolve<DictionarySetModel>(DictionarySetModel);
-        tagModel = modelContainer.resolve<TagModel>(TagModel);
-        setTagModel = modelContainer.resolve<SetTagModel>(SetTagModel);
-        userModel = modelContainer.resolve<UserModel>(UserModel);
+        setModel = modelContainer.resolve<DictionarySetRepository>(DictionarySetRepository);
+        tagModel = modelContainer.resolve<TagRepository>(TagRepository);
+        setTagModel = modelContainer.resolve<SetTagRepository>(SetTagRepository);
+        userModel = modelContainer.resolve<UserRepository>(UserRepository);
     });
 
     beforeEach(async (): Promise<string> => {
@@ -73,8 +68,8 @@ describe('DictionarySetModel integration', () => {
 
     describe('Basic Set Operations', () => {
         test('createSet should insert a dictionary set', async () => {
-            const sample: DictionarySet = sampleSet(userId);
-            const createdSet: DictionarySet = await setModel.createSet({
+            const sample: IDictionarySet = sampleSet(userId);
+            const createdSet: IDictionarySet = await setModel.createSet({
                 dictionarySetId: sample.dictionarySetId,
                 name: sample.name,
                 ownerId: sample.ownerId,
@@ -94,7 +89,7 @@ describe('DictionarySetModel integration', () => {
         });
 
         test('getSetById should retrieve existing set', async () => {
-            const set: DictionarySet = sampleSet(userId);
+            const set: IDictionarySet = sampleSet(userId);
             await setModel.createSet(set);
             
             const fetchedSet = await setModel.getSetById(set.dictionarySetId);
