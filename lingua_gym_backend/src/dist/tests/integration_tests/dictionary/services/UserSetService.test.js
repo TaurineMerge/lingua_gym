@@ -7,16 +7,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { setupTestModelContainer, setupTestServiceContainer, clearDatabase, closeDatabase } from '../../../utils/di/TestContainer.js';
-import { DictionarySetModel } from '../../../../src/models/dictionary/dictionary.js';
+import { setupTestRepositoryContainer, setupTestServiceContainer, clearDatabase, closeDatabase } from '../../../utils/di/TestContainer.js';
+import { DictionarySetRepository } from '../../../../src/repositories/dictionary/dictionary.js';
 import UserSetService from '../../../../src/services/dictionary/UserSetService.js';
+import { LanguageCode } from '../../../../src/database/interfaces/DbInterfaces.js';
 import { v4 as uuidv4 } from 'uuid';
 let userSetService;
 let setModel;
 beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     yield clearDatabase();
-    const modelContainer = yield setupTestModelContainer();
-    setModel = modelContainer.resolve(DictionarySetModel);
+    const modelContainer = yield setupTestRepositoryContainer();
+    setModel = modelContainer.resolve(DictionarySetRepository);
     const serviceContainer = yield setupTestServiceContainer();
     userSetService = serviceContainer.resolve(UserSetService);
 }));
@@ -34,7 +35,7 @@ describe('UserSetService', () => {
         description: 'Shared set',
         ownerId: uuidv4(),
         isPublic: false,
-        languageCode: 'en',
+        languageCode: LanguageCode.ENGLISH,
     };
     test('should add user to set with permission', () => __awaiter(void 0, void 0, void 0, function* () {
         yield setModel.createSet(testSet);

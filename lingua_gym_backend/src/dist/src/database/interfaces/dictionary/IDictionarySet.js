@@ -1,0 +1,28 @@
+var LanguageCode;
+(function (LanguageCode) {
+    LanguageCode["ENGLISH"] = "en";
+    LanguageCode["SPANISH"] = "es";
+    LanguageCode["FRENCH"] = "fr";
+    LanguageCode["GERMAN"] = "de";
+    LanguageCode["ITALIAN"] = "it";
+    LanguageCode["PORTUGUESE"] = "pt";
+    LanguageCode["RUSSIAN"] = "ru";
+    LanguageCode["CHINESE"] = "zh";
+    LanguageCode["JAPANESE"] = "ja";
+    LanguageCode["KOREAN"] = "ko";
+    LanguageCode["HINDI"] = "hi";
+    LanguageCode["ARABIC"] = "ar";
+    LanguageCode["HEBREW"] = "he";
+    LanguageCode["THAI"] = "th";
+    LanguageCode["VIETNAMESE"] = "vi";
+    LanguageCode["POLISH"] = "pl";
+    LanguageCode["CATALAN"] = "ca";
+    LanguageCode["CZECH"] = "cs";
+    LanguageCode["DANISH"] = "da";
+    LanguageCode["DUTCH"] = "nl";
+    LanguageCode["FINNISH"] = "fi";
+    LanguageCode["HUNGARIAN"] = "hu";
+    LanguageCode["NORWEGIAN"] = "no";
+    LanguageCode["SWEDISH"] = "sv";
+})(LanguageCode || (LanguageCode = {}));
+export { LanguageCode };

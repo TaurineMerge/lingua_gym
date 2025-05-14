@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import Database from '../../database/config/db-connection.js';
 import logger from '../../utils/logger/Logger.js';
-import Tag from '../../database/interfaces/tag/Tag.js';
+import Tag from '../../database/interfaces/tag/ITag.js';
 import { inject, injectable } from 'tsyringe';
 
 @injectable()

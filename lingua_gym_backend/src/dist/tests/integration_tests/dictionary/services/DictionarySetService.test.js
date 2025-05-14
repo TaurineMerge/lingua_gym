@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import DictionarySetService from '../../../../src/services/dictionary/DictionarySetService.js';
 import { setupTestServiceContainer, clearDatabase, closeDatabase } from '../../../utils/di/TestContainer.js';
+import { LanguageCode } from '../../../../src/database/interfaces/DbInterfaces.js';
 import { v4 as uuidv4 } from 'uuid';
 import { RegistrationService } from '../../../../src/services/access_management/access_management.js';
 let dictionarySetService;
@@ -43,7 +44,7 @@ describe('DictionarySetService', () => {
             description: 'Common verbs in English',
             ownerId: testUser.userId,
             isPublic: true,
-            languageCode: 'en',
+            languageCode: LanguageCode.ENGLISH,
         };
     }));
     test('should create a dictionary set', () => __awaiter(void 0, void 0, void 0, function* () {

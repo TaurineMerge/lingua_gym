@@ -8,7 +8,7 @@ import { inject, injectable } from 'tsyringe';
 class UserMetadataRepository {
   constructor(@inject('Database') private db: Database) {}
 
-  async createUserMetadata(userMetadata: IUserMetadata): Promise<void> {
+  async createUserMetadata(userMetadata: IUserMetadata): Promise<boolean> {
     const query = `
       INSERT INTO "UserMetadata" (user_id, last_login, signup_date)
       VALUES ($1, $2, $3)
@@ -22,6 +22,7 @@ class UserMetadataRepository {
       logger.info('Creating user metadata...');
       await this.db.query(query, values);
       logger.info('User metadata created successfully');
+      return true;
     } catch (err) {
       logger.error('Error creating user metadata:', err);
       throw err;
@@ -45,7 +46,7 @@ class UserMetadataRepository {
     }
   }
 
-  async updateUserMetadataById(user_id: string, updates: Partial<IUserMetadata>): Promise<void> {
+  async updateUserMetadataById(user_id: string, updates: Partial<IUserMetadata>): Promise<boolean> {
     const fields = Object.keys(updates)
       .map((key, index) => { 
         const keyMapping: Record<string, string> = {
@@ -65,19 +66,21 @@ class UserMetadataRepository {
       logger.info(`Updating metadata for user: ${user_id}`);
       await this.db.query(query, values);
       logger.info('User metadata updated successfully');
+      return true;
     } catch (err) {
       logger.error('Error updating user metadata:', err);
       throw err;
     }
   }
 
-  async deleteUserMetadataById(user_id: string): Promise<void> {
+  async deleteUserMetadataById(user_id: string): Promise<boolean> {
     const query = `DELETE FROM "UserMetadata" WHERE user_id = $1`;
 
     try {
       logger.info(`Deleting metadata for user: ${user_id}`);
       await this.db.query(query, [user_id]);
       logger.info('User metadata deleted successfully');
+      return true;
     } catch (err) {
       logger.error('Error deleting user metadata:', err);
       throw err;

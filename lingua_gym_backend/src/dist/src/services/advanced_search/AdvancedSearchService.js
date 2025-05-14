@@ -24,14 +24,14 @@ import { inject, injectable } from "tsyringe";
 import logger from "../../utils/logger/Logger.js";
 // !NOT TESTED!
 let AdvancedSearchService = class AdvancedSearchService {
-    constructor(advancedSearchModel) {
-        this.advancedSearchModel = advancedSearchModel;
+    constructor(advancedSearchRepository) {
+        this.advancedSearchRepository = advancedSearchRepository;
     }
     performSearch(params_1) {
         return __awaiter(this, arguments, void 0, function* (params, limit = 20, offset = 0) {
             try {
                 logger.info("Performing advanced search in service with params:", Object.assign(Object.assign({}, params), { limit, offset }));
-                const filterInstance = this.advancedSearchModel(params);
+                const filterInstance = this.advancedSearchRepository(params);
                 const results = yield filterInstance.search(limit, offset);
                 logger.info(`Search completed successfully with ${results.items.length} results.`);
                 return results;
@@ -45,7 +45,7 @@ let AdvancedSearchService = class AdvancedSearchService {
 };
 AdvancedSearchService = __decorate([
     injectable(),
-    __param(0, inject("AdvancedSearchModel")),
+    __param(0, inject("AdvancedSearchRepository")),
     __metadata("design:paramtypes", [Function])
 ], AdvancedSearchService);
 export { AdvancedSearchService };

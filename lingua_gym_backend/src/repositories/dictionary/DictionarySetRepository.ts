@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import Database from '../../database/config/db-connection.js';
-import { DictionarySet } from '../../database/interfaces/DbInterfaces.js';
+import { IDictionarySet } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';
 
@@ -8,7 +8,7 @@ import { inject, injectable } from 'tsyringe';
 class DictionarySetRepository {
     constructor(@inject('Database') private db: Database) {}
 
-    async createSet(dictionarySet: DictionarySet): Promise<DictionarySet> {
+    async createSet(dictionarySet: IDictionarySet): Promise<IDictionarySet> {
         const query = `
             INSERT INTO "DictionarySet" 
                 (set_id, name, owner_id, description, language_code, is_public) 
@@ -34,7 +34,7 @@ class DictionarySetRepository {
         ];
         
         try {
-            const result = await this.db.query<DictionarySet>(query, values);
+            const result = await this.db.query<IDictionarySet>(query, values);
             return result.rows[0];
         } catch (error) {
             logger.error({ error }, 'Error creating dictionary set');
@@ -42,7 +42,7 @@ class DictionarySetRepository {
         }
     }
 
-    async getSetById(setId: string): Promise<DictionarySet | null> {
+    async getSetById(setId: string): Promise<IDictionarySet | null> {
         const query = `
             SELECT 
                 set_id as "dictionarySetId",
@@ -57,7 +57,7 @@ class DictionarySetRepository {
         `;
         
         try {
-            const result = await this.db.query<DictionarySet>(query, [setId]);
+            const result = await this.db.query<IDictionarySet>(query, [setId]);
             return result.rows[0] || null;
         } catch (error) {
             logger.error({ error }, 'Error fetching dictionary set');
@@ -65,7 +65,7 @@ class DictionarySetRepository {
         }
     }
 
-    async deleteSet(setId: string): Promise<DictionarySet | null> {
+    async deleteSet(setId: string): Promise<IDictionarySet | null> {
         const query = `
             DELETE FROM "DictionarySet" 
             WHERE set_id = $1 
@@ -80,7 +80,7 @@ class DictionarySetRepository {
         `;
         
         try {
-            const result = await this.db.query<DictionarySet>(query, [setId]);
+            const result = await this.db.query<IDictionarySet>(query, [setId]);
             return result.rows[0] || null;
         } catch (error) {
             logger.error({ error }, 'Error deleting dictionary set');

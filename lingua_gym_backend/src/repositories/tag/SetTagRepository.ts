@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import Database from '../../database/config/db-connection.js';
-import { SetTag } from '../../database/interfaces/DbInterfaces.js';
+import { ISetTag } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';
 
@@ -30,10 +30,10 @@ class SetTagRepository {
         }
     }
     
-    async getTagsForSet(setId: string): Promise<SetTag[]> {
+    async getTagsForSet(setId: string): Promise<ISetTag[]> {
         const query = `SELECT t.name, t.tag_id AS "tagId", st.set_id AS "setId" FROM "Tag" t INNER JOIN "SetTag" st ON t.tag_id = st.tag_id WHERE st.set_id = $1;`;
         try {
-            const result = await this.db.query<SetTag>(query, [setId]);
+            const result = await this.db.query<ISetTag>(query, [setId]);
             return result.rows;
         } catch (error) {
             logger.error({ error, setId }, 'Error fetching tags for set');

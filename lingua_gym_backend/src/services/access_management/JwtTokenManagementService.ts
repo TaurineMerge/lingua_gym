@@ -41,6 +41,14 @@ class TokenManagementService {
       throw new Error('Could not update token version');
     }
   }
+
+  checkAccessToken(token: string): { userId: string } {
+    return this.jwtTokenManager.verifyAccessToken(token);
+  }
+
+  checkRefreshToken(token: string): { userId: string } {
+    return this.jwtTokenManager.verifyRefreshToken(token);
+  }
 }
 
 export default TokenManagementService;

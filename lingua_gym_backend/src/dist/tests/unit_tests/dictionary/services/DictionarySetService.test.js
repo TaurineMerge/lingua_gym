@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import DictionarySetService from '../../../../src/services/dictionary/DictionarySetService';
+import { LanguageCode } from '../../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../../../src/utils/logger/Logger.js';
 jest.mock('../../../../src/utils/logger/Logger.js', () => ({
     warn: jest.fn(),
@@ -23,7 +24,7 @@ describe('DictionarySetService', () => {
         ownerId: 'owner-123',
         description: 'Test set description',
         isPublic: false,
-        languageCode: 'en',
+        languageCode: LanguageCode.ENGLISH,
     };
     beforeEach(() => {
         mockDictionarySetModel = {

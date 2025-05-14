@@ -19,7 +19,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { SetTagModel } from '../../../src/models/tag/tag.js';
+import { SetTagRepository } from '../../repositories/tag/tag.js';
 import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';
 let SetTagService = class SetTagService {
@@ -75,6 +75,6 @@ let SetTagService = class SetTagService {
 SetTagService = __decorate([
     injectable(),
     __param(0, inject('SetTagModel')),
-    __metadata("design:paramtypes", [SetTagModel])
+    __metadata("design:paramtypes", [SetTagRepository])
 ], SetTagService);
 export default SetTagService;

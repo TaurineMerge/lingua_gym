@@ -19,7 +19,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { SetCardModel } from '../../../src/models/dictionary/dictionary.js';
+import { SetCardRepository } from '../../repositories/dictionary/dictionary.js';
 import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';
 let SetCardService = class SetCardService {
@@ -74,7 +74,7 @@ let SetCardService = class SetCardService {
 };
 SetCardService = __decorate([
     injectable(),
-    __param(0, inject('SetCardModel')),
-    __metadata("design:paramtypes", [SetCardModel])
+    __param(0, inject('SetCardRepository')),
+    __metadata("design:paramtypes", [SetCardRepository])
 ], SetCardService);
 export default SetCardService;

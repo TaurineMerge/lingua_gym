@@ -1,10 +1,10 @@
-import { TagModel } from '../../repositories/tag/tag.js';
+import { TagRepository } from '../../repositories/tag/tag.js';
 import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';
 
 @injectable()
 class TagService {
-    constructor(@inject('TagModel') private tagModel: TagModel) {}
+    constructor(@inject('TagRepository') private tagRepository: TagRepository) {}
 
     async createTag(tagId: string, name: string): Promise<string | null> {
         if (!tagId || !name) {
@@ -13,7 +13,7 @@ class TagService {
         }
 
         try {
-            return await this.tagModel.createTag(tagId, name);
+            return await this.tagRepository.createTag(tagId, name);
         } catch (error) {
             logger.error({ error, tagId, name }, 'Failed to create tag');
             return null;
@@ -27,7 +27,7 @@ class TagService {
         }
 
         try {
-            return await this.tagModel.getTagById(tagId);
+            return await this.tagRepository.getTagById(tagId);
         } catch (error) {
             logger.error({ error, tagId }, 'Failed to get tag by ID');
             return null;
@@ -36,7 +36,7 @@ class TagService {
 
     async getAllTags() {
         try {
-            return await this.tagModel.getAllTags();
+            return await this.tagRepository.getAllTags();
         } catch (error) {
             logger.error({ error }, 'Failed to get all tags');
             return [];
@@ -50,7 +50,7 @@ class TagService {
         }
 
         try {
-            return await this.tagModel.updateTag(tagId, name);
+            return await this.tagRepository.updateTag(tagId, name);
         } catch (error) {
             logger.error({ error, tagId, name }, 'Failed to update tag');
             return false;
@@ -64,7 +64,7 @@ class TagService {
         }
 
         try {
-            return await this.tagModel.deleteTag(tagId);
+            return await this.tagRepository.deleteTag(tagId);
         } catch (error) {
             logger.error({ error, tagId }, 'Failed to delete tag');
             return false;

@@ -7,8 +7,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { DictionaryCardModel } from '../../../../src/models/dictionary/dictionary.js';
-import { CardTagModel } from '../../../../src/models/tag/tag.js';
+import { DictionaryCardModel } from '../../../../src/repositories/dictionary/dictionary.js';
+import { CardTagModel } from '../../../../src/repositories/tag/tag.js';
 describe('DictionaryCardModel', () => {
     let dbMock;
     let cardModel;

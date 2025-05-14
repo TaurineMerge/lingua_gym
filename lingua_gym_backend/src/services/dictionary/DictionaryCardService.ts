@@ -1,34 +1,30 @@
-import { DictionaryCardModel } from '../../repositories/dictionary/dictionary.js';
+import { ICardExample, ICardMeaning, ICardTranslation, IDictionaryCard } from '../../database/interfaces/DbInterfaces.js';
+import { Card } from '../../models/dictionary/dictionary.js';
+import { DictionaryCardRepository } from '../../repositories/dictionary/dictionary.js';
 import logger from '../../utils/logger/Logger.js';
-import { DictionaryCard, CardTranslation, CardMeaning, CardExample } from '../../database/interfaces/DbInterfaces.js';
 import { injectable, inject } from 'tsyringe';
 
 @injectable()
 class DictionaryCardService {
-    constructor(@inject('DictionaryCardModel') private model: DictionaryCardModel) {}
+    constructor(@inject('DictionaryCardModel') private cardRepository: DictionaryCardRepository) {}
 
-    async createCard(card: DictionaryCard, cardTranslations: Array<CardTranslation>, cardMeanings: Array<CardMeaning>, cardExamples: Array<CardExample>): Promise<string | null> {
-        if (!card.cardId || !card.original) {
-            logger.warn({ card }, 'Validation failed while creating dictionary card');
-            return null;
-        }
-
+    async createCard(generalCardData: IDictionaryCard, cardTranslations: Array<ICardTranslation>, cardMeanings: Array<ICardMeaning>, cardExamples: Array<ICardExample>): Promise<string | null> {
         try {
-            return await this.model.createCard(card, cardTranslations, cardMeanings, cardExamples);
+            const card = new Card(generalCardData, cardTranslations, cardMeanings, cardExamples);
+            return await this.cardRepository.createCard(card.card);
         } catch (error) {
-            logger.error({ error, card }, 'Failed to create dictionary card');
+            logger.error({ error, generalCardData }, 'Failed to create dictionary card');
             return null;
         }
     }
 
-    async getCardById(cardId: string): Promise<DictionaryCard | null> {
+    async getCardById(cardId: string): Promise<IDictionaryCard | null> {
         if (!cardId) {
             logger.warn('Card ID is required');
             return null;
         }
-
         try {
-            return await this.model.getCardById(cardId);
+            return await this.cardRepository.getCardById(cardId);
         } catch (error) {
             logger.error({ error, cardId }, 'Failed to fetch dictionary card');
             return null;
@@ -40,9 +36,8 @@ class DictionaryCardService {
             logger.warn('Missing card ID for deletion');
             return false;
         }
-
         try {
-            return await this.model.removeCardById(cardId);
+            return await this.cardRepository.removeCardById(cardId);
         } catch (error) {
             logger.error({ error, cardId }, 'Failed to delete dictionary card');
             return false;

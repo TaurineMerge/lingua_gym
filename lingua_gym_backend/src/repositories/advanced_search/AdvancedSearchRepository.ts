@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import Database from "../../database/config/db-connection.js";
-import { IDictionarySet } from "../../database/interfaces/DbInterfaces.js";
+import { IDictionarySet, LanguageCode } from "../../database/interfaces/DbInterfaces.js";
 import logger from "../../utils/logger/Logger.js";
 import { inject, injectable } from "tsyringe";
 
@@ -45,7 +45,7 @@ class AdvancedSearchRepository {
                 dictionarySetId: string,
                 name: string,
                 description: string,
-                languageCode: string,
+                languageCode: LanguageCode,
                 isPublic: boolean,
                 createdAt: string,
                 ownerId: string,

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import Database from '../../database/config/db-connection.js';
-import { DictionaryCard, CardTranslation, CardMeaning, CardExample } from '../../database/interfaces/DbInterfaces.js';
+import { IDictionaryCard, ICardTranslation, ICardMeaning, ICardExample } from '../../database/interfaces/DbInterfaces.js';
 import logger from '../../utils/logger/Logger.js';
 import { inject, injectable } from 'tsyringe';
 
@@ -8,11 +8,16 @@ import { inject, injectable } from 'tsyringe';
 class DictionaryCardRepository {
     constructor(@inject('Database') private db: Database) {}
 
-    async createCard(cardGeneralData: DictionaryCard, cardTranslations: Array<CardTranslation>, cardMeanings: Array<CardMeaning>, cardExamples: Array<CardExample>): Promise<string> {
+    async createCard(card: IDictionaryCard & {translations: ICardTranslation[], meanings: ICardMeaning[], examples: ICardExample[]}): Promise<string> {
         try {
+            const cardGeneralData = card;
+            const cardTranslations = card.translations;
+            const cardMeanings = card.meanings;
+            const cardExamples = card.examples;
+
             await this.db.query('BEGIN');
 
-            const cardResult = await this.db.query<DictionaryCard>(
+            const cardResult = await this.db.query<IDictionaryCard>(
                 `INSERT INTO "DictionaryCard" (card_id, original, transcription, pronunciation)
                  VALUES ($1, $2, $3, $4) RETURNING card_id AS "cardId"`,
                 [cardGeneralData.cardId, cardGeneralData.original, cardGeneralData.transcription, cardGeneralData.pronunciation]
@@ -32,21 +37,21 @@ class DictionaryCardRepository {
         }
     }
 
-    private async insertTranslations(cardId: string, cardTranslations: Array<CardTranslation>): Promise<void> {
+    private async insertTranslations(cardId: string, cardTranslations: Array<ICardTranslation>): Promise<void> {
         const query = `INSERT INTO "DictionaryTranslation" (card_id, translation) VALUES ($1, $2)`;
         for (const translation of cardTranslations) {
             await this.db.query(query, [cardId, translation.translation]);
         }
     }
 
-    private async insertMeanings(cardId: string, cardMeanings: Array<CardMeaning>): Promise<void> {
+    private async insertMeanings(cardId: string, cardMeanings: Array<ICardMeaning>): Promise<void> {
         const query = `INSERT INTO "DictionaryMeaning" (card_id, meaning) VALUES ($1, $2)`;
         for (const meaning of cardMeanings) {
             await this.db.query(query, [cardId, meaning.meaning]);
         }
     }
 
-    private async insertExamples(cardId: string, cardExamples: Array<CardExample>): Promise<void> {
+    private async insertExamples(cardId: string, cardExamples: Array<ICardExample>): Promise<void> {
         const query = `INSERT INTO "DictionaryExample" (card_id, example) VALUES ($1, $2)`;
         for (const example of cardExamples) {
             await this.db.query(query, [cardId, example.example]);
@@ -80,10 +85,10 @@ class DictionaryCardRepository {
     
     async updateCard(
         cardId: string,
-        cardGeneralData: Partial<DictionaryCard>,
-        cardTranslations?: Array<CardTranslation>,
-        cardMeanings?: Array<CardMeaning>,
-        cardExamples?: Array<CardExample>
+        cardGeneralData: Partial<IDictionaryCard>,
+        cardTranslations?: Array<ICardTranslation>,
+        cardMeanings?: Array<ICardMeaning>,
+        cardExamples?: Array<ICardExample>
     ): Promise<boolean> {
         try {
             await this.db.query('BEGIN');
@@ -91,7 +96,7 @@ class DictionaryCardRepository {
             if (Object.keys(cardGeneralData).length > 0) {
                 const fieldsToUpdate = Object.entries(cardGeneralData)
                     .filter(([, value]) => value !== undefined)
-                    .map(([field]) => field as keyof DictionaryCard);
+                    .map(([field]) => field as keyof IDictionaryCard);
     
                 if (fieldsToUpdate.length > 0) {
                     const setClause = fieldsToUpdate
@@ -138,13 +143,13 @@ class DictionaryCardRepository {
         }
     }
 
-    async getCardById(cardId: string): Promise<DictionaryCard & { translation: string[], meaning: string[], example: string[] } | null> {
+    async getCardById(cardId: string): Promise<IDictionaryCard & { translation: string[], meaning: string[], example: string[] } | null> {
         const cardQuery = `SELECT * FROM "DictionaryCard" WHERE card_id = $1`;
         const translationQuery = `SELECT translation FROM "DictionaryTranslation" WHERE card_id = $1`;
         const meaningQuery = `SELECT meaning FROM "DictionaryMeaning" WHERE card_id = $1`;
         const exampleQuery = `SELECT example FROM "DictionaryExample" WHERE card_id = $1`;
         
-        const cardResult = await this.db.query<DictionaryCard>(cardQuery, [cardId]);
+        const cardResult = await this.db.query<IDictionaryCard>(cardQuery, [cardId]);
         if (cardResult.rows.length === 0) return null;
         
         const translations = (await this.db.query(translationQuery, [cardId])).rows.map(row => row.translation).flat();

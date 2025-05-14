@@ -8,8 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { setupTestServiceContainer, clearDatabase, closeDatabase } from '../../../utils/di/TestContainer.js';
-import { DictionarySetModel, DictionaryCardModel } from '../../../../src/models/dictionary/dictionary.js';
+import { DictionarySetRepository, DictionaryCardRepository } from '../../../../src/repositories/dictionary/dictionary.js';
 import { SetCardService } from '../../../../src/services/dictionary/dictionary.js';
+import { LanguageCode } from '../../../../src/database/interfaces/DbInterfaces.js';
 import { v4 as uuidv4 } from 'uuid';
 import { RegistrationService } from '../../../../src/services/access_management/access_management.js';
 let setCardService;
@@ -19,8 +20,8 @@ let registrationService;
 beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     yield clearDatabase();
     const serviceContainer = yield setupTestServiceContainer();
-    setModel = serviceContainer.resolve(DictionarySetModel);
-    cardModel = serviceContainer.resolve(DictionaryCardModel);
+    setModel = serviceContainer.resolve(DictionarySetRepository);
+    cardModel = serviceContainer.resolve(DictionaryCardRepository);
     setCardService = serviceContainer.resolve(SetCardService);
     registrationService = serviceContainer.resolve(RegistrationService);
 }));
@@ -50,7 +51,7 @@ describe('SetCardService', () => {
             description: 'A test set of cards',
             ownerId: '',
             isPublic: true,
-            languageCode: 'en',
+            languageCode: LanguageCode.ENGLISH,
         };
         testCard = {
             cardId: testCardId,
@@ -64,7 +65,7 @@ describe('SetCardService', () => {
     }));
     test('should add card to set', () => __awaiter(void 0, void 0, void 0, function* () {
         yield setModel.createSet(testSet);
-        yield cardModel.createCard(testCard, [], [], []);
+        yield cardModel.createCard(Object.assign(Object.assign({}, testCard), { translations: [], meanings: [], examples: [] }));
         const added = yield setCardService.addCardToSet(testSet.dictionarySetId, testCard.cardId);
         expect(added).not.toBe(false);
         if (added !== false && added !== true) {
@@ -74,7 +75,7 @@ describe('SetCardService', () => {
     }));
     test('should return cards in set', () => __awaiter(void 0, void 0, void 0, function* () {
         yield setModel.createSet(testSet);
-        yield cardModel.createCard(testCard, [], [], []);
+        yield cardModel.createCard(Object.assign(Object.assign({}, testCard), { translations: [], meanings: [], examples: [] }));
         yield setCardService.addCardToSet(testSet.dictionarySetId, testCard.cardId);
         const cards = yield setCardService.getCardsForSet(testSet.dictionarySetId);
         expect(cards.length).toBe(1);
@@ -82,7 +83,7 @@ describe('SetCardService', () => {
     }));
     test('should remove card from set', () => __awaiter(void 0, void 0, void 0, function* () {
         yield setModel.createSet(testSet);
-        yield cardModel.createCard(testCard, [], [], []);
+        yield cardModel.createCard(Object.assign(Object.assign({}, testCard), { translations: [], meanings: [], examples: [] }));
         yield setCardService.addCardToSet(testSet.dictionarySetId, testCard.cardId);
         const removed = yield setCardService.removeCardFromSet(testSet.dictionarySetId, testCard.cardId);
         expect(removed).not.toBe(false);

@@ -12,12 +12,12 @@ interface SearchData {
 type SearchDataItem = {
     id: string;
     name: string;
-    description: string;
+    description?: string | null;
     filters: Filters;
 }
 
 interface Filters {
-    time?: Date;
+    time?: Date | null;
     materialType: string;
     language: string;
     tags: string[];

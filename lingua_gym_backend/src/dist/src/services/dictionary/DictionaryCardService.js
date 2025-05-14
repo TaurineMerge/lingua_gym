@@ -19,24 +19,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { DictionaryCardModel } from '../../../src/models/dictionary/dictionary.js';
+import { Card } from '../../models/dictionary/dictionary.js';
+import { DictionaryCardRepository } from '../../repositories/dictionary/dictionary.js';
 import logger from '../../utils/logger/Logger.js';
 import { injectable, inject } from 'tsyringe';
 let DictionaryCardService = class DictionaryCardService {
-    constructor(model) {
-        this.model = model;
+    constructor(cardRepository) {
+        this.cardRepository = cardRepository;
     }
-    createCard(card, cardTranslations, cardMeanings, cardExamples) {
+    createCard(generalCardData, cardTranslations, cardMeanings, cardExamples) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (!card.cardId || !card.original) {
-                logger.warn({ card }, 'Validation failed while creating dictionary card');
-                return null;
-            }
             try {
-                return yield this.model.createCard(card, cardTranslations, cardMeanings, cardExamples);
+                const card = new Card(generalCardData, cardTranslations, cardMeanings, cardExamples);
+                return yield this.cardRepository.createCard(card.card);
             }
             catch (error) {
-                logger.error({ error, card }, 'Failed to create dictionary card');
+                logger.error({ error, generalCardData }, 'Failed to create dictionary card');
                 return null;
             }
         });
@@ -48,7 +46,7 @@ let DictionaryCardService = class DictionaryCardService {
                 return null;
             }
             try {
-                return yield this.model.getCardById(cardId);
+                return yield this.cardRepository.getCardById(cardId);
             }
             catch (error) {
                 logger.error({ error, cardId }, 'Failed to fetch dictionary card');
@@ -63,7 +61,7 @@ let DictionaryCardService = class DictionaryCardService {
                 return false;
             }
             try {
-                return yield this.model.removeCardById(cardId);
+                return yield this.cardRepository.removeCardById(cardId);
             }
             catch (error) {
                 logger.error({ error, cardId }, 'Failed to delete dictionary card');
@@ -75,6 +73,6 @@ let DictionaryCardService = class DictionaryCardService {
 DictionaryCardService = __decorate([
     injectable(),
     __param(0, inject('DictionaryCardModel')),
-    __metadata("design:paramtypes", [DictionaryCardModel])
+    __metadata("design:paramtypes", [DictionaryCardRepository])
 ], DictionaryCardService);
 export default DictionaryCardService;

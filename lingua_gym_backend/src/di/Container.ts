@@ -46,7 +46,7 @@ container.register<PasswordResetService>('PasswordResetService', {
   useClass: PasswordResetService,
 });
 
-container.register("AdvancedSearchModel", {
+container.register("AdvancedSearchRepository", {
   useFactory: (c) => (params: AdvancedSearchParameters) => new AdvancedSearchRepository(c.resolve<Database>("Database"), params)
 });
 

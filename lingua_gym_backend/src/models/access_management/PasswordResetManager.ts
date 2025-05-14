@@ -1,6 +1,6 @@
-import logger from "../../utils/logger/Logger";
+import logger from "../../utils/logger/Logger.js";
 import jwt from 'jsonwebtoken';
-import User from "./User";
+import { User } from "./access_management.js";
 
 class PasswordResetManager {
     private resetSecret: string;

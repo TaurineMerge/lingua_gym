@@ -8,9 +8,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { AuthenticationService, RegistrationService } from '../../../../src/services/access_management/access_management.js';
-import { UserModel } from '../../../../src/models/access_management/access_management.js';
+import { UserRepository } from '../../../../src/repositories/access_management/access_management.js';
 import bcrypt from 'bcrypt';
-import { clearDatabase, closeDatabase, setupTestModelContainer, setupTestServiceContainer } from '../../../utils/di/TestContainer.js';
+import { clearDatabase, closeDatabase, setupTestRepositoryContainer, setupTestServiceContainer } from '../../../utils/di/TestContainer.js';
+import User from '../../../../src/models/access_management/User.js';
 let userModel;
 let authService;
 let registrationService;
@@ -25,8 +26,8 @@ const testUserData = {
 };
 beforeAll(() => __awaiter(void 0, void 0, void 0, function* () {
     yield clearDatabase();
-    const modelContainer = yield setupTestModelContainer();
-    userModel = modelContainer.resolve(UserModel);
+    const modelContainer = yield setupTestRepositoryContainer();
+    userModel = modelContainer.resolve(UserRepository);
     const serviceContainer = yield setupTestServiceContainer();
     authService = serviceContainer.resolve(AuthenticationService);
     registrationService = serviceContainer.resolve(RegistrationService);
@@ -49,8 +50,8 @@ describe('AuthenticationService (Integration)', () => {
         yield expect(authService.login('nonexistent@example.com', 'password123')).rejects.toThrow('User not found');
     }));
     test('should invalidate refresh token on logout', () => __awaiter(void 0, void 0, void 0, function* () {
-        yield authService.logout(testUserData.userId);
-        const updatedUser = yield userModel.getUserById(testUserData.userId);
+        const user = new User(testUserData);
+        const updatedUser = yield userModel.getUserById(user.userId);
         expect(updatedUser === null || updatedUser === void 0 ? void 0 : updatedUser.tokenVersion).toBe(testUserData.tokenVersion + 1);
     }));
 });

@@ -8,9 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { setupTestModelContainer, setupTestServiceContainer, clearDatabase, closeDatabase } from '../../utils/di/TestContainer.js';
-import { TagModel } from '../../../src/models/tag/tag.js';
+import { TagModel } from '../../../src/repositories/tag/tag.js';
 import CardTagService from '../../../src/services/tag/CardTagService.js';
-import { DictionaryCardModel } from '../../../src/models/dictionary/dictionary.js';
+import { DictionaryCardModel } from '../../../src/repositories/dictionary/dictionary.js';
 import { v4 as uuidv4 } from 'uuid';
 let cardTagService;
 let tagModel;

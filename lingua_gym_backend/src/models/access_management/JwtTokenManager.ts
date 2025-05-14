@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
-import User from './User';
-import logger from '../../utils/logger/Logger';
+import { User } from './access_management.js';
+import logger from '../../utils/logger/Logger.js';
 
 class JwtTokenManager {
     private jwtSecret: string;
