@@ -6,6 +6,7 @@ import { useAuth } from '../hooks/auth/UseAuthForm';
 import PasswordResetPage from '../components/auth/PasswordResetForm';
 import AdvancedSearchView from '../pages/AdvancedSearchPage';
 import TextReader from '../pages/TextReader';
+import TextLoader from '../pages/TextLoader';
 
 export function ProtectedRoute() {
   const { isAuthenticated, isAuthLoading } = useAuth();
@@ -33,6 +34,7 @@ const router = createBrowserRouter([
           { index: true, element: <HomePage /> },
           { path: 'materials', element: <AdvancedSearchView /> },
           { path: 'text', element: <TextReader /> },
+          { path: 'text-loader', element: <TextLoader /> },
         ],
       },
     ],
