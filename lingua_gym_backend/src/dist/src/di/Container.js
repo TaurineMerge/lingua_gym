@@ -5,9 +5,11 @@ import Logger from '../utils/logger/Logger.js';
 import { UserRepository, UserMetadataRepository, UserPasswordResetRepository, } from '../repositories/access_management/access_management.js';
 import { AuthenticationService, JwtTokenManagementService, RegistrationService, PasswordResetService, } from '../services/access_management/access_management.js';
 import { AdvancedSearchRepository } from '../repositories/advanced_search/AdvancedSearchRepository.js';
+import ContextTranslationIntegration from '../integrations/ContextTranslationIntegration.js';
 const db = new Database();
 container.registerInstance('Logger', Logger);
 container.registerInstance('Database', db);
+container.registerInstance('ContextTranslationIntegration', ContextTranslationIntegration);
 container.register('UserRepository', {
     useValue: new UserRepository(db),
 });
