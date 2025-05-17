@@ -17,13 +17,11 @@ import {
   PasswordResetService,
 } from '../services/access_management/access_management.js';
 import { AdvancedSearchRepository, AdvancedSearchParameters } from '../repositories/advanced_search/AdvancedSearchRepository.js';
-import ContextTranslationIntegration from '../integrations/ContextTranslationIntegration.js';
 
 const db = new Database();
 
 container.registerInstance('Logger', Logger);
 container.registerInstance('Database', db);
-container.registerInstance('ContextTranslationIntegration', ContextTranslationIntegration);
 
 container.register<UserRepository>('UserRepository', {
   useValue: new UserRepository(db),

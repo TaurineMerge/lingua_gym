@@ -10,6 +10,18 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import HistoryIcon from '@mui/icons-material/History';
 import CollectionsIcon from '@mui/icons-material/Collections';
 import NotesIcon from '@mui/icons-material/Notes';
+import axios from "axios";
+
+interface TranslationRequest {
+    original: string;
+    originalLanguageCode: string;
+    targetLanguageCode: string;
+    context?: string;
+}
+
+interface TranslationResponse {
+    translatedText: string;
+}
 
 const TextReader = () => {
     const [page, setPage] = useState(1);
@@ -19,13 +31,13 @@ const TextReader = () => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [highlightedParagraph, setHighlightedParagraph] = useState<number[]>([]);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [translatedText, setTranslatedText] = useState<string | null>(null);
+    const [isTranslating, setIsTranslating] = useState(false);
 
     const handleOpenDialog = () => setDialogOpen(true);
     const handleCloseDialog = () => setDialogOpen(false);
     const toggleMenu = () => setMenuOpen(!menuOpen);
 
-    const translationText = "Пример перевода выделенного текста. Он может быть длинным, глубоким, с аллюзиями и послевкусием.";
-    
     const containerRef = useRef<HTMLDivElement>(null);
 
     const isDragging = useRef(false);
@@ -39,6 +51,57 @@ const TextReader = () => {
     To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain`;
     
     const words = text.match(/\S+|\s+/g) || [];
+
+    const sendTranslationRequest = async (requestData: TranslationRequest): Promise<TranslationResponse> => {
+        setIsTranslating(true);
+        try {
+            const apiClient = axios.create({
+                baseURL: 'http://localhost:3000/api',
+                withCredentials: true,
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+            const response = await apiClient.post<TranslationResponse>('/text/translate', requestData);
+            return response.data;
+        } catch (error) {
+            console.error('Translation error:', error);
+            throw error;
+        } finally {
+            setIsTranslating(false);
+        }
+    };
+
+    const handleTranslation = async () => {
+        if (selectedWordsIds.length === 0) return;
+
+        const selectedText = selectedWordsIds
+            .map(id => words[id])
+            .join('')
+            .trim();
+
+        if (!selectedText) return;
+
+        const translationRequest: TranslationRequest = {
+            original: selectedText,
+            originalLanguageCode: 'en',
+            targetLanguageCode: 'ru',
+            context: highlightedParagraph.length > 0 
+                ? highlightedParagraph.map(id => words[id]).join('').trim()
+                : undefined
+        };
+
+        try {
+            const response = await sendTranslationRequest(translationRequest);
+            setTranslatedText(response.translatedText);
+            
+            if (anchorEl) {
+                setAnchorEl(anchorEl);
+            }
+        } catch {
+            setTranslatedText("Error occurred during translation");
+        }
+    };
 
     const handleMouseDown = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -54,6 +117,7 @@ const TextReader = () => {
             setHighlightedParagraph([]);
             setSelectedWordsIds([]);
             setAnchorEl(null);
+            setTranslatedText(null);
         }
 
         if (!isNaN(index)) {
@@ -82,6 +146,7 @@ const TextReader = () => {
                     setHighlightedParagraph([]);
                     setSelectedWordsIds([]);
                     setAnchorEl(null);
+                    setTranslatedText(null);
                   } else {
                     setSelectedWordsIds([index]);
                     setAnchorEl(target);
@@ -116,6 +181,7 @@ const TextReader = () => {
         setHighlightedParagraph([]);
         setSelectedWordsIds([]);
         setAnchorEl(null);
+        setTranslatedText(null);
     }
 
     const isSentenceEnd = (word: string) => {
@@ -176,6 +242,8 @@ const TextReader = () => {
         
         const paragraphRange = Array.from({ length: end - start + 1 }, (_, i) => start + i);
         setHighlightedParagraph(paragraphRange);
+        
+        handleTranslation();
     }
 
     const menuItems = [
@@ -395,17 +463,23 @@ const TextReader = () => {
                                     overflowY: 'auto',
                                 }}
                             >
-                                <Typography
-                                    sx={{
-                                        color: '#EEE',
-                                        fontSize: '1rem',
-                                        fontStyle: 'italic',
-                                        wordBreak: 'break-word',
-                                        lineHeight: 1.4,
-                                    }}
-                                >
-                                    {translationText}
-                                </Typography>
+                                {isTranslating ? (
+                                    <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+                                        <Typography>Translating...</Typography>
+                                    </Box>
+                                ) : (
+                                    <Typography
+                                        sx={{
+                                            color: '#EEE',
+                                            fontSize: '1rem',
+                                            fontStyle: 'italic',
+                                            wordBreak: 'break-word',
+                                            lineHeight: 1.4,
+                                        }}
+                                    >
+                                        {translatedText || "Select text to translate"}
+                                    </Typography>
+                                )}
                             </Box>
                             <Box
                                 display="flex"
@@ -522,7 +596,7 @@ const TextReader = () => {
                                 whiteSpace: 'pre-wrap',
                             }}
                         >
-                            {translationText}
+                            {translatedText}
                         </Typography>
                     </DialogContent>
                 </Dialog>

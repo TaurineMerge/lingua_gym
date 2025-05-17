@@ -2,6 +2,7 @@ import 'dotenv/config';
 import OpenAI from "openai";
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import logger from '../utils/logger/Logger.js';
+import 'dotenv/config';
 
 class ContextTranslationIntegration {
     private apiKey: string;

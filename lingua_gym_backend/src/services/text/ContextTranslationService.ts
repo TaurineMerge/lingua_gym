@@ -1,13 +1,12 @@
-import 'reflect-metadata';
-import { inject, injectable } from "tsyringe";
 import ContextTranslationIntegration from "../../integrations/ContextTranslationIntegration.js";
 import logger from '../../utils/logger/Logger.js';
 
-@injectable()
 class ContextTranslationService {
-    constructor(
-        @inject('ContextTranslationIntegration') private contextTranslationIntegration: ContextTranslationIntegration,
-    ) {}
+    private contextTranslationIntegration: ContextTranslationIntegration;
+
+    constructor() {
+        this.contextTranslationIntegration = new ContextTranslationIntegration();
+    }
 
     async translate(original: string, originalLanguageCode: string, targetLanguageCode: string, context?: string): Promise<string | null> {
         try {

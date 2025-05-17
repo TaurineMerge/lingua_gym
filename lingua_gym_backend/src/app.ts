@@ -3,6 +3,7 @@ import 'dotenv/config';
 import cookieParser from 'cookie-parser';
 import accessManagementRoutes from './routes/AccessManagementRoutes.js';
 import advancedSearchRoutes from './routes/AdvancedSearchRoutes.js';
+import textRoutes from './routes/TextRoutes.js';
 //import dictionaryRoutes from './routes/DictionaryRoutes.js';
 import container from './di/Container.js';
 import Database from './database/config/db-connection.js';
@@ -28,6 +29,7 @@ app.use(cookieParser());
 
 app.use('/api/access_management', accessManagementRoutes);
 app.use('/api/advanced_search', advancedSearchRoutes);
+app.use('/api/text', textRoutes);
 //app.use('/api/dictionary', dictionaryRoutes);
 
 app.use((req, res) => {

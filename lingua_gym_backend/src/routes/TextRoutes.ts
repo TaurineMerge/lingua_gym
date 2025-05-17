@@ -4,6 +4,6 @@ import textController from '../controllers/TextController.js';
 
 const router = express.Router();
 
-router.get('/search', validateAccessToken as express.RequestHandler, textController.translate);
+router.post('/translate', validateAccessToken as express.RequestHandler, textController.translate);
 
 export default router;

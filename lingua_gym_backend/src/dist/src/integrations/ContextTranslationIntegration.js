@@ -11,6 +11,7 @@ import 'dotenv/config';
 import OpenAI from "openai";
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import logger from '../utils/logger/Logger.js';
+import 'dotenv/config';
 class ContextTranslationIntegration {
     constructor() {
         const { PROXY_USER, PROXY_PASSWORD, PROXY_HOST, PROXY_PORT, PROXY_PROTOCOL, OPENAI_API_KEY } = process.env;

@@ -7,18 +7,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { container } from "tsyringe";
 import logger from "../utils/logger/Logger.js";
+import ContextTranslationService from "../services/text/ContextTranslationService.js";
 class TextController {
     static translate(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 logger.info('Text translation attempt');
-                const { original, targetLanguage, originalLanguage, context } = req.body;
-                const contextTranslationService = container.resolve('ContextTranslationService');
-                const translatedText = yield contextTranslationService.translate(original, originalLanguage, targetLanguage, context);
-                logger.info('Text translated successfully: ', { original, targetLanguage, originalLanguage, context, translatedText });
-                res.status(201).json({ message: 'Text translated: ', original, targetLanguage, originalLanguage, context, translatedText });
+                const { original, targetLanguageCode, originalLanguageCode, context } = req.body;
+                const contextTranslationService = new ContextTranslationService();
+                const translatedText = yield contextTranslationService.translate(original, originalLanguageCode, targetLanguageCode, context);
+                logger.info('Text translated successfully: ', { original, targetLanguageCode, originalLanguageCode, context, translatedText });
+                res.status(201).json({ message: 'Text translated: ', original, targetLanguageCode, originalLanguageCode, context, translatedText });
             }
             catch (error) {
                 logger.error({ error }, 'Text translation failed');
