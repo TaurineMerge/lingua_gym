@@ -31,7 +31,7 @@ import {
             <Avatar sx={{ bgcolor: '#D9D5E4', width: 24, height: 24, mr: 1, p: 2 }}>A</Avatar>
             <Typography variant="body2" sx={{ color: theme.palette.text.primary }}>{username}</Typography>
           </Box>
-          <Button variant="contained">View</Button>
+          <Button variant="contained">Перейти</Button>
           <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box display="flex" flexWrap="wrap" gap={0.5} width="80%">
           {tags.slice(0, 2).map((tag, index) => (

@@ -26,7 +26,6 @@ interface TranslationResponse {
 const TextReader = () => {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const [selectedWordsIds, setSelectedWordsIds] = useState<number[]>([]);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [highlightedParagraph, setHighlightedParagraph] = useState<number[]>([]);
@@ -37,6 +36,8 @@ const TextReader = () => {
     const handleOpenDialog = () => setDialogOpen(true);
     const handleCloseDialog = () => setDialogOpen(false);
     const toggleMenu = () => setMenuOpen(!menuOpen);
+
+    const selectedWordsIds = useRef<number[]>([]);
 
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -52,17 +53,17 @@ const TextReader = () => {
     
     const words = text.match(/\S+|\s+/g) || [];
 
-    const sendTranslationRequest = async (requestData: TranslationRequest): Promise<TranslationResponse> => {
+    const sendTranslationRequest = async (requestData: TranslationRequest, isContextTranslation: boolean = false): Promise<TranslationResponse> => {
         setIsTranslating(true);
         try {
             const apiClient = axios.create({
-                baseURL: 'http://localhost:3000/api',
+                baseURL: 'http://localhost:3000/api/text',
                 withCredentials: true,
                 headers: {
                     'Content-Type': 'application/json',
                 }
             });
-            const response = await apiClient.post<TranslationResponse>('/text/translate', requestData);
+            const response = await apiClient.post<TranslationResponse>(isContextTranslation ? '/translate-context' : '/translate', requestData);
             return response.data;
         } catch (error) {
             console.error('Translation error:', error);
@@ -72,34 +73,49 @@ const TextReader = () => {
         }
     };
 
-    const handleTranslation = async () => {
-        if (selectedWordsIds.length === 0) return;
+    const handleTranslation = async (isContextTranslation: boolean) => {
+        if (selectedWordsIds.current.length === 0) return;
 
-        const selectedText = selectedWordsIds
+        const selectedText = selectedWordsIds.current
             .map(id => words[id])
             .join('')
             .trim();
 
         if (!selectedText) return;
 
-        const translationRequest: TranslationRequest = {
-            original: selectedText,
-            originalLanguageCode: 'en',
-            targetLanguageCode: 'ru',
-            context: highlightedParagraph.length > 0 
-                ? highlightedParagraph.map(id => words[id]).join('').trim()
-                : undefined
-        };
-
-        try {
-            const response = await sendTranslationRequest(translationRequest);
-            setTranslatedText(response.translatedText);
-            
-            if (anchorEl) {
-                setAnchorEl(anchorEl);
+        if (!isContextTranslation) {
+            const translationRequest: TranslationRequest = {
+                original: selectedText,
+                originalLanguageCode: 'en',
+                targetLanguageCode: 'ru'
+            };
+            try {
+                const response = await sendTranslationRequest(translationRequest, isContextTranslation);
+                setTranslatedText(response.translatedText);
+            } catch {
+                setTranslatedText("Error occurred during translation");
             }
-        } catch {
-            setTranslatedText("Error occurred during translation");
+            return;
+        } else {
+            const translationRequest: TranslationRequest = {
+                original: selectedText,
+                originalLanguageCode: 'en',
+                targetLanguageCode: 'ru',
+                context: highlightedParagraph.length > 0 
+                    ? highlightedParagraph.map(id => words[id]).join('').trim()
+                    : undefined
+            };
+
+            try {
+                const response = await sendTranslationRequest(translationRequest, isContextTranslation);
+                setTranslatedText(response.translatedText);
+                
+                if (anchorEl) {
+                    setAnchorEl(anchorEl);
+                }
+            } catch {
+                setTranslatedText("Error occurred during translation");
+            }
         }
     };
 
@@ -113,9 +129,9 @@ const TextReader = () => {
         const target = e.target as HTMLElement;
         const index = Number(target.dataset.index);
         
-        if (!selectedWordsIds.includes(index) || selectedWordsIds.length !== 1) {
+        if (!selectedWordsIds.current.includes(index) || selectedWordsIds.current.length !== 1) {
             setHighlightedParagraph([]);
-            setSelectedWordsIds([]);
+            selectedWordsIds.current = [];
             setAnchorEl(null);
             setTranslatedText(null);
         }
@@ -142,22 +158,24 @@ const TextReader = () => {
                 const index = Number(target.dataset.index);
                 
                 if (!isNaN(index)) {
-                  if (selectedWordsIds.includes(index)) {
+                  if (selectedWordsIds.current.includes(index)) {
                     setHighlightedParagraph([]);
-                    setSelectedWordsIds([]);
+                    selectedWordsIds.current = [];
                     setAnchorEl(null);
                     setTranslatedText(null);
                   } else {
-                    setSelectedWordsIds([index]);
+                    selectedWordsIds.current = [index];
                     setAnchorEl(target);
+                    handleTranslation(false);
                   }
                 }
             } else {
                 const [start, end] = [dragStartIndex.current, dragEndIndex.current].sort((a, b) => a !== null && b !== null ? a - b : 0);
                 if (start !== null && end !== null) {
                     const range = Array.from({ length: end - start + 1 }, (_, i) => start + i);
-                    setSelectedWordsIds(range);
+                    selectedWordsIds.current = range;
                     setAnchorEl(e.target as HTMLElement);
+                    handleTranslation(true);
                 }
             }
         }             
@@ -173,13 +191,13 @@ const TextReader = () => {
             dragEndIndex.current = id;
             const [start, end] = [dragStartIndex.current, dragEndIndex.current].sort((a, b) => a - b);
             const range = Array.from({ length: end - start + 1 }, (_, i) => start + i);
-            setSelectedWordsIds(range);
+            selectedWordsIds.current = range;
         }
     };
 
     const handleClosePopper = () => {
         setHighlightedParagraph([]);
-        setSelectedWordsIds([]);
+        selectedWordsIds.current = [];
         setAnchorEl(null);
         setTranslatedText(null);
     }
@@ -189,15 +207,15 @@ const TextReader = () => {
     };
 
     const handleContextTranslation = () => {
-        if (selectedWordsIds.length === 0) return;
+        if (selectedWordsIds.current.length === 0) return;
 
         if (highlightedParagraph.length > 0) {
             setHighlightedParagraph([]);
             return;
         }
 
-        let start = Math.min(...selectedWordsIds);
-        let end = Math.max(...selectedWordsIds);
+        let start = Math.min(...selectedWordsIds.current);
+        let end = Math.max(...selectedWordsIds.current);
         
         while (start > 0 && !isSentenceEnd(words[start - 1])) {
             start--;
@@ -243,7 +261,7 @@ const TextReader = () => {
         const paragraphRange = Array.from({ length: end - start + 1 }, (_, i) => start + i);
         setHighlightedParagraph(paragraphRange);
         
-        handleTranslation();
+        handleTranslation(true);
     }
 
     const menuItems = [
@@ -284,13 +302,13 @@ const TextReader = () => {
             <>
                 {words.map((word, i) => {
                     const isWord = /\S+/.test(word);
-                    const selected = selectedWordsIds.includes(i);
+                    const selected = selectedWordsIds.current.includes(i);
                     const inHighlightedParagraph = highlightedParagraph.includes(i);
     
                     const isSpaceBetweenSelected =
                         !isWord &&
-                        selectedWordsIds.includes(i - 1) &&
-                        selectedWordsIds.includes(i + 1);
+                        selectedWordsIds.current.includes(i - 1) &&
+                        selectedWordsIds.current.includes(i + 1);
     
                     const highlight = selected || isSpaceBetweenSelected;
                     

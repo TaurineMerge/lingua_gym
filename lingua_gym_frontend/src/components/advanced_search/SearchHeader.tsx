@@ -42,7 +42,7 @@ const SearchHeader = ({
       >
         { 
           searchQuery.trim() === ""
-            ? "Search for new materials"
+            ? "Поиск материалов"
             : `Results for '${searchQuery}'`
         }
       </Typography>
@@ -79,7 +79,7 @@ const SearchHeader = ({
           variant="standard"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search materials"
+          placeholder="Введите название"
           fullWidth
           sx={{ width: "100%" }}
           InputProps={{ 
