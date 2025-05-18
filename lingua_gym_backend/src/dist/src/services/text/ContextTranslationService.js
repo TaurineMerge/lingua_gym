@@ -13,10 +13,21 @@ class ContextTranslationService {
     constructor() {
         this.contextTranslationIntegration = new ContextTranslationIntegration();
     }
-    translate(original, originalLanguageCode, targetLanguageCode, context) {
+    translate(original, originalLanguageCode, targetLanguageCode) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                return yield this.contextTranslationIntegration.translate(original, originalLanguageCode, targetLanguageCode, context);
+                return yield this.contextTranslationIntegration.translate(original, originalLanguageCode, targetLanguageCode);
+            }
+            catch (error) {
+                logger.error(`Error while translating text: ${error}`);
+                throw error;
+            }
+        });
+    }
+    translateContext(original, originalLanguageCode, targetLanguageCode, context) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                return yield this.contextTranslationIntegration.translateContext(original, originalLanguageCode, targetLanguageCode, context);
             }
             catch (error) {
                 logger.error(`Error while translating text: ${error}`);

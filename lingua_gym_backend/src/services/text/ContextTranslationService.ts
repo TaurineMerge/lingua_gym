@@ -8,9 +8,18 @@ class ContextTranslationService {
         this.contextTranslationIntegration = new ContextTranslationIntegration();
     }
 
-    async translate(original: string, originalLanguageCode: string, targetLanguageCode: string, context?: string): Promise<string | null> {
+    async translate(original: string, originalLanguageCode: string, targetLanguageCode: string): Promise<string | null> {
         try {
-            return await this.contextTranslationIntegration.translate(original, originalLanguageCode, targetLanguageCode, context);
+            return await this.contextTranslationIntegration.translate(original, originalLanguageCode, targetLanguageCode);
+        } catch (error) {
+            logger.error(`Error while translating text: ${error}`);
+            throw error;
+        }
+    }
+
+    async translateContext(original: string, originalLanguageCode: string, targetLanguageCode: string, context: string): Promise<string | null> {
+        try {
+            return await this.contextTranslationIntegration.translateContext(original, originalLanguageCode, targetLanguageCode, context);
         } catch (error) {
             logger.error(`Error while translating text: ${error}`);
             throw error;

@@ -7,9 +7,25 @@ class TextController {
         try {
             logger.info('Text translation attempt');
             
+            const { original, targetLanguageCode, originalLanguageCode } = req.body;
+            const contextTranslationService = new ContextTranslationService();
+            const translatedText = await contextTranslationService.translate(original, originalLanguageCode, targetLanguageCode);
+
+            logger.info('Text translated successfully: ', { original, targetLanguageCode, originalLanguageCode, translatedText });
+            res.status(201).json({ message: 'Text translated: ', original, targetLanguageCode, originalLanguageCode, translatedText });
+        } catch (error) {
+            logger.error({ error }, 'Text translation failed');
+            res.status(400).json({ error: (error as Error).message });
+        }
+    }
+    
+    static async translateContext(req: Request, res: Response): Promise<void> {
+        try {
+            logger.info('Text translation attempt');
+            
             const { original, targetLanguageCode, originalLanguageCode, context } = req.body;
             const contextTranslationService = new ContextTranslationService();
-            const translatedText = await contextTranslationService.translate(original, originalLanguageCode, targetLanguageCode, context);
+            const translatedText = await contextTranslationService.translateContext(original, originalLanguageCode, targetLanguageCode, context);
 
             logger.info('Text translated successfully: ', { original, targetLanguageCode, originalLanguageCode, context, translatedText });
             res.status(201).json({ message: 'Text translated: ', original, targetLanguageCode, originalLanguageCode, context, translatedText });
