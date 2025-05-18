@@ -110,31 +110,34 @@ const settings = {
   ],
 };
 
-const Carousel = ({ tabValue }: { tabValue: number }) => {
+const Carousel = ({ tabValue, title }: { tabValue: number, title: string }) => {
   const data = tabValue === 0 ? dummyDataSets : dummyDataTexts;
 
   return (
     <>
       <Box display="flex" justifyContent="space-between" alignItems="center">
-        <Typography variant="h6" color="#E5E5E7">Recommended</Typography>
+        <Typography variant="h6" color="#E5E5E7">{title}</Typography>
         <Typography
           variant="body2"
           color="primary"
+          mt={6}
           sx={{
             cursor: 'pointer',
             padding: '4px',
             transition: 'all 0.3s ease',
+            fontSize: '1.2rem',
+            alignSelf: 'end',
             "&:hover": {
               backgroundColor: 'rgba(255, 255, 255, 0.08)',
               borderRadius: '4px'
             }
           }}
         >
-          View all
+          Посмотреть все
         </Typography>
       </Box>
 
-      <Box position="relative" sx={{ mt: 2 }}>
+      <Box position="relative">
         <Box sx={{ overflow: 'visible', position: 'relative' }}>
           <AnimatePresence mode="wait">
             <motion.div

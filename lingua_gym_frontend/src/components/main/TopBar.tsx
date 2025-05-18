@@ -1,4 +1,4 @@
-import { AppBar, Toolbar, Typography, Box, IconButton, Stack, Button } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, IconButton, Stack, Button, Divider } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Link } from 'react-router-dom';
@@ -32,16 +32,24 @@ const TopBar = () => {
               LinguaGym
           </Typography>
           <Stack  direction="row" spacing={{ xs: 0.25, sm: 0.5, md: 0.75, lg: 1 }}>
-            <Button component={Link} to={'/library'} sx={{ color: '#FFFFFF', fontSize: '1rem', textTransform: 'none' }}>
-              My Library
+            <Button component={Link} to={'/'} sx={{ color: '#FFFFFF', fontSize: '1rem', textTransform: 'none' }}>
+              Главная
             </Button>
+            <Divider orientation="vertical" variant="middle" aria-hidden="true" role="presentation" flexItem />
+            <Button component={Link} to={'/library'} sx={{ color: '#FFFFFF', fontSize: '1rem', textTransform: 'none' }}>
+              Библиотека
+            </Button>
+            <Divider orientation="vertical" variant="middle" aria-hidden="true" role="presentation" flexItem />
             <Button component={Link} to={'/materials'} sx={{ color: '#FFFFFF', fontSize: '1rem', textTransform: 'none' }}>
-              New Materials
+              Поиск
+            </Button>
+            <Divider orientation="vertical" variant="middle" aria-hidden="true" role="presentation" flexItem />
+            <Button component={Link} to={'/progress'} sx={{ color: '#FFFFFF', fontSize: '1rem', textTransform: 'none' }}>
+              Прогресс
             </Button>
           </Stack>
         </Box>
 
-        {/* Right: Icons */}
         <Box display="flex" alignItems="center" justifyContent={'right'} width={'50%'}>
           <IconButton sx={{ color: '#FFFFFF' }}>
             <SettingsIcon sx={{ fontSize: '2rem' }} />

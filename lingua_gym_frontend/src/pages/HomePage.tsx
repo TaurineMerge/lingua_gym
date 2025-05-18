@@ -1,5 +1,5 @@
 import { Box, Container, Typography } from '@mui/material';
-import { SearchBar, Tab, Carousel } from '../components/components';
+import { Tab, Carousel } from '../components/components';
 import { useTheme } from '@mui/material/styles';
 
 import { useState } from 'react';
@@ -10,7 +10,7 @@ const HomePage = () => {
   const theme = useTheme();
 
   return (
-    <Container>
+    <Container sx={{ overflowY: 'auto', overflowX: 'hidden' }}>
       <LetterOverlay />
       <Box mt={4}>
         <Typography variant="h3" sx={{ 
@@ -19,21 +19,18 @@ const HomePage = () => {
           lineHeight: theme.typography.h3.lineHeight,
           fontSize: theme.typography.h3.fontSize
         }}>
-          Search for new materials
+          Добро пожаловать!
         </Typography>
       </Box>
-      <Box mt={2}>
-        <SearchBar />
-      </Box>
-      <Box mt={2}>
+      <Box mt={5}>
         <Tab 
-          labels={['Sets', 'Texts']} 
+          labels={['Сеты', 'Тексты']} 
           value={tabValue}
           onChange={(newVal) => setTabValue(newVal)}
         />
       </Box>
-      <Box mt={2}>
-        <Carousel tabValue={tabValue} />
+      <Box mt={4}>
+        <Carousel tabValue={tabValue} title='Продолжи изучение' />
       </Box>
     </Container>
   );
