@@ -17,6 +17,8 @@ import {
   PasswordResetService,
 } from '../services/access_management/access_management.js';
 import { AdvancedSearchRepository, AdvancedSearchParameters } from '../repositories/advanced_search/AdvancedSearchRepository.js';
+import GoogleAuthIntegration from '../integrations/GoogleAuthIntegration.js';
+import GoogleAuthService from '../services/access_management/GoogleAuthService.js';
 
 const db = new Database();
 
@@ -48,6 +50,14 @@ container.register<PasswordResetService>('PasswordResetService', {
 
 container.register("AdvancedSearchRepository", {
   useFactory: (c) => (params: AdvancedSearchParameters) => new AdvancedSearchRepository(c.resolve<Database>("Database"), params)
+});
+
+container.register("GoogleAuth", {
+  useClass: GoogleAuthIntegration,
+});
+
+container.register("GoogleAuthService", {
+  useClass: GoogleAuthService,
 });
 
 export default container;

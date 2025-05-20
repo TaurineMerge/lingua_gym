@@ -20,6 +20,7 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "express": "^4.21.2",
+    "google-auth-library": "^9.15.1",
     "helmet": "^8.0.0",
     "https-proxy-agent": "^7.0.6",
     "jsonwebtoken": "^9.0.2",

@@ -43,7 +43,7 @@ interface AuthContextType {
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: () => Promise<void>;
   handleTabChange: (newValue: number) => void;
-  handleGoogleLogin: () => void;
+  //handleGoogleLogin: (credentialResponse: CredentialResponse) => void;
   resetForm: () => void;
   debouncedValidate: (name: string, value: string, password?: string) => void;
   validateForm: () => boolean;
