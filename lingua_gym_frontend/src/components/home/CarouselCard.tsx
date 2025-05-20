@@ -4,7 +4,7 @@ import {
   } from '@mui/material';
   import ArticleIcon from '@mui/icons-material/Article';
   import { MaterialsCardProps } from '../../types/NewMaterials';
-  import ViewModuleIcon from '@mui/icons-material/ViewModule';
+  import BookIcon from "@mui/icons-material/Book";
   
   const CardComponent = ({ title, description, username, tags, language, type }: MaterialsCardProps) => {
     const theme = useTheme();
@@ -21,7 +21,7 @@ import {
           <Box
             sx={{ p: 2, color: '#000', display: 'flex', justifyContent: 'left', height: '15%' }}
           >
-            <ViewModuleIcon sx={{ fontSize: 40, color: theme.palette.primary.main }} />
+            <BookIcon sx={{ fontSize: 40, color: theme.palette.primary.main }} />
           </Box>
         )}
         <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', p: 2, height: '85%' }}>

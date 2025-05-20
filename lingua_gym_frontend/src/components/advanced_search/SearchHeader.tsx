@@ -69,7 +69,6 @@ const SearchHeader = ({
         px: 2, py: 1,
         display: "flex",
         alignItems: "center",
-        mb: 4,
         maxWidth: isMobile ? "100%" : "50%",
         width: "100%",
         minHeight: "7vh"

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Card, Typography, Avatar, Chip, Divider, useTheme, Button } from "@mui/material";
+import { Box, Card, Typography, Avatar, Chip, useTheme, Button } from "@mui/material";
 import { Article as ArticleIcon } from "@mui/icons-material";
 
 interface SearchCardProps {
@@ -44,7 +44,7 @@ const SearchCard = ({ isSmall, ...cardInfo }: SearchCardProps) => {
             backfaceVisibility: "hidden",
             display: "flex",
             flexDirection: "column",
-            p: isSmall ? 1.5 : 2,
+            p: isSmall ? 1 : 1.5,
             boxShadow: theme.shadows[3],
             backgroundColor: '#1A1A1A',
             zIndex: flipped ? 0 : 1,
@@ -62,7 +62,7 @@ const SearchCard = ({ isSmall, ...cardInfo }: SearchCardProps) => {
                 variant="h6"
                 fontWeight="bold"
                 noWrap
-                sx={{ fontSize: isSmall ? "1.2rem" : "1.5rem", width: "95%" }}
+                sx={{ fontSize: isSmall ? "1rem" : "1.3rem", width: "95%" }}
               >
                 {cardInfo.title}
               </Typography>
@@ -70,20 +70,20 @@ const SearchCard = ({ isSmall, ...cardInfo }: SearchCardProps) => {
                 variant="body2"
                 color="text.primary"
                 mt={0.5}
-                sx={{ fontSize: isSmall ? "0.875rem" : "1rem", overflowY: "auto", height: "3rem", width: "95%" }}
+                sx={{ fontSize: isSmall ? "0.6rem" : "0.8rem", overflowY: "auto", height: "2.5rem", width: "95%" }}
               >
                 {cardInfo.description}
               </Typography>
             </Box>
           </Box>
 
-          <Box sx={{ my: 1.5, overflowX: "auto", overflowY: "hidden" }}>
+          <Box sx={{ my: 0.5, overflowX: "auto", overflowY: "hidden" }}>
             {cardInfo.tags.map((tag, index) => (
               <Chip
                 key={index}
                 label={`#${tag}`}
                 size="small"
-                sx={{ mr: 0.5, mb: 0.5 }}
+                sx={{ mr: 0.5, fontSize: isSmall ? "0.6rem" : "0.8rem" }}
               />
             ))}
           </Box>
@@ -93,24 +93,35 @@ const SearchCard = ({ isSmall, ...cardInfo }: SearchCardProps) => {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              mt: "auto"
+              mt: "0.5rem"
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <Avatar
                 sx={{
-                  width: 24,
-                  height: 24,
+                  width: 18,
+                  height: 18,
                   mr: 1,
                   backgroundColor: theme.palette.secondary.main
                 }}
               >
                 U
               </Avatar>
-              <Typography variant="body2" sx={{ overflowX: "auto" }}>{cardInfo.users[0]}</Typography>
+              <Typography variant="body2" sx={{ overflowX: "auto", fontSize: isSmall ? "0.8rem" : "1rem" }}>{cardInfo.users[0]}</Typography>
             </Box>
             <Typography variant="caption" fontWeight="bold">
               {cardInfo.language}
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}
+          >
+            <Typography variant="caption" fontSize={isSmall ? "0.6rem" : "0.8rem"}>
+              Created: {cardInfo.time}
             </Typography>
           </Box>
         </Card>
@@ -132,32 +143,18 @@ const SearchCard = ({ isSmall, ...cardInfo }: SearchCardProps) => {
           }}
         >
           <Box display="flex" flexDirection="column" gap={1}>
-            <Button sx={{ bgcolor: theme.palette.secondary.main, color: theme.palette.text.secondary, '&:hover': { backgroundColor: '#05DF88' } }}>
-              <Typography fontWeight="bold">View set</Typography>
+            <Button sx={{ color: '#FFF', '&:hover': { backgroundColor: '#222' } }}>
+              <Typography fontWeight="bold" fontSize={isSmall ? "0.6rem" : "0.8rem"}>Подробнее</Typography>
             </Button>
-            <Box display={"flex"} flexDirection={"row"} bgcolor={'#222'} gap={1}>
-              <Button fullWidth sx={{ bgcolor: theme.palette.secondary.main, color: theme.palette.text.secondary, '&:hover': { backgroundColor: '#05DF88' } }}>
-                <Typography fontWeight="bold">Copy set</Typography>
-              </Button>
-              <Button fullWidth sx={{ bgcolor: theme.palette.secondary.main, color: theme.palette.text.secondary, '&:hover': { backgroundColor: '#05DF88' } }}>
-                <Typography fontWeight="bold">Subscribe to set</Typography>
-              </Button>
-            </Box>
-            <Button onClick={handleFlip} sx={{ bgcolor: '#EE5555', color: theme.palette.text.secondary, '&:hover': { backgroundColor: '#EE4444' } }}>
-              <Typography fontWeight="bold">Cancel</Typography>
+            <Button fullWidth sx={{ color: '#FFF', '&:hover': { backgroundColor: '#222' } }}>
+              <Typography fontWeight="bold" fontSize={isSmall ? "0.6rem" : "0.8rem"}>Копировать сет</Typography>
             </Button>
-          </Box>
-          <Divider sx={{ my: 1, backgroundColor: "rgba(255, 255, 255, 0.2)" }} />
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center"
-            }}
-          >
-            <Typography variant="caption">
-              Created: {cardInfo.time}
-            </Typography>
+            <Button fullWidth sx={{ color: '#FFF', '&:hover': { backgroundColor: '#222' } }}>
+              <Typography fontWeight="bold" fontSize={isSmall ? "0.6rem" : "0.8rem"}>Добавить по ссылке</Typography>
+            </Button>
+            <Button onClick={handleFlip} sx={{ color: '#FFF', '&:hover': { backgroundColor: '#222' } }}>
+              <Typography fontWeight="bold" fontSize={isSmall ? "0.6rem" : "0.8rem"}>Отмена</Typography>
+            </Button>
           </Box>
         </Card>
       </Box>

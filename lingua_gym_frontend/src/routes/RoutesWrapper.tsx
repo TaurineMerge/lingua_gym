@@ -7,6 +7,8 @@ import PasswordResetPage from '../components/auth/PasswordResetForm';
 import AdvancedSearchView from '../pages/AdvancedSearchPage';
 import TextReader from '../pages/TextReader';
 import TextLoader from '../pages/TextLoader';
+import Library from '../pages/Library';
+import Progress from '../pages/Progress';
 
 export function ProtectedRoute() {
   const { isAuthenticated, isAuthLoading } = useAuth();
@@ -35,6 +37,8 @@ const router = createBrowserRouter([
           { path: 'materials', element: <AdvancedSearchView /> },
           { path: 'text', element: <TextReader /> },
           { path: 'text-loader', element: <TextLoader /> },
+          { path: 'library', element: <Library /> },
+          { path: 'progress', element: <Progress /> },
         ],
       },
     ],
