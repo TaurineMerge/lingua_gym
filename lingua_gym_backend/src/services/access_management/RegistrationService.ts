@@ -2,12 +2,13 @@ import { UserRepository, UserMetadataRepository } from '../../repositories/acces
 import logger from '../../utils/logger/Logger.js';
 import { User } from '../../models/access_management/access_management.js';
 import { inject, injectable } from 'tsyringe';
+import { RegistrationMethod } from '../../database/interfaces/User/IUser.js';
 
 @injectable()
 class RegistrationService {
     constructor(@inject('UserRepository') private userRepository: UserRepository, @inject('UserMetadataRepository') private userMetadataRepository: UserMetadataRepository) {}
     
-    async register(username: string, email: string, password: string, displayName?: string): Promise<User> {
+    async register(username: string, email: string, password: string, displayName?: string, registrationMethod?: RegistrationMethod): Promise<User> {
       logger.info({ username, email }, 'User registration started');
 
       try {
@@ -18,7 +19,7 @@ class RegistrationService {
         throw error;
       }
 
-      const user = new User({ username, password, email, displayName });
+      const user = new User({ username, password, email, displayName, registrationMethod });
       await this.userRepository.createUser(user);
     
       const signupDate = new Date();

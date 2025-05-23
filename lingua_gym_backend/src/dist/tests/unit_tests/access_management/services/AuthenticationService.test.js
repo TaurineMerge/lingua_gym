@@ -13,6 +13,7 @@ import { UserRepository } from '../../../../src/repositories/access_management/a
 import TokenManagementService from '../../../../src/services/access_management/JwtTokenManagementService.js';
 import User from '../../../../src/models/access_management/User.js';
 import JwtTokenManager from '../../../../src/models/access_management/JwtTokenManager.js';
+import { RegistrationMethod } from '../../../../src/database/interfaces/DbInterfaces.js';
 const mockDbInstance = {};
 describe('AuthenticationService', () => {
     let authenticationService;
@@ -36,6 +37,7 @@ describe('AuthenticationService', () => {
                 passwordHash: bcrypt.hashSync(password, passwordHashSalt),
                 email: 'test@example.com',
                 profilePicture: 'avatar.png',
+                registrationMethod: RegistrationMethod.LOCAL,
                 emailVerified: true,
                 tokenVersion: 1,
             });
@@ -66,6 +68,7 @@ describe('AuthenticationService', () => {
                 passwordHash: bcrypt.hashSync(password, passwordHashSalt),
                 email: 'test@example.com',
                 profilePicture: 'avatar.png',
+                registrationMethod: RegistrationMethod.LOCAL,
                 emailVerified: true,
                 tokenVersion: 1,
             };
@@ -87,6 +90,7 @@ describe('AuthenticationService', () => {
                 passwordHash: bcrypt.hashSync(password, passwordHashSalt),
                 email: 'test@example.com',
                 profilePicture: 'avatar.png',
+                registrationMethod: RegistrationMethod.LOCAL,
                 emailVerified: true,
                 tokenVersion: 1,
             });

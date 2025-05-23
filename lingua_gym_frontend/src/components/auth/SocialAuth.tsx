@@ -1,5 +1,5 @@
 import { Button } from '@mui/material';
-import { TokenResponse, useGoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin } from '@react-oauth/google';
 
 interface SocialAuthProps {
   icon?: React.ReactNode;
@@ -13,26 +13,29 @@ export const SocialAuth = ({
   //const { handleGoogleLogin } = useAuth();
   
   const login = useGoogleLogin({
-    onSuccess: async (tokenResponse: TokenResponse) => {
+    onSuccess: async (codeResponse) => {
       const res = await fetch('http://localhost:3000/api/access_management/google/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ token: tokenResponse.access_token }),
+        body: JSON.stringify({ code: codeResponse.code }),
       });
 
-      const data = await res.json();
-      console.log('Response:', data);
+      if (res.ok) {
+        const data = await res.json();
+        window.location.href = data.redirectUrl;
+      }
     },
-    onError: () => console.log('Ошибка входа через Google'),
-    flow: 'implicit',
+    flow: 'auth-code',
+    redirect_uri: 'http://localhost:3001'
   });
+
 
   return (
     <Button
       fullWidth
       variant="contained"
-      onClick={() => login()} // вызывается без аргументов
+      onClick={() => login()}
       startIcon={icon}
       sx={{
         bgcolor: '#0d47a1',

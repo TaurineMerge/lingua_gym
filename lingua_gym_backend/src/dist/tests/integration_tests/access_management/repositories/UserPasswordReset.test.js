@@ -7,6 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import { RegistrationMethod } from '../../../../src/database/interfaces/DbInterfaces.js';
 import { UserRepository, UserPasswordResetRepository } from '../../../../src/repositories/access_management/access_management.js';
 import { v4 as uuidv4 } from 'uuid';
 import { clearDatabase, closeDatabase, setupTestRepositoryContainer } from '../../../utils/di/TestContainer.js';
@@ -32,6 +33,7 @@ describe('UserPasswordResetModel Integration Tests', () => {
             displayName: 'Test User',
             passwordHash: 'hashedpassword',
             email: `testuser_${Date.now()}@example.com`,
+            registrationMethod: RegistrationMethod.LOCAL,
             tokenVersion: 1,
             emailVerified: false,
         };

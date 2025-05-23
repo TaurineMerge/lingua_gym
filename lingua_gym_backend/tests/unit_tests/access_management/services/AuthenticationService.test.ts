@@ -5,6 +5,7 @@ import TokenManagementService from '../../../../src/services/access_management/J
 import Database from '../../../../src/database/config/db-connection.js';
 import User from '../../../../src/models/access_management/User.js';
 import JwtTokenManager from '../../../../src/models/access_management/JwtTokenManager.js';
+import { RegistrationMethod } from '../../../../src/database/interfaces/DbInterfaces.js';
 
 const mockDbInstance = {} as Database;
 
@@ -32,6 +33,7 @@ describe('AuthenticationService', () => {
         passwordHash: bcrypt.hashSync(password, passwordHashSalt),
         email: 'test@example.com',
         profilePicture: 'avatar.png',
+        registrationMethod: RegistrationMethod.LOCAL,
         emailVerified: true,
         tokenVersion: 1,
       });
@@ -70,6 +72,7 @@ describe('AuthenticationService', () => {
         passwordHash: bcrypt.hashSync(password, passwordHashSalt),
         email: 'test@example.com',
         profilePicture: 'avatar.png',
+        registrationMethod: RegistrationMethod.LOCAL,
         emailVerified: true,
         tokenVersion: 1,
       };
@@ -95,6 +98,7 @@ describe('AuthenticationService', () => {
         passwordHash: bcrypt.hashSync(password, passwordHashSalt),
         email: 'test@example.com',
         profilePicture: 'avatar.png',
+        registrationMethod: RegistrationMethod.LOCAL,
         emailVerified: true,
         tokenVersion: 1,
       });

@@ -1,6 +1,8 @@
 import User from "../access_management/User.js";
 class DictionarySet {
     constructor(set, owner, cards) {
+        if (owner.registrationMethod === undefined)
+            throw new Error("User has no registration method");
         this._dictionarySetId = set.dictionarySetId;
         this._owner = new User(owner);
         this._name = set.name;

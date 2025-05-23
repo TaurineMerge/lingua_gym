@@ -1,6 +1,6 @@
 import { UserRepository } from '../../../../src/repositories/access_management/access_management.js';
 import Database from '../../../../src/database/config/db-connection.js';
-import { IUser } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { IUser, RegistrationMethod } from '../../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../../../src/utils/logger/Logger.js';
 
 jest.mock('../../../../src/utils/logger/logger', () => ({
@@ -25,6 +25,7 @@ describe('UserModel', () => {
     passwordHash: 'hashed_password',
     email: 'test@example.com',
     profilePicture: 'avatar.png',
+    registrationMethod: RegistrationMethod.LOCAL,
     emailVerified: true,
     tokenVersion: 1,
   };

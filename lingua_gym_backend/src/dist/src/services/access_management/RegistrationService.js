@@ -28,7 +28,7 @@ let RegistrationService = class RegistrationService {
         this.userRepository = userRepository;
         this.userMetadataRepository = userMetadataRepository;
     }
-    register(username, email, password, displayName) {
+    register(username, email, password, displayName, registrationMethod) {
         return __awaiter(this, void 0, void 0, function* () {
             logger.info({ username, email }, 'User registration started');
             try {
@@ -39,7 +39,7 @@ let RegistrationService = class RegistrationService {
                 logger.error({ error }, 'Registration failed: Email or username already exists');
                 throw error;
             }
-            const user = new User({ username, password, email, displayName });
+            const user = new User({ username, password, email, displayName, registrationMethod });
             yield this.userRepository.createUser(user);
             const signupDate = new Date();
             yield this.userMetadataRepository.createUserMetadata({

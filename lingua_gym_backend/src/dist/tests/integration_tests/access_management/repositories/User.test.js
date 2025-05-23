@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { UserRepository } from '../../../../src/repositories/access_management/access_management.js';
+import { RegistrationMethod } from '../../../../src/database/interfaces/DbInterfaces.js';
 import { v4 as uuidv4 } from 'uuid';
 import { clearDatabase, closeDatabase, setupTestRepositoryContainer } from '../../../utils/di/TestContainer.js';
 let userModel;
@@ -29,6 +30,7 @@ describe('UserModel Integration Tests', () => {
             displayName: 'Test User',
             passwordHash: 'hashedpassword',
             email: 'test@example.com',
+            registrationMethod: RegistrationMethod.LOCAL,
             tokenVersion: 1,
             emailVerified: false,
         };

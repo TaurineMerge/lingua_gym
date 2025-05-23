@@ -178,26 +178,22 @@ class AccessManagementController {
     static googleToken(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const { token } = req.body;
-                if (!token) {
-                    res.status(400).json({ error: 'Missing token' });
+                const { code } = req.body;
+                if (!code) {
+                    res.status(400).json({ error: 'Missing code' });
                     return;
                 }
                 const googleService = container.resolve('GoogleAuthService');
-                googleService.authenticateUser(token)
+                yield googleService.authenticateUser(code)
                     .then((user) => __awaiter(this, void 0, void 0, function* () {
-                    console.log(user);
-                    const authService = container.resolve('AuthenticationService');
-                    const { accessToken, refreshToken } = yield authService.login(user.email, user.password);
-                    console.log(accessToken, refreshToken);
-                    AccessManagementController.setTokenCookies(res, refreshToken, accessToken);
-                    res.json(user);
+                    AccessManagementController.setTokenCookies(res, user.refreshToken, user.accessToken);
+                    res.json({ user, redirectUrl: process.env.GOOGLE_REDIRECT_URI });
                 }))
-                    .catch(() => res.status(400).json({ error: 'Invalid Google token' }));
+                    .catch(() => res.status(400).json({ error: 'Invalid Google code' }));
             }
             catch (err) {
                 logger.error(err);
-                res.status(401).json({ error: 'Invalid Google token' });
+                res.status(401).json({ error: 'User google authentication failed' });
             }
         });
     }

@@ -12,18 +12,29 @@ import logger from '../utils/logger/Logger.js';
 import 'dotenv/config';
 class GoogleAuthIntegration {
     constructor() {
-        this.client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET);
-        this.verifyGoogleToken = (idToken) => __awaiter(this, void 0, void 0, function* () {
+        this.verifyGoogleToken = (code) => __awaiter(this, void 0, void 0, function* () {
             try {
-                logger.info({ idToken }, 'Verifying Google token');
+                logger.info({ code }, 'Verifying Google auth code');
+                const { tokens } = yield this.client.getToken({
+                    code,
+                    redirect_uri: process.env.GOOGLE_REDIRECT_URI
+                });
+                if (!(tokens === null || tokens === void 0 ? void 0 : tokens.id_token)) {
+                    throw new Error('No id_token found in Google response');
+                }
                 const ticket = yield this.client.verifyIdToken({
-                    idToken,
+                    idToken: tokens.id_token,
                     audience: process.env.GOOGLE_CLIENT_ID,
                 });
                 const payload = ticket.getPayload();
-                if (!payload)
-                    throw new Error('Invalid token payload');
-                logger.info({ payload }, 'Google token verified');
+                if (!payload) {
+                    throw new Error('Token payload is empty');
+                }
+                logger.info({
+                    email: payload.email,
+                    name: payload.name,
+                    googleId: payload.sub
+                }, 'Google token verified successfully');
                 return {
                     email: payload.email,
                     name: payload.name,
@@ -31,10 +42,11 @@ class GoogleAuthIntegration {
                     googleId: payload.sub,
                 };
             }
-            catch (_a) {
-                throw new Error('Invalid token');
+            catch (error) {
+                throw new Error('Error verifying Google token: ' + (error instanceof Error ? error.message : String(error)));
             }
         });
+        this.client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET, process.env.GOOGLE_REDIRECT_URI);
     }
 }
 export default GoogleAuthIntegration;

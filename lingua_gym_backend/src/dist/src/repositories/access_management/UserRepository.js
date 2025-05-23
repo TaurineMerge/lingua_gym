@@ -29,7 +29,7 @@ let UserRepository = class UserRepository {
     }
     createUser(user) {
         return __awaiter(this, void 0, void 0, function* () {
-            const query = 'INSERT INTO "User" (user_id, username, display_name, password_hash, email, token_version, profile_picture, email_verified) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)';
+            const query = 'INSERT INTO "User" (user_id, username, display_name, password_hash, email, token_version, profile_picture, email_verified, registration_method) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)';
             const values = [
                 user.userId,
                 user.username,
@@ -39,6 +39,7 @@ let UserRepository = class UserRepository {
                 user.tokenVersion,
                 user.profilePicture,
                 user.emailVerified,
+                user.registrationMethod
             ];
             try {
                 logger.info('Creating user...');
@@ -64,6 +65,7 @@ let UserRepository = class UserRepository {
         token_version as "tokenVersion",
         profile_picture as "profilePicture",
         email_verified as "emailVerified",
+        registration_method as "registrationMethod",
         created_at as "createdAt",
         updated_at as "updatedAt"
       FROM "User" WHERE user_id = $1`;
@@ -89,6 +91,7 @@ let UserRepository = class UserRepository {
         token_version as "tokenVersion",
         profile_picture as "profilePicture",
         email_verified as "emailVerified",
+        registration_method as "registrationMethod",
         created_at as "createdAt",
         updated_at as "updatedAt"
       FROM "User" WHERE email = $1`;
@@ -114,6 +117,7 @@ let UserRepository = class UserRepository {
         token_version as "tokenVersion",
         profile_picture as "profilePicture",
         email_verified as "emailVerified",
+        registration_method as "registrationMethod",
         created_at as "createdAt",
         updated_at as "updatedAt"
       FROM "User" WHERE username = $1`;

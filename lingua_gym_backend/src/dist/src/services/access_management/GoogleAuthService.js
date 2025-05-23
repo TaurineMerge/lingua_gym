@@ -25,22 +25,38 @@ import GoogleAuthIntegration from "../../integrations/GoogleAuthIntegration.js";
 import User from "../../models/access_management/User.js";
 import { UserRepository } from "../../repositories/access_management/access_management.js";
 import { RegistrationService } from "./access_management.js";
+import logger from '../../utils/logger/Logger.js';
+import { JwtTokenManager } from '../../models/access_management/access_management.js';
+import { RegistrationMethod } from '../../database/interfaces/User/IUser.js';
 let GoogleAuthService = class GoogleAuthService {
-    constructor(googleAuth, userRepository, registrationService) {
+    constructor(googleAuth, userRepository, registrationService, jwtTokenManager) {
         this.googleAuth = googleAuth;
         this.userRepository = userRepository;
         this.registrationService = registrationService;
-        this.authenticateUser = (token) => __awaiter(this, void 0, void 0, function* () {
-            console.log(token);
-            const googleUser = yield this.googleAuth.verifyGoogleToken(token);
-            console.log(googleUser);
-            const user = new User(yield this.userRepository.getUserByEmail(googleUser.email || ''));
-            console.log(user);
-            if (!user) {
-                const newUser = yield this.registrationService.register(googleUser.name || '', googleUser.email || '', '', '');
-                return newUser;
+        this.jwtTokenManager = jwtTokenManager;
+        this.authenticateUser = (code) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const googleUser = yield this.googleAuth.verifyGoogleToken(code);
+                if (!googleUser.email) {
+                    throw new Error('Google user does not have an email');
+                }
+                let userData = yield this.userRepository.getUserByEmail(googleUser.email);
+                if (!userData) {
+                    logger.info({ email: googleUser.email }, 'Registering new user via Google');
+                    yield this.registrationService.register(googleUser.name || '', googleUser.email, '', '', RegistrationMethod.GOOGLE);
+                    userData = yield this.userRepository.getUserByEmail(googleUser.email);
+                    if (!userData)
+                        throw new Error('Failed to retrieve newly registered user');
+                }
+                const user = new User(userData);
+                const accessToken = this.jwtTokenManager.generateAccessToken(user);
+                const refreshToken = this.jwtTokenManager.generateRefreshToken(user);
+                return { accessToken, refreshToken };
             }
-            return user;
+            catch (error) {
+                logger.error(error, 'Google authentication failed');
+                throw new Error('Google authentication failed');
+            }
         });
     }
 };
@@ -49,8 +65,10 @@ GoogleAuthService = __decorate([
     __param(0, inject('GoogleAuth')),
     __param(1, inject('UserRepository')),
     __param(2, inject('RegistrationService')),
+    __param(3, inject('JwtTokenManager')),
     __metadata("design:paramtypes", [GoogleAuthIntegration,
         UserRepository,
-        RegistrationService])
+        RegistrationService,
+        JwtTokenManager])
 ], GoogleAuthService);
 export default GoogleAuthService;

@@ -53,9 +53,17 @@ describe('PasswordResetService Integration Tests', () => {
     await passwordResetService.resetPassword(resetToken, newPassword);
     
     const userResult = await userModel.getUserById(testUser.userId);
-  
+    
+    if (!userResult) {
+      throw new Error('User not found');
+    }
+
+    if (!userResult.passwordHash) {
+      throw new Error('Password hash not found');
+    }
+
     expect(userResult!.tokenVersion).toBe(testUser.tokenVersion + 1);
-    expect(await bcrypt.compare(newPassword, userResult!.passwordHash)).toBe(true);
+    expect(bcrypt.compare(newPassword, userResult!.passwordHash)).toBe(true);
   });
 
   test('should fail for invalid reset token', async () => {
