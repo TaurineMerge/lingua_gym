@@ -3,6 +3,7 @@ import { JwtTokenManagementService as TokenManagementService } from '../../../..
 import { UserRepository } from '../../../../src/repositories/access_management/access_management.js';
 import Database from '../../../../src/database/config/db-connection.js';
 import { JwtTokenManager, User } from '../../../../src/models/access_management/access_management.js';
+import { RegistrationMethod } from '../../../../src/database/interfaces/DbInterfaces.js';
 
 const mockDbInstance = {} as Database;
 
@@ -18,6 +19,7 @@ describe('TokenManagementService', () => {
     passwordHash: 'hashed_password',
     email: 'test@example.com',
     profilePicture: 'avatar.png',
+    registrationMethod: RegistrationMethod.LOCAL,
     emailVerified: false,
     tokenVersion: 1,
   });

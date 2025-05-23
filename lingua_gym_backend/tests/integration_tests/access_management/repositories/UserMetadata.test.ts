@@ -1,4 +1,4 @@
-import { IUser, IUserMetadata } from '../../../../src/database/interfaces/DbInterfaces.js';
+import { IUser, IUserMetadata, RegistrationMethod } from '../../../../src/database/interfaces/DbInterfaces.js';
 import { UserRepository, UserMetadataRepository } from '../../../../src/repositories/access_management/access_management.js';
 import { v4 as uuidv4 } from 'uuid';
 import { clearDatabase, closeDatabase, setupTestRepositoryContainer } from '../../../utils/di/TestContainer.js';
@@ -29,6 +29,7 @@ describe('UserMetadataModel Integration Tests', () => {
       displayName: 'Test User',
       passwordHash: 'hashedpassword',
       email: `testUser${Date.now()}@example.com`,
+      registrationMethod: RegistrationMethod.LOCAL,
       tokenVersion: 1,
       emailVerified: false,
     };

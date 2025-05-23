@@ -231,10 +231,18 @@ export const AuthProvider = ({
     }, 400);
   }, [activeTab, resetForm]);
 
-  const handleGoogleLogin = useCallback(() => {
-    console.log('Redirecting to Google OAuth...');
-    // To be implemented
-  }, []);
+  /* const handleGoogleLogin = useCallback((credentialResponse: CredentialResponse) => {
+    fetch('/api/auth/google/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ token: credentialResponse.credential }),
+    })
+      .then(res => res.json())
+      .then(data => {
+        console.log('Успешный вход:', data);
+      });
+  }, []); */
 
   const contextValue = useMemo(() => ({
     formData,
@@ -246,7 +254,7 @@ export const AuthProvider = ({
     handleChange,
     handleSubmit,
     handleTabChange,
-    handleGoogleLogin,
+    //handleGoogleLogin,
     resetForm,
     debouncedValidate,
     setErrors,
@@ -268,7 +276,7 @@ export const AuthProvider = ({
     handleChange,
     handleSubmit,
     handleTabChange,
-    handleGoogleLogin,
+    //handleGoogleLogin,
     resetForm,
     debouncedValidate,
     setErrors,

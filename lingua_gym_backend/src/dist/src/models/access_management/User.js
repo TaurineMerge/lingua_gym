@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import crypto from 'bcrypt';
 import logger from '../../utils/logger/Logger.js';
+import { RegistrationMethod } from '../../database/interfaces/User/IUser.js';
 class User {
     constructor(user) {
         this.validateEmail = (email) => {
@@ -20,6 +21,10 @@ class User {
         };
         try {
             logger.info('Initializing user');
+            if (!user) {
+                throw new Error('Invalid user');
+            }
+            this._registrationMethod = 'registrationMethod' in user && user.registrationMethod ? user.registrationMethod : RegistrationMethod.LOCAL;
             if (!(user instanceof Object)) {
                 throw new Error('Invalid user');
             }
@@ -29,14 +34,19 @@ class User {
             else {
                 this._username = user.username;
             }
-            if ('passwordHash' in user) {
-                this._passwordHash = user.passwordHash;
+            if (this._registrationMethod === RegistrationMethod.LOCAL) {
+                if ('passwordHash' in user) {
+                    this._passwordHash = user.passwordHash;
+                }
+                else {
+                    if (!this.validatePassword(user.password)) {
+                        throw new Error('Invalid password');
+                    }
+                    this._passwordHash = this.hashPassword(user.password);
+                }
             }
             else {
-                if (!this.validatePassword(user.password)) {
-                    throw new Error('Invalid password');
-                }
-                this._passwordHash = this.hashPassword(user.password);
+                this._passwordHash = null;
             }
             if (!this.validateEmail(user.email)) {
                 throw new Error('Invalid email');
@@ -59,6 +69,9 @@ class User {
     }
     verifyPasswordHash(password) {
         try {
+            if (!this._passwordHash) {
+                return false;
+            }
             return crypto.compareSync(password, this._passwordHash);
         }
         catch (err) {
@@ -97,16 +110,18 @@ class User {
     get passwordHash() { return this._passwordHash; }
     get updatedAt() { return this._updatedAt || null; }
     get createdAt() { return this._createdAt || null; }
+    get registrationMethod() { return this._registrationMethod; }
     get user() {
         return {
             userId: this._userId,
             username: this._username,
             displayName: this._displayName || null,
-            passwordHash: this._passwordHash,
+            passwordHash: this._passwordHash || null,
             email: this._email,
             profilePicture: this._profilePicture || null,
             emailVerified: this._emailVerified,
             tokenVersion: this._tokenVersion,
+            registrationMethod: this._registrationMethod,
             createdAt: this._createdAt || null,
             updatedAt: this._updatedAt || null,
         };

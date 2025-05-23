@@ -2,22 +2,30 @@ import { v4 as uuidv4 } from 'uuid';
 import { IUser } from '../../database/interfaces/DbInterfaces.js';
 import crypto from 'bcrypt';
 import logger from '../../utils/logger/Logger.js';
+import { RegistrationMethod } from '../../database/interfaces/User/IUser.js';
 
 class User {
     private _userId: string;
     private _username: string;
     private _displayName?: string | null;
-    private _passwordHash: string;
+    private _passwordHash: string | null;
     private _email: string;
     private _profilePicture?: string | null;
     private _emailVerified: boolean;
     private _tokenVersion: number;
     private _createdAt?: Date | null;
     private _updatedAt?: Date | null;
+    private _registrationMethod: RegistrationMethod;
 
-    constructor(user: IUser | { username: string, password: string, email: string, displayName?: string } | null) {
+    constructor(user: IUser | { username: string, password: string, email: string, displayName?: string, registrationMethod?: RegistrationMethod } | null) {
         try {
             logger.info('Initializing user');
+
+            if (!user) {
+                throw new Error('Invalid user');
+            }
+
+            this._registrationMethod = 'registrationMethod' in user && user.registrationMethod ? user.registrationMethod : RegistrationMethod.LOCAL;
 
             if (!(user instanceof Object)) {
                 throw new Error('Invalid user');
@@ -28,14 +36,18 @@ class User {
             } else {
                 this._username = user.username;
             }
-
-            if ('passwordHash' in user) {
-                this._passwordHash = user.passwordHash;
-            } else {
-                if (!this.validatePassword(user.password)) {
-                    throw new Error('Invalid password');
+            
+            if (this._registrationMethod === RegistrationMethod.LOCAL) {
+                if ('passwordHash' in user) {
+                    this._passwordHash = user.passwordHash;
+                } else {
+                    if (!this.validatePassword(user.password)) {
+                        throw new Error('Invalid password');
+                    }
+                    this._passwordHash = this.hashPassword(user.password);
                 }
-                this._passwordHash = this.hashPassword(user.password);
+            } else {
+                this._passwordHash = null;
             }
 
             if (!this.validateEmail(user.email)) {
@@ -59,6 +71,9 @@ class User {
 
     public verifyPasswordHash(password: string): boolean {
         try {
+          if (!this._passwordHash) {
+            return false;
+          }
           return crypto.compareSync(password, this._passwordHash);
         } catch (err) {
           logger.error({ error: err }, 'Password verification failed');
@@ -114,20 +129,22 @@ class User {
     public get profilePicture(): string | null { return this._profilePicture || null; }
     public get emailVerified(): boolean { return this._emailVerified; }
     public get tokenVersion(): number { return this._tokenVersion; }
-    public get passwordHash(): string { return this._passwordHash; }
+    public get passwordHash(): string | null { return this._passwordHash; }
     public get updatedAt(): Date | null { return this._updatedAt || null; }
     public get createdAt(): Date | null { return this._createdAt || null; }
+    public get registrationMethod(): RegistrationMethod { return this._registrationMethod; }
     
     public get user(): IUser {
         return {
             userId: this._userId,
             username: this._username,
             displayName: this._displayName || null,
-            passwordHash: this._passwordHash,
+            passwordHash: this._passwordHash || null,
             email: this._email,
             profilePicture: this._profilePicture || null,
             emailVerified: this._emailVerified,
             tokenVersion: this._tokenVersion,
+            registrationMethod: this._registrationMethod,
             createdAt: this._createdAt || null,
             updatedAt: this._updatedAt || null,
         };

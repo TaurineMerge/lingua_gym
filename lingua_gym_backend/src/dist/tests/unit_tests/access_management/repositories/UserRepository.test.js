@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { UserRepository } from '../../../../src/repositories/access_management/access_management.js';
+import { RegistrationMethod } from '../../../../src/database/interfaces/DbInterfaces.js';
 import logger from '../../../../src/utils/logger/Logger.js';
 jest.mock('../../../../src/utils/logger/logger', () => ({
     info: jest.fn(),
@@ -28,6 +29,7 @@ describe('UserModel', () => {
         passwordHash: 'hashed_password',
         email: 'test@example.com',
         profilePicture: 'avatar.png',
+        registrationMethod: RegistrationMethod.LOCAL,
         emailVerified: true,
         tokenVersion: 1,
     };

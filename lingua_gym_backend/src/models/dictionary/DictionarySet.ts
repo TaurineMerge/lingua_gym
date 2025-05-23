@@ -16,6 +16,8 @@ class DictionarySet {
         owner: User,
         cards?: Card[],
     ) {
+        if (owner.registrationMethod === undefined) throw new Error("User has no registration method");
+
         this._dictionarySetId = set.dictionarySetId;
         this._owner = new User(owner);
         this._name = set.name;

@@ -11,6 +11,7 @@ import jwt from 'jsonwebtoken';
 import { JwtTokenManagementService as TokenManagementService } from '../../../../src/services/access_management/access_management.js';
 import { UserRepository } from '../../../../src/repositories/access_management/access_management.js';
 import { JwtTokenManager, User } from '../../../../src/models/access_management/access_management.js';
+import { RegistrationMethod } from '../../../../src/database/interfaces/DbInterfaces.js';
 const mockDbInstance = {};
 describe('TokenManagementService', () => {
     let tokenService;
@@ -23,6 +24,7 @@ describe('TokenManagementService', () => {
         passwordHash: 'hashed_password',
         email: 'test@example.com',
         profilePicture: 'avatar.png',
+        registrationMethod: RegistrationMethod.LOCAL,
         emailVerified: false,
         tokenVersion: 1,
     });

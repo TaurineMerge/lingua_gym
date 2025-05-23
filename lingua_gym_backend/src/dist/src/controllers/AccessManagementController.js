@@ -175,5 +175,27 @@ class AccessManagementController {
             }
         });
     }
+    static googleToken(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { code } = req.body;
+                if (!code) {
+                    res.status(400).json({ error: 'Missing code' });
+                    return;
+                }
+                const googleService = container.resolve('GoogleAuthService');
+                yield googleService.authenticateUser(code)
+                    .then((user) => __awaiter(this, void 0, void 0, function* () {
+                    AccessManagementController.setTokenCookies(res, user.refreshToken, user.accessToken);
+                    res.json({ user, redirectUrl: process.env.GOOGLE_REDIRECT_URI });
+                }))
+                    .catch(() => res.status(400).json({ error: 'Invalid Google code' }));
+            }
+            catch (err) {
+                logger.error(err);
+                res.status(401).json({ error: 'User google authentication failed' });
+            }
+        });
+    }
 }
 export default AccessManagementController;

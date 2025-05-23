@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import RegistrationService from '../../../../src/services/access_management/RegistrationService.js';
 import { UserRepository, UserMetadataRepository } from '../../../../src/repositories/access_management/access_management.js';
 import bcrypt from 'bcrypt';
+import { RegistrationMethod } from '../../../../src/database/interfaces/DbInterfaces.js';
 jest.mock('../../../../src/models/access_management/access_management.js');
 jest.mock('../../../../src/models/access_management/access_management.js');
 const mockDbInstance = {};
@@ -25,6 +26,7 @@ describe('RegistrationService', () => {
         passwordHash: 'hashed_password',
         email: 'test@example.com',
         profilePicture: 'avatar.png',
+        registrationMethod: RegistrationMethod.LOCAL,
         emailVerified: true,
         tokenVersion: 1,
     };

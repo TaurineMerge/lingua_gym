@@ -1,5 +1,5 @@
 import { Button } from '@mui/material';
-import { useAuth } from '../../hooks/auth/UseAuthForm';
+import { useGoogleLogin } from '@react-oauth/google';
 
 interface SocialAuthProps {
   icon?: React.ReactNode;
@@ -10,13 +10,32 @@ export const SocialAuth = ({
   icon, 
   text = "Continue with Google" 
 }: SocialAuthProps) => {
-  const { handleGoogleLogin } = useAuth();
+  //const { handleGoogleLogin } = useAuth();
+  
+  const login = useGoogleLogin({
+    onSuccess: async (codeResponse) => {
+      const res = await fetch('http://localhost:3000/api/access_management/google/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ code: codeResponse.code }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        window.location.href = data.redirectUrl;
+      }
+    },
+    flow: 'auth-code',
+    redirect_uri: 'http://localhost:3001'
+  });
+
 
   return (
     <Button
       fullWidth
       variant="contained"
-      onClick={handleGoogleLogin}
+      onClick={() => login()}
       startIcon={icon}
       sx={{
         bgcolor: '#0d47a1',

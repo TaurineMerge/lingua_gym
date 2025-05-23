@@ -7,6 +7,7 @@ import {
   JwtTokenManagementService,
   PasswordResetService
 } from '../services/access_management/access_management.js';
+import GoogleAuthService from '../services/access_management/GoogleAuthService.js';
 
 class AccessManagementController {
   private static setTokenCookies(res: Response, refreshToken: string, accessToken: string): void {
@@ -176,6 +177,28 @@ class AccessManagementController {
     } catch (error) {
       logger.error({ error }, 'Check if authenticated failed');
       res.status(400).json({ error: (error as Error).message, authenticated: false });
+    }
+  }
+
+  static async googleToken(req: Request, res: Response): Promise<void> {
+    try {
+      const { code } = req.body;
+      if (!code) { 
+        res.status(400).json({ error: 'Missing code' });
+        return;
+      }
+      
+      const googleService = container.resolve<GoogleAuthService>('GoogleAuthService');
+      await googleService.authenticateUser(code)
+        .then(async (user) => {
+          AccessManagementController.setTokenCookies(res, user.refreshToken, user.accessToken);
+          res.json({ user, redirectUrl: process.env.GOOGLE_REDIRECT_URI });
+        })
+        .catch(() => res.status(400).json({ error: 'Invalid Google code' }));
+
+    } catch (err) {
+      logger.error(err);
+      res.status(401).json({ error: 'User google authentication failed' });
     }
   }
 }

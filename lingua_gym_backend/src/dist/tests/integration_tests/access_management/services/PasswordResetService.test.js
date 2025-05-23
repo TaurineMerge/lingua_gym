@@ -48,8 +48,14 @@ describe('PasswordResetService Integration Tests', () => {
         resetToken = yield passwordResetService.requestPasswordReset(testUser.email);
         yield passwordResetService.resetPassword(resetToken, newPassword);
         const userResult = yield userModel.getUserById(testUser.userId);
+        if (!userResult) {
+            throw new Error('User not found');
+        }
+        if (!userResult.passwordHash) {
+            throw new Error('Password hash not found');
+        }
         expect(userResult.tokenVersion).toBe(testUser.tokenVersion + 1);
-        expect(yield bcrypt.compare(newPassword, userResult.passwordHash)).toBe(true);
+        expect(bcrypt.compare(newPassword, userResult.passwordHash)).toBe(true);
     }));
     test('should fail for invalid reset token', () => __awaiter(void 0, void 0, void 0, function* () {
         const error = yield passwordResetService.resetPassword('invalid_token', 'password123').catch(e => e);

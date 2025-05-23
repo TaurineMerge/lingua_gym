@@ -9,6 +9,7 @@ router.post('/request-password-reset', AuthController.requestPasswordReset);
 router.post('/reset-password', AuthController.resetPassword);
 router.post('/check-email-exists', AuthController.checkIfEmailExists);
 router.post('/check-username-exists', AuthController.checkIfUsernameExists);
+router.post('/google/token', AuthController.googleToken);
 router.get('/is-authenticated', AuthController.checkIfAuthenticated);
 router.get('/refresh-token', validateRefreshToken, AuthController.refreshToken);
 export default router;
