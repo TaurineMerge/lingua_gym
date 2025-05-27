@@ -1,13 +1,30 @@
-import { Box, ToggleButtonGroup, Container, Divider, Fab, FormControl, IconButton, InputBase, InputLabel, List, ListItem, ListItemButton, ListItemText, MenuItem, Paper, Select, Stack, ToggleButton, Typography, Chip, Avatar, Skeleton } from "@mui/material";
+import { Box, ToggleButtonGroup, Container, Divider, Fab, FormControl, IconButton, InputBase, InputLabel, List, ListItem, ListItemButton, ListItemText, MenuItem, Paper, Select, Stack, ToggleButton, Typography, Chip, Avatar, Skeleton, Popover, Modal, Button, Link } from "@mui/material";
 import SearchIcon from '@mui/icons-material/Search';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import theme from "../theme";
 import { useState } from "react";
+import CloseIcon from '@mui/icons-material/Close';
 
 const Library = () => {
 	const [alignment, setAlignment] = useState<string | null>('sets');
 	const [loading, setLoading] = useState(false);
+	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+	const [isModalOpen, setIsModalOpen] = useState(false);
+
+	const handleModalOpen = () => setIsModalOpen(true);
+	const handleModalClose = () => setIsModalOpen(false);
+
+	const isPopperOpen = Boolean(anchorEl);
+  	const popperId = isPopperOpen ? 'simple-popper' : undefined;
+
+	const handlePopperClick = (event: React.MouseEvent<HTMLElement>) => {
+		setAnchorEl(anchorEl ? null : event.currentTarget);
+	};
+
+	const handlePopperClose = () => {
+		setAnchorEl(null);
+	};
 
 	const handleAlignment = (
 		event: React.MouseEvent<HTMLElement>,
@@ -24,6 +41,91 @@ const Library = () => {
 
 	return (
 		<Container>
+			<Popover
+				id={popperId}
+				open={isPopperOpen}
+				anchorEl={anchorEl}
+				onClose={handlePopperClose}
+				anchorOrigin={{
+					vertical: 'bottom',
+					horizontal: 'right',
+				}}
+				transformOrigin={{
+					vertical: 'center',
+					horizontal: 'left',
+				}}
+				PaperProps={{
+					sx: {
+						borderRadius: 1,
+						boxShadow: 6,
+						minWidth: 200,
+						bgcolor: '#111',
+						transition: 'all 0.3s ease-in-out',
+						p: 1,
+					},
+				}}
+				>
+				<Box>
+					<List dense>
+						<ListItem disablePadding>
+							<ListItemButton
+							sx={{
+								borderRadius: 1,
+								px: 2,
+								py: 1,
+								'&:hover': {
+									bgcolor: '#222',
+									color: 'white',
+								},
+							}}
+							component={Link}
+							href="/text-loader"
+							>
+								<ListItemText primary="Добавить текст" primaryTypographyProps={{fontSize: '1rem'}} />
+							</ListItemButton>
+						</ListItem>
+						<ListItem disablePadding>
+							<ListItemButton
+							onClick={handlePopperClose}
+							sx={{
+								borderRadius: 1,
+								px: 2,
+								py: 1,
+								'&:hover': {
+									bgcolor: '#222',
+									color: 'white',
+								},
+							}}
+							>
+								<ListItemText primary="Добавить сет" primaryTypographyProps={{fontSize: '1rem'}} />
+							</ListItemButton>
+						</ListItem>
+					</List>
+				</Box>
+			</Popover>
+			<Modal
+				open={isModalOpen}
+				onClose={handleModalClose}
+				aria-labelledby="modal-modal-title"
+				aria-describedby="modal-modal-description"
+			>
+				<Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', minWidth: 400, bgcolor: '#111', border: '2px solid #000', boxShadow: 24, p: 4 }}>
+					<Button sx={{ position: 'absolute', top: 0, right: 0, marginTop: 1 }}>
+						<CloseIcon onClick={handleModalClose} />
+					</Button>
+					<Typography variant="h6" component="h2" textAlign='center'>
+					Вы действительно хотите удалить этот материал?
+					</Typography>
+					<Box display="flex" justifyContent="center" mt={2} gap={2}>
+						<Button variant="contained" color="error" onClick={handleModalClose}>
+							Да
+						</Button>
+						<Button variant="contained" color="primary" onClick={handleModalClose}>
+							Нет
+						</Button>
+					</Box>
+				</Box>
+			</Modal>
 			<Box mt={4} display="flex" alignItems="center" justifyContent="space-between">
 				<Typography variant="h3" sx={{ 
 				color: theme.palette.secondary.main, 
@@ -33,7 +135,7 @@ const Library = () => {
 				}}>
 					Библиотека
 				</Typography>
-				<Fab color="primary" aria-label="add" size="medium">
+				<Fab color="primary" aria-label="add" size="medium" onClick={handlePopperClick}>
 					<AddIcon />
 				</Fab>
 			</Box>
@@ -147,6 +249,7 @@ const Library = () => {
 							<IconButton 
 							edge="end" 
 							aria-label="delete"
+							onClick={handleModalOpen}
 							>
 								<DeleteIcon />
 							</IconButton>
