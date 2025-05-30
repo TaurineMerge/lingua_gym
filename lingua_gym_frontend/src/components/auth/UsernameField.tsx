@@ -18,7 +18,7 @@ export const UsernameField = () => {
     <TextField
       fullWidth
       variant="outlined"
-      label="Username"
+      label="Имя пользователя"
       name="username"
       autoComplete='off'
       value={formData.username}

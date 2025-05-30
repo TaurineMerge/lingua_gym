@@ -8,7 +8,7 @@ interface SocialAuthProps {
 
 export const SocialAuth = ({ 
   icon, 
-  text = "Continue with Google" 
+  text = "Войти через Google" 
 }: SocialAuthProps) => {
   //const { handleGoogleLogin } = useAuth();
   

@@ -95,11 +95,11 @@ const PasswordResetRequestPage: React.FC = () => {
       {token ? (
         <>
           <Typography variant="h5" gutterBottom>
-            Set New Password
+            Придумайте новый пароль
           </Typography>
           <form onSubmit={handleSetNewPassword}>
             <TextField
-              label="New Password"
+              label="Введите новый пароль"
               fullWidth
               type="password"
               margin="normal"
@@ -108,7 +108,7 @@ const PasswordResetRequestPage: React.FC = () => {
               sx={textFieldStyle}
             />
             <TextField
-              label="Confirm Password"
+              label="Подтвердите новый пароль"
               fullWidth
               type="password"
               margin="normal"
@@ -117,14 +117,14 @@ const PasswordResetRequestPage: React.FC = () => {
               sx={textFieldStyle}
             />
             <Button type="submit" variant="contained" fullWidth sx={buttonStyle}>
-              Set Password
+              Поменять пароль
             </Button>
           </form>
           {message && (
             <Alert severity="success" sx={{ mt: 2 }}>
               {message}
               <Typography variant="caption" sx={{ display: 'block', mt: 1 }}>
-                Redirecting to login page...
+                Перенаправление на страницу входа...
               </Typography>
             </Alert>
           )}
@@ -134,16 +134,16 @@ const PasswordResetRequestPage: React.FC = () => {
             fullWidth
             sx={{ mt: 1, color: '#00e676', textTransform: 'none' }}
           >
-            Back to Login
+            Вернуться на страницу входа
           </Button>
         </>
       ) : (
         <>
           <Typography variant="h5" gutterBottom>
-            Reset Your Password
+            Восстановление пароля
           </Typography>
           <Typography variant="body2" sx={{ mb: 2, color: 'gray' }}>
-            Enter your email to receive a reset link.
+            Введите адрес электронной почты
           </Typography>
           <form onSubmit={handleRequestReset}>
             <TextField
@@ -162,7 +162,7 @@ const PasswordResetRequestPage: React.FC = () => {
               sx={buttonStyle}
               disabled={resendTimer > 0}
             >
-              {resendTimer > 0 ? `Resend in ${resendTimer}s` : 'Send Reset Link'}
+              {resendTimer > 0 ? `Получить письмо ещё раз можно через ${resendTimer}` : 'Получить письмо'}
             </Button>
           </form>
           {message && <Alert severity="success" sx={{ mt: 2 }}>{message}</Alert>}
@@ -172,7 +172,7 @@ const PasswordResetRequestPage: React.FC = () => {
             fullWidth
             sx={{ mt: 1, color: '#00e676', textTransform: 'none' }}
           >
-            Back to Login
+            Вернуться на страницу входа
           </Button>
         </>
       )}

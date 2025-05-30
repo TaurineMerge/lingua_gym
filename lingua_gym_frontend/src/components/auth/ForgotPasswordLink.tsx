@@ -19,7 +19,7 @@ export const ForgotPasswordLink = () => {
           cursor: 'pointer'
         }}
       >
-        Forgot password?
+        Забыли пароль?
       </MuiLink>
     </Box>
   );

@@ -6,7 +6,7 @@ export const AuthTabs = () => {
 
   return (
     <WrappedTab
-      labels={['Sign In', 'Sign Up']}
+      labels={['Войти', 'Зарегистрироваться']}
       activeValue={activeTab}
       onTabChange={handleTabChange}
     />

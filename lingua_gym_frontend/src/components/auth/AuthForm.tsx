@@ -8,7 +8,6 @@ import { UsernameField } from './UsernameField';
 import { PasswordField } from './PasswordField';
 import { ConfirmPasswordField } from './ConfirmPasswordField';
 import { SubmitButton } from './SubmitButton';
-import { DisplayNameField } from './DisplayNameField';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAuthActions } from '../../hooks/routing/useAuthActions';
 
@@ -46,7 +45,7 @@ export const AuthForm = () => {
           <SocialAuth />
 
           <Typography variant="body2" sx={{ color: 'gray', textAlign: 'center', mb: 2 }}>
-            or use your email
+            или
           </Typography>
 
           <AnimatePresence mode="wait">
@@ -62,7 +61,6 @@ export const AuthForm = () => {
                 {activeTab === 1 && (
                   <>
                     <UsernameField />
-                    <DisplayNameField />
                   </>
                 )}
                 <PasswordField />

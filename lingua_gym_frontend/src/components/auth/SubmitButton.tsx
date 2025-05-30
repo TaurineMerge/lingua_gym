@@ -19,7 +19,7 @@ export const SubmitButton = () => {
         '&:disabled': { bgcolor: 'grey.700' },
       }}
     >
-      {isSubmitting ? 'Processing...' : activeTab === 0 ? 'Sign In' : 'Sign Up'}
+      {isSubmitting ? 'Processing...' : activeTab === 0 ? 'Войти' : 'Зарегистрироваться'}
     </Button>
   );
 };

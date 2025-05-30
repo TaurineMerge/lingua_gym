@@ -96,6 +96,8 @@ const Library = () => {
 									color: 'white',
 								},
 							}}
+							component={Link}
+							href="/set/set-id"
 							>
 								<ListItemText primary="Добавить сет" primaryTypographyProps={{fontSize: '1rem'}} />
 							</ListItemButton>

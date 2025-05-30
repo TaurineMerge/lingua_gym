@@ -16,7 +16,7 @@ export const ConfirmPasswordField = () => {
     <TextField
       fullWidth
       variant="outlined"
-      label="Confirm Password"
+      label="Подтвердите пароль"
       type="password"
       name="confirmPassword"
       autoComplete='off'

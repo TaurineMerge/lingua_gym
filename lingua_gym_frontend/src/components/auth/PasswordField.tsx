@@ -14,7 +14,7 @@ export const PasswordField = () => {
     <TextField
       fullWidth
       variant="outlined"
-      label="Password"
+      label="Пароль"
       type="password"
       name="password"
       autoComplete='off'
