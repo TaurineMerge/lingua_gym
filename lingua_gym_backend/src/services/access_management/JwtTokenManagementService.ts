@@ -17,13 +17,21 @@ class TokenManagementService {
     
     const payload = this.jwtTokenManager.verifyRefreshToken(refreshToken);
     const user = new User(await this.userRepository.getUserById(payload.userId));
-
+    console.log(user.tokenVersion, payload.tokenVersion);
     if (!user || user.tokenVersion !== payload.tokenVersion) {
       logger.warn({ userId: payload.userId }, 'Invalid refresh token');
       throw new Error('Invalid refresh token');
     }
 
-    await this.incrementTokenVersion(user);
+    const isIncremented = await this.incrementTokenVersion(user);
+
+    if (!isIncremented) {
+      logger.error({ userId: user.userId }, 'Failed to increment token version');
+      throw new Error('Could not update token version');
+    } else  {
+      logger.info({ userId: user.userId }, 'Token version incremented');
+      user.tokenVersion++;
+    }
 
     const newAccessToken = this.jwtTokenManager.generateAccessToken(user);
     const newRefreshToken = this.jwtTokenManager.generateRefreshToken(user);
