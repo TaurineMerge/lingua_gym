@@ -10,6 +10,7 @@ import TextLoader from '../pages/TextLoader';
 import Library from '../pages/Library';
 import Progress from '../pages/Progress';
 import SetPage from '../pages/SetPage';
+import SetExercisePage from '../pages/SetExercisePage';
 
 export function ProtectedRoute() {
   const { isAuthenticated, isAuthLoading } = useAuth();
@@ -41,6 +42,7 @@ const router = createBrowserRouter([
           { path: 'library', element: <Library /> },
           { path: 'progress', element: <Progress /> },
           { path: 'set/:setId', element: <SetPage /> },
+          { path: 'set/:setId/exercise/', element: <SetExercisePage /> },
         ],
       },
     ],
