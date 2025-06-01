@@ -19,6 +19,7 @@ interface SearchResultsGridProps {
 
 interface Filters {
   time: string;
+  rating: string;
   materialType: string;
   language: string;
   tags: string[];
@@ -144,6 +145,7 @@ const SearchResultsGrid = ({ isSmall, searchQuery, filters }: SearchResultsGridP
                 language={card.filters.language}
                 tags={card.filters.tags}
                 time={card.filters.time}
+                rating={card.filters.rating}
                 users={card.filters.users}
                 isSmall={isSmall}
               />

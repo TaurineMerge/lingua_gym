@@ -31,9 +31,9 @@ let DictionarySetRepository = class DictionarySetRepository {
         return __awaiter(this, void 0, void 0, function* () {
             const query = `
             INSERT INTO "DictionarySet" 
-                (set_id, name, owner_id, description, language_code, is_public) 
+                (set_id, name, owner_id, description, language_code, is_public, rating) 
             VALUES 
-                ($1, $2, $3, $4, $5, $6) 
+                ($1, $2, $3, $4, $5, $6, $7) 
             RETURNING 
                 set_id as "dictionarySetId",
                 name,
@@ -41,6 +41,7 @@ let DictionarySetRepository = class DictionarySetRepository {
                 description,
                 language_code as "languageCode",
                 is_public as "isPublic",
+                rating,
                 created_at as "createdAt"
         `;
             const values = [
@@ -50,6 +51,7 @@ let DictionarySetRepository = class DictionarySetRepository {
                 dictionarySet.description || null,
                 dictionarySet.languageCode,
                 dictionarySet.isPublic || false,
+                dictionarySet.rating || 0
             ];
             try {
                 const result = yield this.db.query(query, values);
@@ -71,6 +73,7 @@ let DictionarySetRepository = class DictionarySetRepository {
                 description,
                 language_code as "languageCode",
                 is_public as "isPublic",
+                rating,
                 created_at as "createdAt"
             FROM "DictionarySet" 
             WHERE set_id = $1
@@ -97,6 +100,7 @@ let DictionarySetRepository = class DictionarySetRepository {
                 description,
                 language_code as "languageCode",
                 is_public as "isPublic",
+                rating,
                 created_at as "createdAt"
         `;
             try {

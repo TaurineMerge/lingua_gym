@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Card, Typography, Avatar, Chip, useTheme, Button } from "@mui/material";
+import { Box, Card, Typography, Avatar, Chip, useTheme, Button, Rating } from "@mui/material";
 import { Article as ArticleIcon } from "@mui/icons-material";
 
 interface SearchCardProps {
@@ -11,6 +11,7 @@ interface SearchCardProps {
   language: string;
   tags: string[];
   time: string;
+  rating: string;
   users: string[];
 }
 
@@ -75,6 +76,10 @@ const SearchCard = ({ isSmall, ...cardInfo }: SearchCardProps) => {
                 {cardInfo.description}
               </Typography>
             </Box>
+          </Box>
+
+          <Box>
+            <Rating name="half-rating" defaultValue={Number.parseFloat(cardInfo.rating)} precision={0.5} readOnly sx={{ fontSize: isSmall ? "0.8rem" : "1rem" }} />
           </Box>
 
           <Box sx={{ my: 0.5, overflowX: "auto", overflowY: "hidden" }}>

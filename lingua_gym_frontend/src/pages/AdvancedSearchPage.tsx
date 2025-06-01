@@ -15,11 +15,12 @@ const AdvancedSearchPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState({
     time: "newest",
+    rating: "",
     materialType: "",
     language: "",
     tags: [],
     users: []
-  } as { time: string; materialType: string; language: string; tags: string[]; users: string[] });
+  } as { time: string; materialType: string; language: string; tags: string[]; users: string[], rating: string });
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   const handleFilterChange = (filterName: string, value: string) => {
@@ -66,6 +67,7 @@ const AdvancedSearchPage = () => {
   const clearAllFilters = () => {
     setFilters({
       time: "newest",
+      rating: "",
       materialType: "",
       language: "",
       tags: [],

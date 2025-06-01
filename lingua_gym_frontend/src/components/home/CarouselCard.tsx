@@ -1,13 +1,17 @@
 import {
     Card, CardContent, Typography, Button, Avatar, Box,
     useTheme,
+    Rating,
   } from '@mui/material';
   import ArticleIcon from '@mui/icons-material/Article';
   import { MaterialsCardProps } from '../../types/NewMaterials';
   import BookIcon from "@mui/icons-material/Book";
+import { useState } from 'react';
   
   const CardComponent = ({ title, description, username, tags, language, type }: MaterialsCardProps) => {
     const theme = useTheme();
+
+    const [ratingValue, setRatingValue] = useState<number | null>(2);
 
     return (
       <Card sx={{ minWidth: 280, height: 506, m: 0.5, backgroundColor: '#1A1A1A', pb: 0, maxHeight: '100%', transition: 'all 0.3s ease', "&:hover": { backgroundColor: '#1F1F1F', cursor: 'grab' } }}>
@@ -31,6 +35,16 @@ import {
             <Avatar sx={{ bgcolor: '#D9D5E4', width: 24, height: 24, mr: 1, p: 2 }}>A</Avatar>
             <Typography variant="body2" sx={{ color: theme.palette.text.primary }}>{username}</Typography>
           </Box>
+          <Rating
+            name="half-rating"
+            value={ratingValue}
+            defaultValue={2.5} 
+            precision={0.5}
+            onChange={(event, newValue) => {
+              setRatingValue(newValue);
+            }}
+            sx={{ color: '#25FFA8' }}
+          />
           <Button variant="contained">Перейти</Button>
           <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box display="flex" flexWrap="wrap" gap={0.5} width="80%">
