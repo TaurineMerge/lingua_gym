@@ -8,15 +8,53 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CardType } from '../../types/NewMaterials';
 
-const dummyDataSets = new Array(10).fill(null).map((_, idx) => ({
-  title: `Set Title ${idx + 1}`,
-  description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum is simply dummy text of the printing and typesetting industry. ',
-  username: 'UserName',
-  rating: Math.floor(Math.random() * 6),
-  tags: ['tag1', 'tag2', 'tag3', 'tag4', 'tag5', 'tag6', 'tag7', 'tag8'],
-  language: 'Eng',
-  type: CardType.SET,
-}));
+const dummyDataSets = [
+  {
+    title: `English for beavers`,
+    description: 'Learn essential vocabulary for dam-building, wood-chewing, and social grumbling in the wetland bureaucracy. Ideal for semiaquatic engineers and aspiring forest diplomats.',
+    username: 'log_master',
+    rating: 4.9,
+    tags: ['animals', 'nature', 'construction', 'english'],
+    language: 'Eng',
+    type: CardType.SET,
+  },
+  {
+    title: `Français pour les Dramatiques`,
+    description: 'Un recueil de mots pour ceux qui vivent intensément : les âmes sensibles, les cœurs brisés et les poètes de trottoir. Pour faire de chaque silence une scène et de chaque regard un adieu.',
+    username: 'croissanttears',
+    rating: 4.7,
+    tags: ['émotion', 'théâtre', 'drame', 'existentialisme'],
+    language: 'Fra',
+    type: CardType.SET,
+  },
+  {
+    title: `中文给社交忍者`,
+    description: '精选词汇与短语，助你在聚会中优雅退场、在微信群中巧妙回避，以及在家族聚餐中存活下来而不被盘问婚姻状况。适合内向又不失锋芒的你。',
+    username: '安静即王道',
+    rating: 4.2,
+    tags: ['礼貌', '人际', '模糊表达', '情绪管理'],
+    language: 'Zh',
+    type: CardType.SET,
+  },
+  {
+    title: `Español para Telenovelas`,
+    description: 'Un set de frases y palabras para vivir, amar, llorar y gritar como si el mundo fuera un episodio eterno. Ideal para almas intensas, secretos familiares y entradas dramáticas con viento en el cabello.',
+    username: 'corazónpartido',
+    rating: 3,
+    tags: ['amor', 'secretos', 'pasión', 'familia'],
+    language: 'Es',
+    type: CardType.SET,
+  },
+  {
+    title: `English for beavers`,
+    description: 'Learn essential vocabulary for dam-building, wood-chewing, and social grumbling in the wetland bureaucracy. Ideal for semiaquatic engineers and aspiring forest diplomats.',
+    username: 'log_master',
+    rating: 4.9,
+    tags: ['animals', 'nature', 'construction', 'english'],
+    language: 'Eng',
+    type: CardType.SET,
+  },
+];
 
 const dummyDataTexts = new Array(10).fill(null).map((_, idx) => ({
   title: `Text Title ${idx + 1}`,

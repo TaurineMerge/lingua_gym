@@ -3,6 +3,7 @@ export interface MaterialsCardProps {
   description: string;
   username: string;
   tags: string[];
+  rating: number;
   language: string;
   type: CardType;
 }

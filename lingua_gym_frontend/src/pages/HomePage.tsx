@@ -30,7 +30,7 @@ const HomePage = () => {
         />
       </Box>
       <Box mt={4}>
-        <Carousel tabValue={tabValue} title='Продолжи изучение' />
+        <Carousel tabValue={tabValue} title='Продолжите изучение' />
       </Box>
     </Container>
   );

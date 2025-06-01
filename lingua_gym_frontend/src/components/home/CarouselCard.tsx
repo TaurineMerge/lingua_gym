@@ -1,17 +1,17 @@
 import {
-    Card, CardContent, Typography, Button, Avatar, Box,
-    useTheme,
-    Rating,
-  } from '@mui/material';
-  import ArticleIcon from '@mui/icons-material/Article';
-  import { MaterialsCardProps } from '../../types/NewMaterials';
-  import BookIcon from "@mui/icons-material/Book";
+  Card, CardContent, Typography, Button, Avatar, Box,
+  useTheme,
+  Rating,
+} from '@mui/material';
+import ArticleIcon from '@mui/icons-material/Article';
+import { MaterialsCardProps } from '../../types/NewMaterials';
+import BookIcon from "@mui/icons-material/Book";
 import { useState } from 'react';
   
-  const CardComponent = ({ title, description, username, tags, language, type }: MaterialsCardProps) => {
+  const CardComponent = ({ title, description, username, tags, rating, language, type }: MaterialsCardProps) => {
     const theme = useTheme();
 
-    const [ratingValue, setRatingValue] = useState<number | null>(2);
+    const [ratingValue, setRatingValue] = useState<number | null>(rating);
 
     return (
       <Card sx={{ minWidth: 280, height: 506, m: 0.5, backgroundColor: '#1A1A1A', pb: 0, maxHeight: '100%', transition: 'all 0.3s ease', "&:hover": { backgroundColor: '#1F1F1F', cursor: 'grab' } }}>
@@ -29,18 +29,48 @@ import { useState } from 'react';
           </Box>
         )}
         <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', p: 2, height: '85%' }}>
-          <Typography variant="h6" sx={{ color: theme.palette.text.primary }} gutterBottom>{title}</Typography>
-          <Typography variant="body2" sx={{ color: theme.palette.text.primary, overflow: 'auto', height: '7rem', fontSize: '0.875rem' }}>{description}</Typography>
-          <Box display="flex" alignItems="center" my={2}>
-            <Avatar sx={{ bgcolor: '#D9D5E4', width: 24, height: 24, mr: 1, p: 2 }}>A</Avatar>
+          <Box sx={{ 
+            height: '5.6rem', 
+            overflowY: 'auto', 
+            overflowX: 'hidden',
+            '&::-webkit-scrollbar': {
+              width: '0.2em'
+            },
+            '&::-webkit-scrollbar-track': {
+              border: '1px solid #000'
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: '#0A84FF',
+            }
+            }}>
+            <Typography variant="h6" sx={{ color: theme.palette.text.primary, lineHeight: '2.8rem' }} gutterBottom>{title}</Typography>
+          </Box>
+          <Box sx={{ 
+            height: '4rem', 
+            overflowY: 'auto', 
+            overflowX: 'hidden',
+            '&::-webkit-scrollbar': {
+              width: '0.2em'
+            },
+            '&::-webkit-scrollbar-track': {
+              border: '1px solid #000'
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: '#0A84FF',
+            } 
+            }}>
+            <Typography variant="body2" sx={{ color: theme.palette.text.primary, fontSize: '0.875rem' }}>{description}</Typography>
+          </Box>
+          <Box display="flex" alignItems="center">
+            <Avatar sx={{ bgcolor: '#D9D5E4', width: 24, height: 24, mr: 1, p: 2 }}>{username.charAt(0).toUpperCase()}</Avatar>
             <Typography variant="body2" sx={{ color: theme.palette.text.primary }}>{username}</Typography>
           </Box>
           <Rating
             name="half-rating"
             value={ratingValue}
-            defaultValue={2.5} 
+            defaultValue={ratingValue!} 
             precision={0.5}
-            onChange={(event, newValue) => {
+            onChange={(_, newValue) => {
               setRatingValue(newValue);
             }}
             sx={{ color: '#25FFA8' }}
