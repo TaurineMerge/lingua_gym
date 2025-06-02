@@ -1,21 +1,45 @@
 import { useRef, useState, DragEvent, ChangeEvent } from 'react';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { Box, Paper, Typography } from '@mui/material';
+import { Box, Paper, Typography, Snackbar } from '@mui/material';
+import axios from 'axios';
 
 const TextLoader = () => {
-  const [textContent, setTextContent] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [fileName, setFileName] = useState("");
+  const [error, setError] = useState("");
 
-  const handleFile = (file: File) => {
-    if (file && file.type === 'text/plain') {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setTextContent(reader.result as string);
+  const handleFileUpload = async (file: File) => {
+    if (!file) return;
+
+    if (!file.name.endsWith('.epub')) {
+      setError("Допустим только .epub файл");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const res = await axios.post("http://localhost:3000/api/text/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
+      });
+      setFileName(res.data.path);
+
+      const downloadFile = async (filename: string) => {
+        const link = document.createElement("a");
+        link.href = `http://localhost:3000/api/text/${encodeURIComponent(filename)}/`;
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
       };
-      reader.readAsText(file);
-    } else {
-      alert('Допустимы только текстовые файлы (.txt)');
+
+      await downloadFile(file.name);
+    } catch (err) {
+      console.error(err);
+      setError("Ошибка при загрузке файла");
     }
   };
 
@@ -23,7 +47,7 @@ const TextLoader = () => {
     e.preventDefault();
     setDragActive(false);
     const file = e.dataTransfer.files[0];
-    handleFile(file);
+    if (file) handleFileUpload(file);
   };
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
@@ -37,7 +61,7 @@ const TextLoader = () => {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) handleFile(file);
+    if (file) handleFileUpload(file);
   };
 
   const handleClick = () => {
@@ -57,7 +81,7 @@ const TextLoader = () => {
     >
       <input
         type="file"
-        accept=".txt"
+        accept=".epub"
         ref={inputRef}
         onChange={handleInputChange}
         style={{ display: 'none' }}
@@ -87,9 +111,21 @@ const TextLoader = () => {
       >
         <CloudUploadIcon sx={{ fontSize: 60, color: '#0A84FF', mb: 2 }} />
         <Typography variant="body1" color="text.primary">
-          Перетащи сюда .txt файл<br />или нажми, чтобы выбрать
+          Перетащи сюда .epub файл<br />или нажми, чтобы выбрать
         </Typography>
+        {fileName && (
+          <Typography variant="caption" color="text.secondary" mt={2}>
+            Загружено: {fileName}
+          </Typography>
+        )}
       </Paper>
+
+      <Snackbar
+        open={!!error}
+        autoHideDuration={4000}
+        onClose={() => setError("")}
+        message={error}
+      />
     </Box>
   );
 };

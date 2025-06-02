@@ -6,8 +6,6 @@ import AspectRatioIcon from '@mui/icons-material/AspectRatio';
 import MenuIcon from '@mui/icons-material/Menu';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import TranslateIcon from '@mui/icons-material/Translate';
-import SettingsIcon from '@mui/icons-material/Settings';
-import HistoryIcon from '@mui/icons-material/History';
 import CollectionsIcon from '@mui/icons-material/Collections';
 import NotesIcon from '@mui/icons-material/Notes';
 import axios from "axios";
@@ -28,7 +26,6 @@ const TextReader = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const [dialogOpen, setDialogOpen] = useState(false);
-    const [highlightedParagraph, setHighlightedParagraph] = useState<number[]>([]);
     const [menuOpen, setMenuOpen] = useState(false);
     const [translatedText, setTranslatedText] = useState<string | null>(null);
     const [isTranslating, setIsTranslating] = useState(false);
@@ -41,16 +38,31 @@ const TextReader = () => {
 
     const containerRef = useRef<HTMLDivElement>(null);
 
+    const highlightedParagraphRef = useRef<number[]>([]);
+
     const isDragging = useRef(false);
     const dragTimer = useRef<NodeJS.Timeout | null>(null);
     const dragStartIndex = useRef<number | null>(null);
     const dragEndIndex = useRef<number | null>(null);
 
-    const text = `But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure? 
-    On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. 
-    But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains.But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. 
-    To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain`;
-    
+    const text = `
+Jake had always been good at reading between the lines — not the literal ones, like road signs or menus, but the invisible ones people scribble in conversation. Today, though, the lines were blurred.
+It started with a call from his manager.
+“We need to touch base later,” she said.
+Jake froze. Was it a casual check-in, or was the ground about to shift beneath him? Last time she said that, someone was "let go" — which, ironically, meant they were held tightly by unemployment.
+He tried to keep his head above water for the rest of the morning, juggling emails that “needed eyes,” documents that were “time-sensitive,” and a client who wanted to circle back to an idea they’d buried last quarter. Jake smiled, nodded, and played it by ear, though the tune made little sense.
+During lunch, his colleague Mia dropped by and asked if he was still seeing Claire.
+Jake blinked. “It’s complicated,” he said.
+And wasn’t that a can of worms. “Seeing” could mean dating, could mean arguing, could mean bumping into someone emotionally you’ve been trying to avoid physically. Context, as always, was king.
+Later that afternoon, his computer froze — just as he was about to save face on a messy spreadsheet. He muttered something unkind to the machine, which responded with silence. Technology always knew when to ghost him.
+At the 4 PM meeting, the room was stiff. His manager smiled the kind of smile that had a knife tucked behind it.
+“Let’s get something on the table,” she said.
+Jake panicked — which thing? The budget cuts? His performance? Or the time he "borrowed" that company mug with no intent of return?
+But she was just talking about the new campaign.
+Relief washed over him like a bucket of cold water — startling but cleansing.
+The day wrapped up with a pat on the back and a “Let’s touch base again next week,” which now sounded less like a threat and more like a formality. Maybe. Maybe not.
+As he walked home, Jake thought about language — how one phrase can open doors, or quietly close them behind you. How “I’m fine” can mean “I’m falling apart,” and how “We’ll be in touch” might mean you’ll never hear
+`;
     const words = text.match(/\S+|\s+/g) || [];
 
     const sendTranslationRequest = async (requestData: TranslationRequest, isContextTranslation: boolean = false): Promise<TranslationResponse> => {
@@ -63,6 +75,7 @@ const TextReader = () => {
                     'Content-Type': 'application/json',
                 }
             });
+            
             const response = await apiClient.post<TranslationResponse>(isContextTranslation ? '/translate-context' : '/translate', requestData);
             return response.data;
         } catch (error) {
@@ -75,12 +88,12 @@ const TextReader = () => {
 
     const handleTranslation = async (isContextTranslation: boolean) => {
         if (selectedWordsIds.current.length === 0) return;
-
+        
         const selectedText = selectedWordsIds.current
             .map(id => words[id])
             .join('')
             .trim();
-
+        
         if (!selectedText) return;
 
         if (!isContextTranslation) {
@@ -101,11 +114,11 @@ const TextReader = () => {
                 original: selectedText,
                 originalLanguageCode: 'en',
                 targetLanguageCode: 'ru',
-                context: highlightedParagraph.length > 0 
-                    ? highlightedParagraph.map(id => words[id]).join('').trim()
+                context: highlightedParagraphRef.current.length > 0 
+                    ? highlightedParagraphRef.current.map(id => words[id]).join('').trim()
                     : undefined
             };
-
+            
             try {
                 const response = await sendTranslationRequest(translationRequest, isContextTranslation);
                 setTranslatedText(response.translatedText);
@@ -130,7 +143,7 @@ const TextReader = () => {
         const index = Number(target.dataset.index);
         
         if (!selectedWordsIds.current.includes(index) || selectedWordsIds.current.length !== 1) {
-            setHighlightedParagraph([]);
+            highlightedParagraphRef.current = [];
             selectedWordsIds.current = [];
             setAnchorEl(null);
             setTranslatedText(null);
@@ -159,7 +172,7 @@ const TextReader = () => {
                 
                 if (!isNaN(index)) {
                   if (selectedWordsIds.current.includes(index)) {
-                    setHighlightedParagraph([]);
+                    highlightedParagraphRef.current = [];
                     selectedWordsIds.current = [];
                     setAnchorEl(null);
                     setTranslatedText(null);
@@ -196,7 +209,7 @@ const TextReader = () => {
     };
 
     const handleClosePopper = () => {
-        setHighlightedParagraph([]);
+        highlightedParagraphRef.current = [];
         selectedWordsIds.current = [];
         setAnchorEl(null);
         setTranslatedText(null);
@@ -209,8 +222,8 @@ const TextReader = () => {
     const handleContextTranslation = () => {
         if (selectedWordsIds.current.length === 0) return;
 
-        if (highlightedParagraph.length > 0) {
-            setHighlightedParagraph([]);
+        if (highlightedParagraphRef.current.length > 0) {
+            highlightedParagraphRef.current = [];
             return;
         }
 
@@ -259,7 +272,7 @@ const TextReader = () => {
         end = Math.min(words.length - 1, end);
         
         const paragraphRange = Array.from({ length: end - start + 1 }, (_, i) => start + i);
-        setHighlightedParagraph(paragraphRange);
+        highlightedParagraphRef.current = paragraphRange;
         
         handleTranslation(true);
     }
@@ -276,25 +289,15 @@ const TextReader = () => {
             action: () => console.log("Translations clicked")
         },
         {
-            title: "Collections",
-            icon: <CollectionsIcon />,
-            action: () => console.log("Collections clicked")
-        },
-        {
             title: "Notes",
             icon: <NotesIcon />,
             action: () => console.log("Notes clicked")
         },
         {
-            title: "History",
-            icon: <HistoryIcon />,
-            action: () => console.log("History clicked")
+            title: "Set",
+            icon: <CollectionsIcon />,
+            action: () => console.log("Collections clicked")
         },
-        {
-            title: "Settings",
-            icon: <SettingsIcon />,
-            action: () => console.log("Settings clicked")
-        }
     ];
 
     const renderText = () => {
@@ -303,7 +306,7 @@ const TextReader = () => {
                 {words.map((word, i) => {
                     const isWord = /\S+/.test(word);
                     const selected = selectedWordsIds.current.includes(i);
-                    const inHighlightedParagraph = highlightedParagraph.includes(i);
+                    const inHighlightedParagraph = highlightedParagraphRef.current.includes(i);
     
                     const isSpaceBetweenSelected =
                         !isWord &&
@@ -439,8 +442,8 @@ const TextReader = () => {
                     </Typography>
                 </Box>
                 <Box sx={{ width: '100%', height: '5vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                    <Typography sx={{ color: '#FFFFFF', fontSize: '1rem', textAlign: 'center' }}>Progress: {(totalPages/page)*100}%</Typography>
-                    <LinearProgress value={(totalPages/page)*100} variant="determinate" color="primary" />
+                    <Typography sx={{ color: '#FFFFFF', fontSize: '1rem', textAlign: 'center' }}>Завершено на: {Number.parseFloat(''+((page/totalPages)*100).toFixed(1))}%</Typography>
+                    <LinearProgress value={(page/totalPages)*100} variant="determinate" color="primary" />
                 </Box>
                 <Box sx={{ height: '5vh', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <Pagination count={totalPages} page={page} variant="outlined" color="primary" />
@@ -483,7 +486,7 @@ const TextReader = () => {
                             >
                                 {isTranslating ? (
                                     <Box display="flex" justifyContent="center" alignItems="center" height="100%">
-                                        <Typography>Translating...</Typography>
+                                        <Typography>Осуществляется перевод...</Typography>
                                     </Box>
                                 ) : (
                                     <Typography

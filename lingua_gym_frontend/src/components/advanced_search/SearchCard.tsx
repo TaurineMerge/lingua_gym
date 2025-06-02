@@ -45,7 +45,8 @@ const SearchCard = ({ isSmall, ...cardInfo }: SearchCardProps) => {
             backfaceVisibility: "hidden",
             display: "flex",
             flexDirection: "column",
-            p: isSmall ? 1 : 1.5,
+            justifyContent: "space-between",
+            p: isSmall ? 1 : 1.2,
             boxShadow: theme.shadows[3],
             backgroundColor: '#1A1A1A',
             zIndex: flipped ? 0 : 1,
@@ -82,7 +83,7 @@ const SearchCard = ({ isSmall, ...cardInfo }: SearchCardProps) => {
             <Rating name="half-rating" defaultValue={Number.parseFloat(cardInfo.rating)} precision={0.5} readOnly sx={{ fontSize: isSmall ? "0.8rem" : "1rem" }} />
           </Box>
 
-          <Box sx={{ my: 0.5, overflowX: "auto", overflowY: "hidden" }}>
+          <Box sx={{ overflowX: "auto", overflowY: "hidden", mb: 1 }}>
             {cardInfo.tags.map((tag, index) => (
               <Chip
                 key={index}
@@ -98,7 +99,6 @@ const SearchCard = ({ isSmall, ...cardInfo }: SearchCardProps) => {
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              mt: "0.5rem"
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -110,9 +110,9 @@ const SearchCard = ({ isSmall, ...cardInfo }: SearchCardProps) => {
                   backgroundColor: theme.palette.secondary.main
                 }}
               >
-                U
+                {cardInfo.users[0].charAt(0).toUpperCase()}
               </Avatar>
-              <Typography variant="body2" sx={{ overflowX: "auto", fontSize: isSmall ? "0.8rem" : "1rem" }}>{cardInfo.users[0]}</Typography>
+              <Typography variant="body2" sx={{ overflowX: "auto", fontSize: isSmall ? "0.7rem" : "0.8rem" }}>{cardInfo.users[0]}</Typography>
             </Box>
             <Typography variant="caption" fontWeight="bold">
               {cardInfo.language}
@@ -126,7 +126,7 @@ const SearchCard = ({ isSmall, ...cardInfo }: SearchCardProps) => {
             }}
           >
             <Typography variant="caption" fontSize={isSmall ? "0.6rem" : "0.8rem"}>
-              Created: {cardInfo.time}
+              Создано: {cardInfo.time.slice(0, 10).split("-").reverse().join(".")}
             </Typography>
           </Box>
         </Card>

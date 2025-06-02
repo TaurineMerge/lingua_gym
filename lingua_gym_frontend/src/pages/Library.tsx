@@ -34,10 +34,31 @@ const Library = () => {
 	};
 
 	const items = [
-		{ id: 1, name: "React Fundamentals", type: "set", author: "John Doe", date: "2023-05-15", tags: ["React", "Frontend"] },
-		{ id: 2, name: "Advanced TypeScript", type: "text", author: "Jane Smith", date: "2023-06-20", tags: ["TypeScript"] },
-		{ id: 3, name: "CSS Masterclass", type: "set", author: "Mike Johnson", date: "2023-04-10", tags: ["CSS", "Design"] },
-	];
+		{
+			id: 1,
+			name: "Business Email Vocabulary",
+			type: "text",
+			author: "Jane Smith",
+			date: "2023-06-20",
+			tags: ["Business English", "Formal Writing"]
+		},
+		{
+			id: 2,
+			name: "Essential English Phrases",
+			type: "set",
+			author: "John Doe",
+			date: "2023-05-15",
+			tags: ["Everyday English", "Beginner"]
+		},
+		{
+			id: 3,
+			name: "Travel Conversation Pack",
+			type: "set",
+			author: "Mike Johnson",
+			date: "2023-04-10",
+			tags: ["Travel", "Speaking Practice"]
+		}
+	]
 
 	return (
 		<Container>
@@ -128,7 +149,7 @@ const Library = () => {
 					</Box>
 				</Box>
 			</Modal>
-			<Box mt={4} display="flex" alignItems="center" justifyContent="space-between">
+			<Box mt={4} mb={6} display="flex" alignItems="center" justifyContent="space-between">
 				<Typography variant="h3" sx={{ 
 				color: theme.palette.secondary.main, 
 				fontWeight: theme.typography.h3.fontWeight,
@@ -171,8 +192,8 @@ const Library = () => {
 							label="Фильтр"
 							onChange={() => {}}
 						>
-							<MenuItem value={1}>Русский</MenuItem>
-							<MenuItem value={2}>Английский</MenuItem>
+							<MenuItem value={1}>Английский</MenuItem>
+							<MenuItem value={2}>Русский</MenuItem>
 							<MenuItem value={3}>Китайский</MenuItem>
 						</Select>
 					</FormControl>
@@ -266,7 +287,7 @@ const Library = () => {
 								<Avatar sx={{ 
 									mr: 2, 
 								}}>
-									{item.type === 'set' ? 'S' : 'T'}
+									{item.author[0].toUpperCase()}
 								</Avatar>
 								<Box display={'flex'} flexDirection={'row'} alignItems={'center'} sx={{ flexGrow: 1 }}>
 									<ListItemText
@@ -308,7 +329,7 @@ const Library = () => {
 									</Box>
 									<Box>
 										<Chip 
-											label='ru' 
+											label='en' 
 											size="small" 
 											sx={{ mr: 1, mt: 0.5, backgroundColor: '#111' }} 
 										/>

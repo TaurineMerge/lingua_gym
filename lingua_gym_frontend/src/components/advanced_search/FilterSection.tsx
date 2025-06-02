@@ -1,13 +1,14 @@
-import { Box, Divider, Button, Typography, IconButton } from "@mui/material";
+import { Box, Divider, Button, Typography, IconButton, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { Close as CloseIcon } from "@mui/icons-material";
 import TimeFilter from "./TimeFilter";
 import MaterialTypeFilter from "./MaterialTypeFilter";
 import LanguageFilter from "./LanguageFilter";
 import UserFilter from "./UserFilter";
 import TagsFilter from "./TagsFilter";
+import { Sort as SortIcon } from "@mui/icons-material";
 
 interface FilterSectionProps {
-  filters: { time: string; materialType: string; language: string; tags: string[]; users: string[] };
+  filters: { time: string; rating: string; materialType: string; language: string; tags: string[]; users: string[] };
   isMobile: boolean;
   showMobileFilters: boolean;
   setShowMobileFilters: (show: boolean) => void;
@@ -62,13 +63,32 @@ const FilterSection = ({
         </Box>
       )}
       
+      <Typography variant="h6" mb={2} display="flex" alignItems="center" sx={{ fontSize: "1rem" }}>
+        <SortIcon sx={{ mr: 1 }} /> Сортировать
+      </Typography>
+
       <TimeFilter 
         value={filters.time}
         onChange={(value) => handleFilterChange("time", value)}
       />
+
+      <FormControl fullWidth margin="dense" size="small">
+        <InputLabel sx={{ color: "text.primary" }}>Рейтинг</InputLabel>
+        <Select
+          label="Рейтинг"
+          value={'highest'}
+        >
+          <MenuItem value="highest">По убыванию</MenuItem>
+          <MenuItem value="lowest">По возрастанию</MenuItem>
+        </Select>
+      </FormControl>
       
-      <Divider sx={{ my: 3 }} />
+      <Divider sx={{ my: 2 }} />
       
+      <Typography variant="h6" mb={2} display="flex" alignItems="center" sx={{ fontSize: "1rem" }}>
+        <SortIcon sx={{ mr: 1 }} /> Фильтровать
+      </Typography>
+
       <MaterialTypeFilter 
         value={filters.materialType}
         onChange={(value) => handleFilterChange("materialType", value)}
@@ -103,7 +123,7 @@ const FilterSection = ({
         onClick={clearAllFilters}
         disabled={filters.users.length === 0 && filters.tags.length === 0 && filters.materialType === "" && filters.language === ""}
       >
-        Clear all filters
+        Сбросить настройки
       </Button>
 
       {isMobile && (
@@ -113,7 +133,7 @@ const FilterSection = ({
           sx={{ mt: 2 }}
           onClick={() => setShowMobileFilters(false)}
         >
-          Apply Filters
+          Применить
         </Button>
       )}
     </Box>

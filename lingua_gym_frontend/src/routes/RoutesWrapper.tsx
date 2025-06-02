@@ -37,7 +37,7 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <HomePage /> },
           { path: 'materials', element: <AdvancedSearchView /> },
-          { path: 'text', element: <TextReader /> },
+          { path: 'text/:filename/', element: <TextReader /> },
           { path: 'text-loader', element: <TextLoader /> },
           { path: 'library', element: <Library /> },
           { path: 'progress', element: <Progress /> },

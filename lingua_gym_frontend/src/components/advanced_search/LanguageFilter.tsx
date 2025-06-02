@@ -15,9 +15,9 @@ const LanguageFilter = ({ value, onChange }: LanguageFilterProps) => {
 
   return (
     <FormControl fullWidth margin="dense" size="small">
-      <InputLabel sx={{ color: "text.primary" }}>Language</InputLabel>
+      <InputLabel sx={{ color: "text.primary" }}>Язык</InputLabel>
       <Select
-        label="Language"
+        label="Язык"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       >

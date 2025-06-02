@@ -145,7 +145,7 @@ const SearchResultsGrid = ({ isSmall, searchQuery, filters }: SearchResultsGridP
                 language={card.filters.language}
                 tags={card.filters.tags}
                 time={card.filters.time}
-                rating={card.filters.rating}
+                rating={'5'}
                 users={card.filters.users}
                 isSmall={isSmall}
               />

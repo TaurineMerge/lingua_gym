@@ -51,15 +51,13 @@ class ContextTranslationIntegration {
     async translateContext(original: string, originalLanguageCode: string, targetLanguageCode: string, context: string): Promise<string | null> {
         try {
             const model = process.env.OPENAI_MODEL || '';
-
-            const userPrompt = context 
-                ? `Translate the following text: ${original}. 
-                The context is: ${context}. Original language: ${originalLanguageCode}. 
-                Target language: ${targetLanguageCode}.` 
-                : `Translate the following text: ${original}. 
-                Orgiginal language: ${originalLanguageCode}. 
-                Target language: ${targetLanguageCode}.`;
-            const systemPrompt = `You are a smart translator. You will translate the text from one language into another considering the context.`;
+            
+            const userPrompt = 
+                `Translate ONLY the following word(s) or phrase(s): ${original}. Context: ${context}. From: ${originalLanguageCode} → To: ${targetLanguageCode}.
+                Preserve the grammatical form and agreement of the selected words or phrases within the sentence context.
+                Do NOT translate the context. Do NOT translate anything else.
+                Preserve grammatical form and agreement within the context.`;
+            const systemPrompt = `You are a smart translator. Translate between languages with full attention to context.`;
             const response = await this.openai.chat.completions.create({
                 model: model,
                 messages: [

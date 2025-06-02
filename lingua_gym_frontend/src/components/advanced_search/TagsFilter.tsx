@@ -17,7 +17,7 @@ const TagsFilter = ({ tags, onDelete, onAdd, newTag, setNewTag }: TagsFilterProp
 
   return (
     <>
-      <Typography variant="subtitle1" fontWeight="bold" mb={1}>Tags</Typography>
+      <Typography variant="subtitle1" fontWeight="bold" mb={1}>Теги</Typography>
       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
         {tags.length > 0 ? (
           tags.map(tag => (
@@ -29,7 +29,7 @@ const TagsFilter = ({ tags, onDelete, onAdd, newTag, setNewTag }: TagsFilterProp
             />
           ))
         ) : (
-          <Typography variant="body2" color="text.primary">No tags selected</Typography>
+          <Typography variant="body2" color="text.primary">Теги не выбраны</Typography>
         )}
       </Box>
       
@@ -46,7 +46,7 @@ const TagsFilter = ({ tags, onDelete, onAdd, newTag, setNewTag }: TagsFilterProp
               variant="outlined" 
               size="small" 
               fullWidth
-              placeholder="Add tag..." 
+              placeholder="Добавить тег..." 
               onKeyDown={(e) => e.key === "Enter" && onAdd(newTag)}
             />
           )}

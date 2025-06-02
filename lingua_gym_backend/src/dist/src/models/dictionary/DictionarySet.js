@@ -9,7 +9,6 @@ class DictionarySet {
         this._isPublic = set.isPublic;
         this._languageCode = set.languageCode;
         this._description = set.description;
-        this._rating = set.rating || 0;
         this._createdAt = set.createdAt;
         this._cards = cards;
     }
@@ -20,7 +19,6 @@ class DictionarySet {
         return null; return this._description; }
     get isPublic() { return this._isPublic; }
     get languageCode() { return this._languageCode; }
-    get rating() { return this._rating; }
     get createdAt() { return this._createdAt || null; }
     get cards() { return this._cards || []; }
     get set() {

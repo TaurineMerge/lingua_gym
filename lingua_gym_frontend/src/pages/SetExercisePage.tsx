@@ -68,10 +68,10 @@ const SetExercisePage = () => {
             >
                 <Box sx={{ mb: 3, zIndex: 1 }}>
                     <Typography variant="h4" align="center" color="#0A8CFF" gutterBottom>
-                        Составь предложение
+                        Составьте предложение
                     </Typography>
                     <Typography variant="subtitle1" align="center" sx={{ opacity: 0.8 }}>
-                        Ответь на вопрос, используя ключевые слова.
+                        Ответьте на вопрос, используя ключевые слова.
                     </Typography>
                 </Box>
 

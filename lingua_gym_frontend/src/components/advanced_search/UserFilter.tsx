@@ -17,7 +17,7 @@ const UserFilter = ({ users, onDelete, onAdd, newUser, setNewUser }: UserFilterP
 
   return (
     <>
-      <Typography variant="subtitle1" fontWeight="bold" mb={1}>User</Typography>
+      <Typography variant="subtitle1" fontWeight="bold" mb={1}>Пользователь</Typography>
       {users.length ? (
         <Box sx={{ display: "flex", justifyContent: "flex-start", alignItems: "center", mb: 2 }}>
           {users.map(user => (
@@ -30,7 +30,7 @@ const UserFilter = ({ users, onDelete, onAdd, newUser, setNewUser }: UserFilterP
           ))}
         </Box>
       ) : (
-        <Typography variant="body2" color="text.primary" mb={1}>No user selected</Typography>
+        <Typography variant="body2" color="text.primary" mb={1}>Пользователи не выбраны</Typography>
       )}
       
       <Box sx={{ display: "flex", alignItems: "center", mb: 2, gap: 1 }}>
@@ -46,7 +46,7 @@ const UserFilter = ({ users, onDelete, onAdd, newUser, setNewUser }: UserFilterP
               variant="outlined" 
               size="small" 
               fullWidth
-              placeholder="Add user..." 
+              placeholder="Добавить пользователя..." 
               onKeyDown={(e) => e.key === "Enter" && onAdd(newUser)}
             />
           )}

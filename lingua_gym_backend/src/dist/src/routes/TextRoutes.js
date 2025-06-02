@@ -1,7 +1,10 @@
 import express from 'express';
 import { validateAccessToken } from '../middlewares/authorization/authorizationMiddleware.js';
 import textController from '../controllers/TextController.js';
+import upload from "../middlewares/upload/uploadMiddleware.js";
 const router = express.Router();
+router.post("/upload", validateAccessToken, upload.single("file"), textController.upload);
 router.post('/translate-context', validateAccessToken, textController.translateContext);
 router.post('/translate', validateAccessToken, textController.translate);
+router.get('/:filename/', validateAccessToken, textController.download);
 export default router;
