@@ -442,11 +442,11 @@ As he walked home, Jake thought about language — how one phrase can open doors
                     </Typography>
                 </Box>
                 <Box sx={{ width: '100%', height: '5vh', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                    <Typography sx={{ color: '#FFFFFF', fontSize: '1rem', textAlign: 'center' }}>Завершено на: {Number.parseFloat(''+((page/totalPages)*100).toFixed(1))}%</Typography>
-                    <LinearProgress value={(page/totalPages)*100} variant="determinate" color="primary" />
+                    <Typography sx={{ color: '#FFFFFF', fontSize: '1rem', textAlign: 'center' }}>Завершено на: {Number.parseFloat(''+((3/18)*100).toFixed(1))}%</Typography>
+                    <LinearProgress value={(3/18)*100} variant="determinate" color="primary" />
                 </Box>
                 <Box sx={{ height: '5vh', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <Pagination count={totalPages} page={page} variant="outlined" color="primary" />
+                    <Pagination count={18} page={3} variant="outlined" color="primary" />
                 </Box>
                 <Popper
                     open={Boolean(anchorEl)}
@@ -570,6 +570,20 @@ As he walked home, Jake thought about language — how one phrase can open doors
                                 }}
                             >
                                 Перевести в контексте
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                onClick={handleContextTranslation}
+                                sx={{
+                                    borderColor: '#555',
+                                    color: '#FFF',
+                                    fontWeight: 500,
+                                    paddingX: 2,
+                                    borderRadius: 1,
+                                    '&:hover': { backgroundColor: '#333', borderColor: '#777' },
+                                }}
+                            >
+                                Оставить заметку
                             </Button>
                             <Button
                                 variant="outlined"

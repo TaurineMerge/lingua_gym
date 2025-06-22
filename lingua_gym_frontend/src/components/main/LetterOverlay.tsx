@@ -33,7 +33,7 @@ const LetterOverlay = () => {
           <text x="680" y="162">🗼</text>
         </g>
         <g transform={`rotate(25 700 280)`}>
-          <text x="576" y="90">Y</text>
+          <text x="576" y="110">Y</text>
         </g>
         <g transform={`rotate(-30 620 340)`}>
           <text x="656" y="78">🏯</text>

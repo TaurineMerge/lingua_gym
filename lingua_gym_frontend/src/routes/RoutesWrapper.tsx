@@ -11,6 +11,7 @@ import Library from '../pages/Library';
 import Progress from '../pages/Progress';
 import SetPage from '../pages/SetPage';
 import SetExercisePage from '../pages/SetExercisePage';
+import AboutPage from '../pages/AboutPage';
 
 export function ProtectedRoute() {
   const { isAuthenticated, isAuthLoading } = useAuth();
@@ -19,7 +20,7 @@ export function ProtectedRoute() {
   return isAuthenticated ? <Outlet /> : <Navigate to="/auth" replace />;
 }
 
-export function PublicRoute() {
+export function AuthRoute() {
   const { isAuthenticated, isAuthLoading } = useAuth();
 
   if (isAuthLoading || isAuthenticated === null) return <div>Loading...</div>;
@@ -41,19 +42,23 @@ const router = createBrowserRouter([
           { path: 'text-loader', element: <TextLoader /> },
           { path: 'library', element: <Library /> },
           { path: 'progress', element: <Progress /> },
-          { path: 'set/:setId', element: <SetPage /> },
-          { path: 'set/:setId/exercise/', element: <SetExercisePage /> },
+          { path: 'set/:setName/:setId', element: <SetPage /> },
+          { path: 'set/:setName/:setId/exercise/', element: <SetExercisePage /> },
         ],
       },
     ],
   },
   {
     path: '/auth',
-    element: <PublicRoute />,
+    element: <AuthRoute />,
     children: [
       { index: true, element: <AuthPage /> },
       { path: 'password-reset', element: <PasswordResetPage /> },
     ],
+  },
+  {
+    path: '/about',
+    element: <AboutPage />,
   },
   {
     path: '*',

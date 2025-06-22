@@ -1,29 +1,25 @@
-import { Box, Container, Typography } from '@mui/material';
+import { Box, Container, MenuItem, Select, Typography } from '@mui/material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import theme from '../theme';
 
 const random = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-const textData = [
-  { name: '14 мая', added: random(1, 10), finished: random(1, 10) },
-  { name: '15 мая', added: random(1, 10), finished: random(1, 10) },
-  { name: '16 мая', added: random(1, 10), finished: random(1, 10) },
-  { name: '17 мая', added: random(1, 10), finished: random(1, 10) },
-  { name: '18 мая', added: random(1, 10), finished: random(1, 10) },
-];
+const textData = Array.from({ length: 25 }, (_, i) => ({
+  name: `${i + 1} мая`,
+  added: random(1, 10),
+  finished: random(1, 10),
+}));
 
-const setData = [
-  { name: '14 мая', added: random(1, 10), finished: random(1, 10) },
-  { name: '15 мая', added: random(1, 10), finished: random(1, 10) },
-  { name: '16 мая', added: random(1, 10), finished: random(1, 10) },
-  { name: '17 мая', added: random(1, 10), finished: random(1, 10) },
-  { name: '18 мая', added: random(1, 10), finished: random(1, 10) },
-];
+const setData = Array.from({ length: 25 }, (_, i) => ({
+  name: `${i + 1} мая`,
+  added: random(1, 10),
+  finished: random(1, 10),
+}));
 
 const Progress = () => {
   return (
     <Container>
-      <Box mt={4}>
+      <Box mt={4} display="flex" justifyContent={"space-between"}>
         <Typography variant="h3" sx={{ 
           color: theme.palette.secondary.main, 
           fontWeight: theme.typography.h3.fontWeight,
@@ -32,6 +28,11 @@ const Progress = () => {
         }}>
           Прогресс
         </Typography>
+        <Box mt={2} width={200}>
+          <Select fullWidth value={'Текущий месяц'} onChange={() => {}}>
+              <MenuItem key={1} value={'Текущий месяц'}>{'Текущий месяц'}</MenuItem>
+          </Select>
+        </Box>
       </Box>
 
       <Box mt={4} display="flex" alignItems="center" gap={4}>

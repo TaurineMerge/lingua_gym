@@ -12,6 +12,7 @@ interface SearchCardProps {
   tags: string[];
   time: string;
   rating: string;
+  access: string;
   users: string[];
 }
 
@@ -79,8 +80,9 @@ const SearchCard = ({ isSmall, ...cardInfo }: SearchCardProps) => {
             </Box>
           </Box>
 
-          <Box>
+          <Box display="flex" alignItems="center" gap={1}>
             <Rating name="half-rating" defaultValue={Number.parseFloat(cardInfo.rating)} precision={0.5} readOnly sx={{ fontSize: isSmall ? "0.8rem" : "1rem" }} />
+            <Typography variant="body2" sx={{ fontSize: isSmall ? "0.6rem" : "0.8rem", color: '#aaa' }}>{cardInfo.access}</Typography>
           </Box>
 
           <Box sx={{ overflowX: "auto", overflowY: "hidden", mb: 1 }}>

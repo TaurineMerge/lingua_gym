@@ -63,7 +63,7 @@ const FilterSection = ({
         </Box>
       )}
       
-      <Typography variant="h6" mb={2} display="flex" alignItems="center" sx={{ fontSize: "1rem" }}>
+      <Typography variant="h6" mb={1} display="flex" alignItems="center" sx={{ fontSize: "1rem" }}>
         <SortIcon sx={{ mr: 1 }} /> Сортировать
       </Typography>
 
@@ -85,7 +85,7 @@ const FilterSection = ({
       
       <Divider sx={{ my: 2 }} />
       
-      <Typography variant="h6" mb={2} display="flex" alignItems="center" sx={{ fontSize: "1rem" }}>
+      <Typography variant="h6" display="flex" alignItems="center" sx={{ fontSize: "1rem" }}>
         <SortIcon sx={{ mr: 1 }} /> Фильтровать
       </Typography>
 
@@ -94,6 +94,18 @@ const FilterSection = ({
         onChange={(value) => handleFilterChange("materialType", value)}
       />
       
+      <FormControl fullWidth margin="dense" size="small">
+        <InputLabel sx={{ color: "text.primary" }}>Тип доступа</InputLabel>
+        <Select
+          label="Тип доступа"
+          defaultValue=""
+        >
+          <MenuItem value=""><em>Все</em></MenuItem>
+          <MenuItem value=""><em>Публичный</em></MenuItem>
+          <MenuItem value=""><em>Приватный</em></MenuItem>
+        </Select>
+      </FormControl>
+
       <LanguageFilter 
         value={filters.language}
         onChange={(value) => handleFilterChange("language", value)}

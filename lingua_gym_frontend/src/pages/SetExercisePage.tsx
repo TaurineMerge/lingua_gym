@@ -71,7 +71,7 @@ const SetExercisePage = () => {
                         Составьте предложение
                     </Typography>
                     <Typography variant="subtitle1" align="center" sx={{ opacity: 0.8 }}>
-                        Ответьте на вопрос, используя ключевые слова.
+                        Ответьте на вопрос, используя слова из сета.
                     </Typography>
                 </Box>
 

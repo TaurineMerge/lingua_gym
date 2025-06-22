@@ -146,6 +146,7 @@ const SearchResultsGrid = ({ isSmall, searchQuery, filters }: SearchResultsGridP
                 tags={card.filters.tags}
                 time={card.filters.time}
                 rating={'5'}
+                access="Публичный"
                 users={card.filters.users}
                 isSmall={isSmall}
               />
